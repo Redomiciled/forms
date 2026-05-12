@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Redomiciled Start Here",
-  description: "Start Here intake form for Redomiciled.",
+  title: "Start Here | Redomiciled",
+  description: "Confidential Start Here intake form for Redomiciled.",
 };
 
 export default function RootLayout({

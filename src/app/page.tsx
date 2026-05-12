@@ -1,26 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { StartHereForm } from "@/components/start-here-form";
 
 export default function Home() {
   return (
-    <main className="bg-background text-foreground flex min-h-screen flex-1 items-center justify-center px-6 py-16">
-      <section className="w-full max-w-2xl space-y-8 text-center">
-        <div className="space-y-4">
-          <p className="text-muted-foreground text-sm font-medium tracking-[0.18em] uppercase">
-            Redomiciled
-          </p>
-          <h1 className="text-4xl leading-tight font-semibold sm:text-5xl">
-            Start Here
-          </h1>
-          <p className="text-muted-foreground mx-auto max-w-xl text-base leading-7 sm:text-lg">
-            Intake form scaffold ready for the Redomiciled funnel. The final
-            experience will follow the brand guidance in DESIGN.md.
-          </p>
-        </div>
-
-        <Button size="lg" type="button">
-          Form build in progress
-        </Button>
-      </section>
+    <main className="relative min-h-screen overflow-hidden bg-[#070720]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(92,89,255,0.42),transparent_32%),radial-gradient(circle_at_80%_12%,rgba(59,56,224,0.36),transparent_30%),linear-gradient(135deg,#2422A1_0%,#3B38E0_48%,#11102B_100%)]" />
+      <div className="pointer-events-none absolute inset-0 [background-image:linear-gradient(125deg,transparent_0%,rgba(255,255,255,0.13)_46%,transparent_70%)] opacity-35" />
+      <div className="relative">
+        <StartHereForm />
+      </div>
     </main>
   );
 }
