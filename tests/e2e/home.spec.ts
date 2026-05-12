@@ -11,24 +11,40 @@ test("prepares the Start Here intake payload", async ({ page }) => {
     })
   ).toBeVisible();
 
+  await page.getByRole("button", { name: /continue/i }).click();
+  await expect(
+    page.getByText(/please complete the highlighted fields/i)
+  ).toBeVisible();
+  await expect(page.getByText(/first name is required/i)).toBeVisible();
+  await expect(page.getByLabel(/first name/i)).toHaveAttribute(
+    "aria-invalid",
+    "true"
+  );
+  await expect(
+    page.getByRole("button", { name: /commercial readiness/i })
+  ).toBeDisabled();
+
   await page.getByLabel(/first name/i).fill("Taylor");
   await page.getByLabel(/last name/i).fill("Rivera");
   await page.getByLabel(/email/i).fill("taylor@example.com");
-  await page.getByLabel(/whatsapp/i).fill("+1 555 0100");
-  await page.getByRole("button", { name: /warm referral/i }).click();
+  await page.getByLabel(/phone/i).fill("+1 555 0100");
+  await expect(page.getByText(/where are you coming from/i)).toHaveCount(0);
   await page.getByRole("button", { name: /continue/i }).click();
+  await expect(
+    page.getByRole("button", { name: /contact info/i })
+  ).toBeEnabled();
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);
 
   await page
-    .getByRole("button", { name: /yes - knows structure or bank need/i })
+    .getByRole("radio", { name: /yes .* structure .* bank account/i })
     .click();
-  await page.getByRole("button", { name: /new bank account/i }).click();
+  await page.getByRole("checkbox", { name: /new bank account/i }).click();
   await page.getByRole("button", { name: /continue/i }).click();
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);
 
-  await page.getByRole("button", { name: /partially set up/i }).click();
+  await page.getByRole("radio", { name: /partially set up/i }).click();
   await page.getByLabel(/currently a resident/i).fill("Argentina");
   await page
     .getByLabel(/passport\(s\) \/ citizenship\(s\)/i)
@@ -37,14 +53,17 @@ test("prepares the Start Here intake payload", async ({ page }) => {
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);
 
-  await page.getByRole("button", { name: "Yes" }).first().click();
-  await page.getByRole("button", { name: /\$25k-\$100k\/month/i }).click();
-  await page.getByRole("button", { name: /\$1M-\$5M/i }).click();
-  await page.getByRole("button", { name: /ASAP \/ 0-3 months/i }).click();
+  await page.getByRole("radio", { name: "Yes" }).first().click();
+  await page.getByRole("radio", { name: /\$25k.*\$100k.*month/i }).click();
+  await page.getByRole("radio", { name: /\$1M.*\$5M/i }).click();
+  await page.getByRole("radio", { name: /ASAP \/ 0.*3 months/i }).click();
   await page
-    .getByRole("button", { name: /maybe, if the fit is clear/i })
+    .getByRole("radio", { name: /maybe, if the fit is clear/i })
     .click();
-  await page.getByRole("button", { name: /continue/i }).click();
+  await page.getByRole("button", { name: /complete/i }).click();
+  await expect(
+    page.getByRole("dialog", { name: /confirm the intake/i })
+  ).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);
 

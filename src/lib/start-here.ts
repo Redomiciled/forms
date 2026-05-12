@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const PLACEHOLDERS = {
   clickUpListId: "PLACEHOLDER_CLICKUP_CRM_LIST_ID",
   erikCalendarUrl: "PLACEHOLDER_CAL_COM_ERIK_URL",
@@ -14,47 +16,47 @@ export const leadSourceDetails = [
 ] as const;
 
 export const consideringSpecificStructureOptions = [
-  "Yes - knows structure or bank need",
-  "No - needs path guidance",
-  "Compliance check",
+  "Yes — I know what structure I want, or I know I need a bank account",
+  "No — I want help finding the right path",
+  "I just want to check my current structure is compliant",
 ] as const;
 
 export const tryingToSolveOptions = [
-  "Relocate tax residency",
-  "New entity",
-  "Second passport",
+  "Relocate my individual tax residency",
+  "Set up a new entity that suits me better",
+  "Get a second passport",
   "New bank account",
-  "Crypto transaction",
-  "Structure compliance check",
-  "Diversify assets without moving",
+  "Help with a crypto transaction",
+  "Check if my current structure is compliant",
+  "Diversify my assets globally without changing where I live",
 ] as const;
 
 export const setupMaturityOptions = [
-  "New to this",
-  "Partially set up",
-  "Sophisticated setup",
+  "New to this — first time moving abroad / first experience with the offshore world",
+  "Partially set up — I have some international structure but want to improve it",
+  "Sophisticated setup — I have established structures and need specific expert help",
 ] as const;
 
 export const monthlyRevenueBandOptions = [
-  "$0-$5k/month",
-  "$5k-$25k/month",
-  "$25k-$100k/month",
-  "$100k-$1M/month",
-  "$1M+/month",
+  "$0–$5k / month",
+  "$5k–$25k / month",
+  "$25k–$100k / month",
+  "$100k–$1M / month",
+  "$1M+ / month",
 ] as const;
 
 export const netWorthBandOptions = [
-  "$0-$50k",
-  "$50k-$250k",
-  "$250k-$1M",
-  "$1M-$5M",
-  "$5M-$20M",
+  "$0–$50k",
+  "$50k–$250k",
+  "$250k–$1M",
+  "$1M–$5M",
+  "$5M–$20M",
   "$20M+",
 ] as const;
 
 export const timelineToActOptions = [
-  "ASAP / 0-3 months",
-  "3-6 months",
+  "ASAP / 0–3 months",
+  "3–6 months",
   "6+ months",
   "Just exploring",
 ] as const;
@@ -95,25 +97,117 @@ export type StartHereFormRoute = (typeof startHereFormRouteOptions)[number];
 export type RoutingDecisionSignal =
   (typeof routingDecisionSignalOptions)[number];
 
-export type StartHereFormValues = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  leadSourceDetail: LeadSourceDetail | "";
-  referralDetail: string;
-  consideringSpecificStructure: ConsideringSpecificStructure | "";
-  tryingToSolve: TryingToSolve[];
-  setupMaturity: SetupMaturity | "";
-  currentResidence: string;
-  passportsCitizenships: string;
-  businessMainSourceOfIncome: boolean | null;
-  monthlyRevenueBand: MonthlyRevenueBand | "";
-  netWorthBand: NetWorthBand | "";
-  timelineToAct: TimelineToAct | "";
-  budgetReadiness: BudgetReadiness | "";
-  importantRoutingNotes: string;
-};
+const emptyString = z.literal("");
+
+export const startHereFormSchema = z
+  .object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    phone: z.string(),
+    leadSourceDetail: z.enum(leadSourceDetails),
+    referralDetail: z.string(),
+    consideringSpecificStructure: z.union([
+      z.enum(consideringSpecificStructureOptions),
+      emptyString,
+    ]),
+    tryingToSolve: z.array(z.enum(tryingToSolveOptions)),
+    setupMaturity: z.union([z.enum(setupMaturityOptions), emptyString]),
+    currentResidence: z.string(),
+    passportsCitizenships: z.string(),
+    businessMainSourceOfIncome: z.boolean().nullable(),
+    monthlyRevenueBand: z.union([
+      z.enum(monthlyRevenueBandOptions),
+      emptyString,
+    ]),
+    netWorthBand: z.union([z.enum(netWorthBandOptions), emptyString]),
+    timelineToAct: z.union([z.enum(timelineToActOptions), emptyString]),
+    budgetReadiness: z.union([z.enum(budgetReadinessOptions), emptyString]),
+    importantRoutingNotes: z.string(),
+  })
+  .superRefine((values, context) => {
+    if (!values.firstName.trim()) {
+      addFieldIssue(context, "firstName", "First name is required.");
+    }
+
+    if (!values.lastName.trim()) {
+      addFieldIssue(context, "lastName", "Last name is required.");
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(values.email.trim())) {
+      addFieldIssue(context, "email", "Enter a valid email address.");
+    }
+
+    if (!values.phone.trim()) {
+      addFieldIssue(context, "phone", "Phone is required.");
+    }
+
+    if (!values.consideringSpecificStructure) {
+      addFieldIssue(
+        context,
+        "consideringSpecificStructure",
+        "Choose one option."
+      );
+    }
+
+    if (values.tryingToSolve.length === 0) {
+      addFieldIssue(context, "tryingToSolve", "Choose at least one area.");
+    }
+
+    if (!values.setupMaturity) {
+      addFieldIssue(
+        context,
+        "setupMaturity",
+        "Choose your current setup stage."
+      );
+    }
+
+    if (!values.currentResidence.trim()) {
+      addFieldIssue(
+        context,
+        "currentResidence",
+        "Current residence is required."
+      );
+    }
+
+    if (!values.passportsCitizenships.trim()) {
+      addFieldIssue(
+        context,
+        "passportsCitizenships",
+        "Passport or citizenship details are required."
+      );
+    }
+
+    if (values.businessMainSourceOfIncome === null) {
+      addFieldIssue(context, "businessMainSourceOfIncome", "Choose yes or no.");
+    }
+
+    if (values.businessMainSourceOfIncome && !values.monthlyRevenueBand) {
+      addFieldIssue(
+        context,
+        "monthlyRevenueBand",
+        "Choose a monthly revenue band."
+      );
+    }
+
+    if (!values.netWorthBand) {
+      addFieldIssue(context, "netWorthBand", "Choose a net worth band.");
+    }
+
+    if (!values.timelineToAct) {
+      addFieldIssue(context, "timelineToAct", "Choose a timeline.");
+    }
+
+    if (!values.budgetReadiness) {
+      addFieldIssue(
+        context,
+        "budgetReadiness",
+        "Choose a budget readiness answer."
+      );
+    }
+  });
+
+export type StartHereFormValues = z.infer<typeof startHereFormSchema>;
 
 export type StartHerePreparedSubmission = {
   target: {
@@ -154,7 +248,7 @@ export const emptyStartHereFormValues: StartHereFormValues = {
   lastName: "",
   email: "",
   phone: "",
-  leadSourceDetail: "",
+  leadSourceDetail: "Other",
   referralDetail: "",
   consideringSpecificStructure: "",
   tryingToSolve: [],
@@ -178,66 +272,16 @@ export function validateStartHereValues(
   values: StartHereFormValues
 ): ValidationResult {
   const errors: Partial<Record<keyof StartHereFormValues, string>> = {};
+  const result = startHereFormSchema.safeParse(values);
 
-  if (!values.firstName.trim()) {
-    errors.firstName = "First name is required.";
-  }
+  if (!result.success) {
+    for (const issue of result.error.issues) {
+      const field = issue.path[0];
 
-  if (!values.lastName.trim()) {
-    errors.lastName = "Last name is required.";
-  }
-
-  if (!/^\S+@\S+\.\S+$/.test(values.email.trim())) {
-    errors.email = "Enter a valid email address.";
-  }
-
-  if (!values.phone.trim()) {
-    errors.phone = "WhatsApp or phone is required.";
-  }
-
-  if (!values.leadSourceDetail) {
-    errors.leadSourceDetail = "Choose the closest source.";
-  }
-
-  if (!values.consideringSpecificStructure) {
-    errors.consideringSpecificStructure = "Choose one option.";
-  }
-
-  if (values.tryingToSolve.length === 0) {
-    errors.tryingToSolve = "Choose at least one area.";
-  }
-
-  if (!values.setupMaturity) {
-    errors.setupMaturity = "Choose your current setup stage.";
-  }
-
-  if (!values.currentResidence.trim()) {
-    errors.currentResidence = "Current residence is required.";
-  }
-
-  if (!values.passportsCitizenships.trim()) {
-    errors.passportsCitizenships =
-      "Passport or citizenship details are required.";
-  }
-
-  if (values.businessMainSourceOfIncome === null) {
-    errors.businessMainSourceOfIncome = "Choose yes or no.";
-  }
-
-  if (values.businessMainSourceOfIncome && !values.monthlyRevenueBand) {
-    errors.monthlyRevenueBand = "Choose a monthly revenue band.";
-  }
-
-  if (!values.netWorthBand) {
-    errors.netWorthBand = "Choose a net worth band.";
-  }
-
-  if (!values.timelineToAct) {
-    errors.timelineToAct = "Choose a timeline.";
-  }
-
-  if (!values.budgetReadiness) {
-    errors.budgetReadiness = "Choose a budget readiness answer.";
+      if (typeof field === "string" && isStartHereField(field)) {
+        errors[field] ??= issue.message;
+      }
+    }
   }
 
   return {
@@ -249,11 +293,14 @@ export function validateStartHereValues(
 export function prepareStartHereSubmission(
   values: StartHereFormValues
 ): StartHerePreparedSubmission {
+  const leadSourceDetail: LeadSourceDetail = values.referralDetail.trim()
+    ? "Warm Referral"
+    : values.leadSourceDetail;
   const warmOverride = [
     "Past Client",
     "Warm Referral",
     "Partner Referral",
-  ].includes(values.leadSourceDetail);
+  ].includes(leadSourceDetail);
   const isBankingIntent = values.tryingToSolve.includes("New bank account");
 
   return {
@@ -267,7 +314,7 @@ export function prepareStartHereSubmission(
       email: values.email.trim().toLowerCase(),
       phone: values.phone.trim(),
       leadSource: "Start Here Form",
-      leadSourceDetail: requireValue(values.leadSourceDetail),
+      leadSourceDetail,
       ...(values.referralDetail.trim()
         ? { referralDetail: values.referralDetail.trim() }
         : {}),
@@ -314,16 +361,17 @@ function deriveDecisionSignals(
 
   if (
     values.consideringSpecificStructure ===
-      "Yes - knows structure or bank need" ||
+      "Yes — I know what structure I want, or I know I need a bank account" ||
     values.tryingToSolve.includes("New bank account") ||
-    values.tryingToSolve.includes("Second passport") ||
-    values.tryingToSolve.includes("Crypto transaction")
+    values.tryingToSolve.includes("Get a second passport") ||
+    values.tryingToSolve.includes("Help with a crypto transaction")
   ) {
     signals.push("Known product/path");
   }
 
   if (
-    values.consideringSpecificStructure === "No - needs path guidance" ||
+    values.consideringSpecificStructure ===
+      "No — I want help finding the right path" ||
     values.tryingToSolve.length > 2
   ) {
     signals.push("Complex / Guidance-led");
@@ -333,7 +381,7 @@ function deriveDecisionSignals(
     signals.push("Budget readiness rescue");
   }
 
-  if (values.timelineToAct === "ASAP / 0-3 months") {
+  if (values.timelineToAct === "ASAP / 0–3 months") {
     signals.push("Urgent low commercial signal");
   }
 
@@ -346,4 +394,20 @@ function requireValue<T>(value: T | ""): T {
   }
 
   return value;
+}
+
+function addFieldIssue(
+  context: z.RefinementCtx,
+  field: keyof StartHereFormValues,
+  message: string
+) {
+  context.addIssue({
+    code: "custom",
+    message,
+    path: [field],
+  });
+}
+
+function isStartHereField(field: string): field is keyof StartHereFormValues {
+  return field in emptyStartHereFormValues;
 }

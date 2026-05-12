@@ -36,7 +36,6 @@ export function ReviewStep({
           value={`${values.firstName} ${values.lastName}`}
         />
         <SummaryItem label="Email" value={values.email} />
-        <SummaryItem label="Source" value={values.leadSourceDetail} />
         <SummaryItem
           label="Intent"
           value={values.tryingToSolve.join(", ") || "Not selected"}

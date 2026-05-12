@@ -1,9 +1,19 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
 
-import { steps } from "./step-metadata";
+import { type StepId, steps } from "./step-metadata";
 
-export function StartHereSidebar({ stepIndex }: { stepIndex: number }) {
+export function StartHereSidebar({
+  stepIndex,
+  completedSteps,
+  availableSteps,
+  onStepSelect,
+}: {
+  stepIndex: number;
+  completedSteps: Set<StepId>;
+  availableSteps: Set<StepId>;
+  onStepSelect: (index: number) => void;
+}) {
   return (
     <aside className="flex shrink-0 flex-col justify-center gap-3 overflow-hidden lg:min-h-0 lg:gap-8">
       <div className="space-y-3 lg:space-y-5">
@@ -34,27 +44,48 @@ export function StartHereSidebar({ stepIndex }: { stepIndex: number }) {
       <ol className="grid grid-cols-5 gap-1.5 lg:grid-cols-1 lg:gap-3">
         {steps.map((step, index) => {
           const active = index === stepIndex;
-          const complete = index < stepIndex;
+          const complete = completedSteps.has(step.id);
+          const available = availableSteps.has(step.id);
 
           return (
             <li
               key={step.id}
               className={[
-                "flex min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 backdrop-blur lg:flex-row lg:items-center lg:justify-between lg:rounded-2xl lg:px-4 lg:py-3",
+                "relative flex min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 shadow-none ring-0 backdrop-blur transition lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-3",
                 active
-                  ? "border-white/35 bg-white/16 shadow-[0_0_30px_rgba(92,89,255,0.22)]"
-                  : "border-white/12 bg-white/7",
+                  ? "border-white/38 bg-white/18 shadow-[0_0_34px_rgba(92,89,255,0.28)]"
+                  : complete
+                    ? "border-white/20 bg-white/10"
+                    : available
+                      ? "border-white/12 bg-white/7"
+                      : "border-white/8 bg-white/4 opacity-45",
               ].join(" ")}
             >
-              <div className="min-w-0">
-                <p className="text-[10px] text-white/50 lg:text-xs">
+              <span
+                aria-hidden="true"
+                className={[
+                  "absolute inset-y-2 left-0 hidden w-1 rounded-r-full lg:block",
+                  active
+                    ? "bg-[#A3A1FF]"
+                    : complete
+                      ? "bg-white/35"
+                      : "bg-white/12",
+                ].join(" ")}
+              />
+              <button
+                type="button"
+                className="min-w-0 text-left disabled:cursor-not-allowed lg:pl-2"
+                disabled={!available || active}
+                onClick={() => onStepSelect(index)}
+              >
+                <span className="block text-[10px] text-white/50 lg:text-xs">
                   {step.eyebrow}
-                </p>
-                <p className="truncate text-xs font-semibold lg:text-sm">
+                </span>
+                <span className="block truncate text-[11px] leading-snug font-semibold text-white sm:text-xs lg:text-sm lg:whitespace-normal">
                   {step.label}
-                </p>
-              </div>
-              <span className="grid size-6 place-items-center rounded-full border border-white/20 bg-white/10 text-[10px] lg:size-7 lg:text-xs">
+                </span>
+              </button>
+              <span className="grid size-6 shrink-0 place-items-center self-end rounded-full border border-white/20 bg-white/10 text-[10px] lg:size-7 lg:self-auto lg:text-xs">
                 {complete ? <Check className="size-4" /> : index + 1}
               </span>
             </li>
