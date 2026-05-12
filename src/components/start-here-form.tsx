@@ -21,6 +21,7 @@ import {
   type StartHereFormValues,
   type StartHerePreparedSubmission,
 } from "@/lib/start-here";
+import { adminPresets, type AdminPreset } from "@/lib/start-here-admin";
 
 import {
   getFirstErrorStep,
@@ -47,6 +48,14 @@ export function StartHereForm() {
   const [attemptedSteps, setAttemptedSteps] = useState<Set<StepId>>(
     () => new Set()
   );
+  const [adminAvailable] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return new URLSearchParams(window.location.search).get("admin") === "1";
+  });
+  const [adminMode, setAdminMode] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [submitted, setSubmitted] =
     useState<StartHerePreparedSubmission | null>(null);
@@ -67,13 +76,13 @@ export function StartHereForm() {
         .slice(0, index)
         .every((priorStep) => isStepValid(priorStep.id, validation.errors));
 
-      if (index <= maxStepReached && priorStepsValid) {
+      if (adminMode || (index <= maxStepReached && priorStepsValid)) {
         available.add(step.id);
       }
     });
 
     return available;
-  }, [maxStepReached, validation.errors]);
+  }, [adminMode, maxStepReached, validation.errors]);
   const currentStep = steps[stepIndex] ?? {
     id: "contact",
     label: "Contact Info",
@@ -107,7 +116,7 @@ export function StartHereForm() {
   function goNext() {
     const nextValidation = validateStartHereValues(values);
 
-    if (!isStepValid(currentStep.id, nextValidation.errors)) {
+    if (!adminMode && !isStepValid(currentStep.id, nextValidation.errors)) {
       markStepAttempted(currentStep.id);
       return;
     }
@@ -139,7 +148,7 @@ export function StartHereForm() {
   function submitForm() {
     const nextValidation = validateStartHereValues(values);
 
-    if (!nextValidation.ok) {
+    if (!adminMode && !nextValidation.ok) {
       const firstErrorStep = getFirstErrorStep(nextValidation.errors);
       const firstErrorStepIndex = steps.findIndex(
         (step) => step.id === firstErrorStep
@@ -151,6 +160,16 @@ export function StartHereForm() {
     }
 
     setSubmitted(prepareStartHereSubmission(values));
+  }
+
+  function applyAdminPreset(preset: AdminPreset) {
+    setAdminMode(true);
+    setValues(preset.values);
+    setAttemptedSteps(new Set());
+    setSubmitted(null);
+    setReviewOpen(false);
+    setMaxStepReached(steps.length - 1);
+    setStepIndex(steps.length - 1);
   }
 
   function markStepAttempted(step: StepId) {
@@ -173,7 +192,12 @@ export function StartHereForm() {
         stepIndex={stepIndex}
         completedSteps={completedSteps}
         availableSteps={availableSteps}
+        adminAvailable={adminAvailable}
+        adminMode={adminMode}
+        presets={adminPresets}
         onStepSelect={goToStep}
+        onAdminModeChange={setAdminMode}
+        onPresetSelect={applyAdminPreset}
       />
 
       <form

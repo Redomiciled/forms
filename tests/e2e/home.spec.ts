@@ -23,6 +23,9 @@ test("prepares the Start Here intake payload", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: /commercial readiness/i })
   ).toBeDisabled();
+  await expect(page.getByRole("button", { name: /choose view/i })).toHaveCount(
+    0
+  );
 
   await page.getByLabel(/first name/i).fill("Taylor");
   await page.getByLabel(/last name/i).fill("Rivera");
@@ -80,10 +83,82 @@ test("prepares the Start Here intake payload", async ({ page }) => {
 
   await expect(
     page.getByRole("heading", {
-      name: /intake is ready for redomiciled review/i,
+      name: /ready to book/i,
     })
   ).toBeVisible();
+  await expect(page.getByText(/calendar placeholder for will/i)).toBeVisible();
   await expect(page.getByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("admin preset routes booked banking leads to Will calendar", async ({
+  page,
+}) => {
+  await submitAdminPreset(page, /booked call - banking/i);
+
+  await expect(
+    page.getByRole("heading", { name: /ready to book/i })
+  ).toBeVisible();
+  await expect(page.getByText(/calendar placeholder for will/i)).toBeVisible();
+  await expect(page.getByText("Booked Call", { exact: true })).toBeVisible();
+  await expect(page.getByText("Will", { exact: true })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("admin preset routes booked non-banking leads to Erik calendar", async ({
+  page,
+}) => {
+  await submitAdminPreset(page, /booked call - non-banking/i);
+
+  await expect(
+    page.getByRole("heading", { name: /ready to book/i })
+  ).toBeVisible();
+  await expect(page.getByText(/calendar placeholder for erik/i)).toBeVisible();
+  await expect(page.getByText("Booked Call", { exact: true })).toBeVisible();
+  await expect(page.getByText("Erik", { exact: true })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("admin preset routes manual triage without showing a calendar", async ({
+  page,
+}) => {
+  await submitAdminPreset(page, /manual triage/i);
+
+  await expect(
+    page.getByRole("heading", { name: /ready for redomiciled review/i })
+  ).toBeVisible();
+  await expect(page.getByText("Manual Triage", { exact: true })).toBeVisible();
+  await expect(page.getByText(/calendar placeholder/i)).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+});
+
+test("admin preset routes unqualified leads to the disqualification screen", async ({
+  page,
+}) => {
+  await submitAdminPreset(page, /^unqualified$/i);
+
+  await expect(
+    page.getByRole("heading", {
+      name: /free redomiciled community/i,
+    })
+  ).toBeVisible();
+  await expect(
+    page.getByText("Unqualified / Not Ready", { exact: true })
+  ).toBeVisible();
+  await expect(page.getByText(/no calendar is shown/i)).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("admin preset routes warm low-fit leads to manual triage", async ({
+  page,
+}) => {
+  await submitAdminPreset(page, /warm referral/i);
+
+  await expect(
+    page.getByRole("heading", { name: /ready for redomiciled review/i })
+  ).toBeVisible();
+  await expect(page.getByText("Manual Triage", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Warm source/).first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
 
@@ -105,4 +180,18 @@ async function expectNoPageScroll(page: Page) {
   });
 
   expect(verticalOverflow).toBeLessThanOrEqual(1);
+}
+
+async function submitAdminPreset(page: Page, presetName: RegExp) {
+  await page.goto("/?admin=1");
+  await page.getByRole("button", { name: /choose view/i }).click();
+  await expect(
+    page.getByRole("dialog", { name: /admin preview/i })
+  ).toBeVisible();
+  await page.getByRole("button", { name: presetName }).click();
+  await page.getByRole("button", { name: /complete/i }).click();
+  await expect(
+    page.getByRole("dialog", { name: /confirm the intake/i })
+  ).toBeVisible();
+  await page.getByRole("button", { name: /prepare submission/i }).click();
 }

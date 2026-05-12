@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import {
+  deriveStartHereRoute,
+  getEffectiveLeadSourceDetail,
+} from "./start-here-routing";
+
 export const PLACEHOLDERS = {
   clickUpListId: "PLACEHOLDER_CLICKUP_CRM_LIST_ID",
   erikCalendarUrl: "PLACEHOLDER_CAL_COM_ERIK_URL",
@@ -293,15 +298,9 @@ export function validateStartHereValues(
 export function prepareStartHereSubmission(
   values: StartHereFormValues
 ): StartHerePreparedSubmission {
-  const leadSourceDetail: LeadSourceDetail = values.referralDetail.trim()
-    ? "Warm Referral"
-    : values.leadSourceDetail;
-  const warmOverride = [
-    "Past Client",
-    "Warm Referral",
-    "Partner Referral",
-  ].includes(leadSourceDetail);
-  const isBankingIntent = values.tryingToSolve.includes("New bank account");
+  const leadSourceDetail = getEffectiveLeadSourceDetail(values);
+  const route = deriveStartHereRoute(values);
+  const warmOverride = route.routingDecisionSignals.includes("Warm source");
 
   return {
     target: {
@@ -336,56 +335,14 @@ export function prepareStartHereSubmission(
       ...(values.importantRoutingNotes.trim()
         ? { importantRoutingNotes: values.importantRoutingNotes.trim() }
         : {}),
-      startHereFormRoute: "Manual Triage",
-      startHereFormRouteReason:
-        "Placeholder route for form-only v1. Final routing thresholds, ClickUp updates, and calendar display belong to the downstream automation slice.",
-      routingDecisionSignals: deriveDecisionSignals(values, warmOverride),
-      bookedCallOwner: isBankingIntent ? "Will" : "Not assigned",
-      calendarUrl: isBankingIntent
-        ? PLACEHOLDERS.willCalendarUrl
-        : PLACEHOLDERS.erikCalendarUrl,
+      startHereFormRoute: route.startHereFormRoute,
+      startHereFormRouteReason: route.startHereFormRouteReason,
+      routingDecisionSignals: route.routingDecisionSignals,
+      bookedCallOwner: route.bookedCallOwner,
+      calendarUrl: route.calendarUrl,
       calComBookingId: "",
     },
   };
-}
-
-function deriveDecisionSignals(
-  values: StartHereFormValues,
-  warmOverride: boolean
-): RoutingDecisionSignal[] {
-  const signals: RoutingDecisionSignal[] = [];
-
-  if (warmOverride) {
-    signals.push("Warm source");
-  }
-
-  if (
-    values.consideringSpecificStructure ===
-      "Yes — I know what structure I want, or I know I need a bank account" ||
-    values.tryingToSolve.includes("New bank account") ||
-    values.tryingToSolve.includes("Get a second passport") ||
-    values.tryingToSolve.includes("Help with a crypto transaction")
-  ) {
-    signals.push("Known product/path");
-  }
-
-  if (
-    values.consideringSpecificStructure ===
-      "No — I want help finding the right path" ||
-    values.tryingToSolve.length > 2
-  ) {
-    signals.push("Complex / Guidance-led");
-  }
-
-  if (values.budgetReadiness === "Yes") {
-    signals.push("Budget readiness rescue");
-  }
-
-  if (values.timelineToAct === "ASAP / 0–3 months") {
-    signals.push("Urgent low commercial signal");
-  }
-
-  return signals.length > 0 ? signals : ["Mixed / Unclear answers"];
 }
 
 function requireValue<T>(value: T | ""): T {

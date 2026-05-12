@@ -1,5 +1,16 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { AdminPreset } from "@/lib/start-here-admin";
 
 import { type StepId, steps } from "./step-metadata";
 
@@ -7,13 +18,25 @@ export function StartHereSidebar({
   stepIndex,
   completedSteps,
   availableSteps,
+  adminAvailable,
+  adminMode,
+  presets,
   onStepSelect,
+  onAdminModeChange,
+  onPresetSelect,
 }: {
   stepIndex: number;
   completedSteps: Set<StepId>;
   availableSteps: Set<StepId>;
+  adminAvailable: boolean;
+  adminMode: boolean;
+  presets: AdminPreset[];
   onStepSelect: (index: number) => void;
+  onAdminModeChange: (enabled: boolean) => void;
+  onPresetSelect: (preset: AdminPreset) => void;
 }) {
+  const [adminDialogOpen, setAdminDialogOpen] = useState(false);
+
   return (
     <aside className="flex shrink-0 flex-col justify-center gap-3 overflow-hidden lg:min-h-0 lg:gap-8">
       <div className="space-y-3 lg:space-y-5">
@@ -92,6 +115,57 @@ export function StartHereSidebar({
           );
         })}
       </ol>
+
+      {adminAvailable ? (
+        <div className="rounded-2xl border border-white/12 bg-white/7 p-3 backdrop-blur">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-white">Admin preview</p>
+            <Dialog open={adminDialogOpen} onOpenChange={setAdminDialogOpen}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-8 rounded-lg px-3 text-xs text-white hover:bg-white/10 hover:text-white"
+                onClick={() => {
+                  onAdminModeChange(true);
+                  setAdminDialogOpen(true);
+                }}
+              >
+                Choose view
+              </Button>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Admin preview</DialogTitle>
+                  <DialogDescription>
+                    Select a route view to populate sample data and jump to the
+                    final step.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {presets.map((preset) => (
+                    <Button
+                      key={preset.id}
+                      type="button"
+                      variant="ghost"
+                      className="h-auto justify-start rounded-xl border border-white/10 bg-white/7 px-4 py-3 text-left text-sm text-white/75 hover:bg-white/12 hover:text-white"
+                      onClick={() => {
+                        onPresetSelect(preset);
+                        setAdminDialogOpen(false);
+                      }}
+                    >
+                      {preset.label}
+                    </Button>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          {adminMode ? (
+            <p className="mt-2 text-xs text-white/50">
+              Preview mode is on. All steps are unlocked.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </aside>
   );
 }

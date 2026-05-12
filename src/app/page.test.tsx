@@ -6,6 +6,7 @@ import Home from "./page";
 
 describe("Home", () => {
   it("renders the Start Here intake shell", () => {
+    window.history.pushState({}, "", "/");
     render(<Home />);
 
     expect(
@@ -19,11 +20,15 @@ describe("Home", () => {
         name: /continue/i,
       })
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /choose view/i })
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the user on a step and shows errors when required answers are missing", async () => {
     const user = userEvent.setup();
 
+    window.history.pushState({}, "", "/");
     render(<Home />);
 
     await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -49,6 +54,7 @@ describe("Home", () => {
   it("prepares a local submission payload", async () => {
     const user = userEvent.setup();
 
+    window.history.pushState({}, "", "/");
     render(<Home />);
 
     await user.type(screen.getByLabelText(/first name/i), "Taylor");
@@ -117,9 +123,36 @@ describe("Home", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /intake is ready for redomiciled review/i,
+        name: /ready to book/i,
       })
     ).toBeInTheDocument();
+    expect(screen.getByText(/calendar placeholder for will/i)).toBeVisible();
     expect(screen.getByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeVisible();
+  });
+
+  it("uses admin preview presets to show route outcomes", async () => {
+    const user = userEvent.setup();
+
+    window.history.pushState({}, "", "/?admin=1");
+    render(<Home />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /choose view/i })
+    );
+    expect(
+      screen.getByRole("dialog", { name: /admin preview/i })
+    ).toBeVisible();
+    await user.click(screen.getByRole("button", { name: /unqualified/i }));
+    await user.click(screen.getByRole("button", { name: /complete/i }));
+    await user.click(
+      screen.getByRole("button", { name: /prepare submission/i })
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: /free redomiciled community/i,
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/no calendar is shown/i)).toBeVisible();
   });
 });
