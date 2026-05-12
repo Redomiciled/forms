@@ -139,14 +139,14 @@ export function PhoneField({
       </legend>
       <div
         className={cn(
-          "grid grid-cols-[8.75rem_minmax(0,1fr)] overflow-hidden rounded-2xl border border-white/16 bg-white/10 focus-within:border-[#8D8BFF] focus-within:ring-4 focus-within:ring-[#5C59FF]/20",
+          "grid grid-cols-[9.5rem_minmax(0,1fr)] overflow-hidden rounded-2xl border border-white/16 bg-white/10 focus-within:border-[#8D8BFF] focus-within:ring-4 focus-within:ring-[#5C59FF]/20",
           error &&
             "border-rose-300/70 bg-rose-500/10 focus-within:border-rose-200 focus-within:ring-rose-400/25"
         )}
       >
         <select
           aria-label="Country code"
-          className="h-12 min-w-0 border-r border-white/12 bg-transparent px-3 text-sm text-white outline-none"
+          className="h-12 min-w-0 border-r border-white/25 bg-transparent px-4 text-sm text-white outline-none"
           value={activeCountry.name}
           onChange={(event) => {
             const nextCountry =

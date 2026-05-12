@@ -30,7 +30,7 @@ export function ContactStep({
           error={errors.lastName}
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4">
         <TextField
           label="Email"
           value={values.email}
@@ -39,6 +39,8 @@ export function ContactStep({
           autoComplete="email"
           error={errors.email}
         />
+      </div>
+      <div className="grid gap-4">
         <PhoneField
           label="Phone"
           value={values.phone}
