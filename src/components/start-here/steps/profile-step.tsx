@@ -3,7 +3,11 @@ import {
   type StartHereFormValues,
 } from "@/lib/start-here";
 
-import { OptionGroup, TextArea, TextField } from "../fields";
+import {
+  CountryMultiSelectField,
+  CountrySelectField,
+  OptionGroup,
+} from "../fields";
 import type { FieldErrors, UpdateValue } from "../types";
 
 export function ProfileStep({
@@ -24,13 +28,13 @@ export function ProfileStep({
         onChange={(value) => updateValue("setupMaturity", value)}
         error={errors.setupMaturity}
       />
-      <TextField
+      <CountrySelectField
         label="Where are you currently a resident?"
         value={values.currentResidence}
         onChange={(value) => updateValue("currentResidence", value)}
         error={errors.currentResidence}
       />
-      <TextArea
+      <CountryMultiSelectField
         label="What passport(s) / citizenship(s) do you hold?"
         value={values.passportsCitizenships}
         onChange={(value) => updateValue("passportsCitizenships", value)}

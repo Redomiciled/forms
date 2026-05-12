@@ -48,10 +48,8 @@ test("prepares the Start Here intake payload", async ({ page }) => {
   await expectNoPageScroll(page);
 
   await page.getByRole("radio", { name: /partially set up/i }).click();
-  await page.getByLabel(/currently a resident/i).fill("Argentina");
-  await page
-    .getByLabel(/passport\(s\) \/ citizenship\(s\)/i)
-    .fill("United States");
+  await page.getByLabel(/currently a resident.*search/i).fill("Argentina");
+  await page.getByRole("button", { name: /United States/i }).click();
   await page.getByRole("button", { name: /continue/i }).click();
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);

@@ -81,13 +81,10 @@ describe("Home", () => {
 
     await user.click(screen.getByRole("radio", { name: /partially set up/i }));
     await user.type(
-      screen.getByLabelText(/currently a resident/i),
+      screen.getByLabelText(/currently a resident.*search/i),
       "Argentina"
     );
-    await user.type(
-      screen.getByLabelText(/passport\(s\) \/ citizenship\(s\)/i),
-      "United States"
-    );
+    await user.click(screen.getByRole("button", { name: /United States/i }));
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
     const businessIncomeYes = screen.getAllByRole("radio", {

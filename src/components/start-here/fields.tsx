@@ -40,6 +40,27 @@ const phoneCountries = [
   { flag: "🇧🇷", name: "Brazil", dialCode: "+55" },
 ] as const;
 
+const countryOptions = [
+  { flag: "🇦🇷", name: "Argentina" },
+  { flag: "🇧🇷", name: "Brazil" },
+  { flag: "🇨🇦", name: "Canada" },
+  { flag: "🇨🇱", name: "Chile" },
+  { flag: "🇨🇴", name: "Colombia" },
+  { flag: "🇨🇷", name: "Costa Rica" },
+  { flag: "🇫🇷", name: "France" },
+  { flag: "🇩🇪", name: "Germany" },
+  { flag: "🇮🇹", name: "Italy" },
+  { flag: "🇲🇽", name: "Mexico" },
+  { flag: "🇵🇦", name: "Panama" },
+  { flag: "🇵🇹", name: "Portugal" },
+  { flag: "🇪🇸", name: "Spain" },
+  { flag: "🇬🇧", name: "United Kingdom" },
+  { flag: "🇦🇪", name: "United Arab Emirates" },
+  { flag: "🇺🇸", name: "United States" },
+] as const;
+
+type CountryName = (typeof countryOptions)[number]["name"];
+
 function optionId(label: string, option: string) {
   return `${label}-${option}`
     .toLowerCase()
@@ -195,6 +216,151 @@ export function TextArea({
   );
 }
 
+export function CountrySelectField({
+  label,
+  value,
+  onChange,
+  error,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | undefined;
+}) {
+  const selectedCountry = countryOptions.find(
+    (option) => option.name === value
+  );
+
+  return (
+    <fieldset className="grid gap-2">
+      <legend
+        className={cn(
+          "text-sm font-medium text-white/78",
+          error && "text-rose-100"
+        )}
+      >
+        {label}
+      </legend>
+      <div
+        className={cn(
+          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-3",
+          error && "border-rose-300/70 bg-rose-500/10"
+        )}
+      >
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          list={`${optionId(label, "countries")}-list`}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Search country"
+        />
+        <datalist id={`${optionId(label, "countries")}-list`}>
+          {countryOptions.map((option) => (
+            <option key={option.name} value={option.name} />
+          ))}
+        </datalist>
+        {selectedCountry ? (
+          <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-sm text-white/78">
+            <span>{selectedCountry.flag}</span>
+            <span>{selectedCountry.name}</span>
+          </div>
+        ) : null}
+      </div>
+      <FieldError message={error} />
+    </fieldset>
+  );
+}
+
+export function CountryMultiSelectField({
+  label,
+  value,
+  onChange,
+  error,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | undefined;
+}) {
+  const [query, setQuery] = useState("");
+  const selectedCountries = parseCountryList(value);
+  const filteredCountries = countryOptions.filter((option) =>
+    option.name.toLowerCase().includes(query.trim().toLowerCase())
+  );
+
+  function toggleCountry(country: CountryName) {
+    const nextCountries = selectedCountries.includes(country)
+      ? selectedCountries.filter((item) => item !== country)
+      : [...selectedCountries, country];
+
+    onChange(nextCountries.join(", "));
+  }
+
+  return (
+    <fieldset className="grid gap-2">
+      <legend
+        className={cn(
+          "text-sm font-medium text-white/78",
+          error && "text-rose-100"
+        )}
+      >
+        {label}
+      </legend>
+      <div
+        className={cn(
+          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-3",
+          error && "border-rose-300/70 bg-rose-500/10"
+        )}
+      >
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search country"
+        />
+        {selectedCountries.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {selectedCountries.map((country) => (
+              <button
+                key={country}
+                type="button"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/12 px-3 py-2 text-sm text-white/82"
+                onClick={() => toggleCountry(country)}
+              >
+                <span>{getCountryFlag(country)}</span>
+                <span>{country}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div className="grid max-h-56 gap-2 overflow-auto pr-1 sm:grid-cols-2">
+          {filteredCountries.map((option) => {
+            const active = selectedCountries.includes(option.name);
+
+            return (
+              <button
+                key={option.name}
+                type="button"
+                className={cn(
+                  "flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm transition",
+                  active ? activeOptionClassName : inactiveOptionClassName
+                )}
+                onClick={() => toggleCountry(option.name)}
+              >
+                <span>{option.flag}</span>
+                <span>{option.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <FieldError message={error} />
+    </fieldset>
+  );
+}
+
 function splitPhoneValue(value: string) {
   const normalized = value.trim();
   const country =
@@ -205,6 +371,22 @@ function splitPhoneValue(value: string) {
     : normalized;
 
   return { country, localNumber };
+}
+
+function parseCountryList(value: string): CountryName[] {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter((item): item is CountryName =>
+      countryOptions.some((option) => option.name === item)
+    );
+}
+
+function getCountryFlag(country: CountryName) {
+  return (
+    countryOptions.find((option) => option.name === country)?.flag ??
+    country.slice(0, 2).toUpperCase()
+  );
 }
 
 export function OptionGroup<Option extends string>({
