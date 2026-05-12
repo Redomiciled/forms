@@ -1,5 +1,4 @@
 import type { StartHereFormValues } from "@/lib/start-here";
-import { deriveStartHereRoute } from "@/lib/start-here-routing";
 
 import { SummaryItem } from "../fields";
 
@@ -11,7 +10,6 @@ export function ReviewStep({
   errors: Partial<Record<keyof StartHereFormValues, string>>;
 }) {
   const errorEntries = Object.entries(errors);
-  const route = deriveStartHereRoute(values);
   const monthlyRevenue = values.businessMainSourceOfIncome
     ? values.monthlyRevenueBand || "Not selected"
     : "Not applicable";
@@ -81,8 +79,6 @@ export function ReviewStep({
           label="Budget readiness"
           value={values.budgetReadiness || "Not selected"}
         />
-        <SummaryItem label="Preview route" value={route.startHereFormRoute} />
-        <SummaryItem label="Preview owner" value={route.bookedCallOwner} />
         <SummaryItem
           label="Anything important"
           value={values.importantRoutingNotes || "Not provided"}

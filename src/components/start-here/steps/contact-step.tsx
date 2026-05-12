@@ -1,6 +1,6 @@
 import type { StartHereFormValues } from "@/lib/start-here";
 
-import { TextField } from "../fields";
+import { PhoneField, TextField } from "../fields";
 import type { FieldErrors, UpdateValue } from "../types";
 
 export function ContactStep({
@@ -39,12 +39,10 @@ export function ContactStep({
           autoComplete="email"
           error={errors.email}
         />
-        <TextField
+        <PhoneField
           label="Phone"
           value={values.phone}
           onChange={(value) => updateValue("phone", value)}
-          type="tel"
-          autoComplete="tel"
           error={errors.phone}
         />
       </div>

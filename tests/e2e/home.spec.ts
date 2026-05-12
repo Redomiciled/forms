@@ -30,7 +30,7 @@ test("prepares the Start Here intake payload", async ({ page }) => {
   await page.getByLabel(/first name/i).fill("Taylor");
   await page.getByLabel(/last name/i).fill("Rivera");
   await page.getByLabel(/email/i).fill("taylor@example.com");
-  await page.getByLabel(/phone/i).fill("+1 555 0100");
+  await page.getByLabel(/phone number/i).fill("555 0100");
   await expect(page.getByText(/where are you coming from/i)).toHaveCount(0);
   await page.getByRole("button", { name: /continue/i }).click();
   await expect(

@@ -60,7 +60,7 @@ describe("Home", () => {
     await user.type(screen.getByLabelText(/first name/i), "Taylor");
     await user.type(screen.getByLabelText(/last name/i), "Rivera");
     await user.type(screen.getByLabelText(/email/i), "taylor@example.com");
-    await user.type(screen.getByLabelText(/^phone$/i), "+1 555 0100");
+    await user.type(screen.getByLabelText(/phone number/i), "555 0100");
     expect(screen.queryByText(/where are you coming from/i)).toBeNull();
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
