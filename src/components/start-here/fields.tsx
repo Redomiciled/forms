@@ -1,4 +1,4 @@
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  findCountryByDialCode,
+  joinPhoneValue,
+  splitPhoneValue,
+} from "@/lib/phone";
+import {
+  countryNameExists,
+  filterCountries,
+  findCountryByName,
+} from "@/lib/countries";
 import { cn } from "@/lib/utils";
 
 const fieldControlClassName =
@@ -26,40 +36,6 @@ const inactiveOptionClassName =
 
 const cardControlClassName =
   "absolute inset-0 z-10 h-full w-full cursor-pointer rounded-2xl opacity-0";
-
-const phoneCountries = [
-  { flag: "🇺🇸", name: "United States", dialCode: "+1" },
-  { flag: "🇨🇦", name: "Canada", dialCode: "+1" },
-  { flag: "🇬🇧", name: "United Kingdom", dialCode: "+44" },
-  { flag: "🇪🇸", name: "Spain", dialCode: "+34" },
-  { flag: "🇵🇹", name: "Portugal", dialCode: "+351" },
-  { flag: "🇦🇪", name: "United Arab Emirates", dialCode: "+971" },
-  { flag: "🇦🇷", name: "Argentina", dialCode: "+54" },
-  { flag: "🇲🇽", name: "Mexico", dialCode: "+52" },
-  { flag: "🇨🇴", name: "Colombia", dialCode: "+57" },
-  { flag: "🇧🇷", name: "Brazil", dialCode: "+55" },
-] as const;
-
-const countryOptions = [
-  { flag: "🇦🇷", name: "Argentina" },
-  { flag: "🇧🇷", name: "Brazil" },
-  { flag: "🇨🇦", name: "Canada" },
-  { flag: "🇨🇱", name: "Chile" },
-  { flag: "🇨🇴", name: "Colombia" },
-  { flag: "🇨🇷", name: "Costa Rica" },
-  { flag: "🇫🇷", name: "France" },
-  { flag: "🇩🇪", name: "Germany" },
-  { flag: "🇮🇹", name: "Italy" },
-  { flag: "🇲🇽", name: "Mexico" },
-  { flag: "🇵🇦", name: "Panama" },
-  { flag: "🇵🇹", name: "Portugal" },
-  { flag: "🇪🇸", name: "Spain" },
-  { flag: "🇬🇧", name: "United Kingdom" },
-  { flag: "🇦🇪", name: "United Arab Emirates" },
-  { flag: "🇺🇸", name: "United States" },
-] as const;
-
-type CountryName = (typeof countryOptions)[number]["name"];
 
 function optionId(label: string, option: string) {
   return `${label}-${option}`
@@ -114,19 +90,8 @@ export function PhoneField({
   onChange: (value: string) => void;
   error?: string | undefined;
 }) {
-  const { country, localNumber } = splitPhoneValue(value);
-  const [selectedCountry, setSelectedCountry] = useState(country);
-  const [countryOpen, setCountryOpen] = useState(false);
-  const activeCountry = value.trim() ? country : selectedCountry;
-
-  function updatePhone(dialCode: string, number: string) {
-    const trimmedNumber = number.trimStart();
-    const nextValue = trimmedNumber.startsWith("+")
-      ? trimmedNumber
-      : `${dialCode} ${trimmedNumber}`;
-
-    onChange(trimmedNumber ? nextValue : "");
-  }
+  const { dialCode, localNumber } = splitPhoneValue(value);
+  const activeCountry = findCountryByDialCode(dialCode);
 
   return (
     <fieldset className="grid gap-2">
@@ -138,73 +103,45 @@ export function PhoneField({
       >
         {label}
       </legend>
-      <div className="relative">
-        <div
-          className={cn(
-            "flex h-12 overflow-hidden rounded-2xl border border-white/16 bg-white/10 focus-within:border-[#8D8BFF] focus-within:ring-4 focus-within:ring-[#5C59FF]/20",
-            error &&
-              "border-rose-300/70 bg-rose-500/10 focus-within:border-rose-200 focus-within:ring-rose-400/25"
-          )}
-        >
-          <button
-            type="button"
-            aria-label="Country code"
-            aria-haspopup="listbox"
-            aria-expanded={countryOpen}
-            className="flex h-12 w-36 shrink-0 items-center justify-between border-r border-white/25 bg-white/6 px-4 text-sm text-white transition outline-none hover:bg-white/10"
-            onClick={() => setCountryOpen((open) => !open)}
+      <div
+        className={cn(
+          "flex h-12 overflow-hidden rounded-2xl border border-white/16 bg-white/10 focus-within:border-[#8D8BFF] focus-within:ring-4 focus-within:ring-[#5C59FF]/20",
+          error &&
+            "border-rose-300/70 bg-rose-500/10 focus-within:border-rose-200 focus-within:ring-rose-400/25"
+        )}
+      >
+        <div className="flex h-12 w-36 shrink-0 items-center border-r border-white/25 bg-white/6 pl-4">
+          <span
+            aria-label={activeCountry?.name ?? "Unknown country"}
+            className="w-7 text-base"
           >
-            <span className="inline-flex items-center gap-2">
-              <span>{activeCountry.flag}</span>
-              <span>{activeCountry.dialCode}</span>
-            </span>
-            <ChevronDown className="size-4 text-white/65" />
-          </button>
+            {activeCountry?.flag ?? ""}
+          </span>
           <Input
-            aria-label="Phone number"
-            aria-invalid={Boolean(error)}
-            className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 text-base text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
-            value={localNumber}
+            aria-label="Country calling code"
+            className="h-12 w-full rounded-none border-0 bg-transparent px-1 text-sm font-medium text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
+            value={dialCode}
             onChange={(event) =>
-              updatePhone(activeCountry.dialCode, event.target.value)
+              onChange(joinPhoneValue(event.target.value, localNumber))
             }
             type="tel"
-            autoComplete="tel-national"
+            autoComplete="tel-country-code"
             inputMode="tel"
+            placeholder="+"
           />
         </div>
-        {countryOpen ? (
-          <div
-            role="listbox"
-            className="absolute top-full left-0 z-30 mt-2 grid max-h-64 w-72 overflow-auto rounded-2xl border border-white/16 bg-[#171044] p-2 text-sm text-white shadow-2xl"
-          >
-            {phoneCountries.map((option) => {
-              const active = option.name === activeCountry.name;
-
-              return (
-                <button
-                  key={`${option.name}-${option.dialCode}`}
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  className={cn(
-                    "flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-left transition",
-                    active ? "bg-white/16 text-white" : "hover:bg-white/10"
-                  )}
-                  onClick={() => {
-                    setSelectedCountry(option);
-                    updatePhone(option.dialCode, localNumber);
-                    setCountryOpen(false);
-                  }}
-                >
-                  <span>{option.flag}</span>
-                  <span className="min-w-10">{option.dialCode}</span>
-                  <span className="text-white/68">{option.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
+        <Input
+          aria-label="Phone number"
+          aria-invalid={Boolean(error)}
+          className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 text-base text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
+          value={localNumber}
+          onChange={(event) =>
+            onChange(joinPhoneValue(dialCode, event.target.value))
+          }
+          type="tel"
+          autoComplete="tel-national"
+          inputMode="tel"
+        />
       </div>
       <FieldError message={error} />
     </fieldset>
@@ -252,12 +189,30 @@ export function CountrySelectField({
   onChange: (value: string) => void;
   error?: string | undefined;
 }) {
-  const selectedCountry = countryOptions.find(
-    (option) => option.name === value
-  );
+  const [query, setQuery] = useState("");
+  const selectedCountry = findCountryByName(value);
+  const filteredCountries = filterCountries(query)
+    .filter((country) => country.name !== selectedCountry?.name)
+    .slice(0, 12);
+
+  function handleQueryChange(nextQuery: string) {
+    const matchingCountry = findCountryByName(nextQuery);
+
+    setQuery(nextQuery);
+
+    if (matchingCountry && matchingCountry.name !== selectedCountry?.name) {
+      onChange(matchingCountry.name);
+      setQuery("");
+    }
+  }
+
+  function selectCountry(country: string) {
+    setQuery("");
+    onChange(country);
+  }
 
   return (
-    <fieldset className="grid gap-2">
+    <fieldset className="grid gap-4">
       <legend
         className={cn(
           "text-sm font-medium text-white/78",
@@ -268,28 +223,65 @@ export function CountrySelectField({
       </legend>
       <div
         className={cn(
-          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-3",
+          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-4",
           error && "border-rose-300/70 bg-rose-500/10"
         )}
       >
-        <Input
-          aria-label={`${label} search`}
-          className={fieldControlClassName}
-          list={`${optionId(label, "countries")}-list`}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="Search country"
-        />
-        <datalist id={`${optionId(label, "countries")}-list`}>
-          {countryOptions.map((option) => (
-            <option key={option.name} value={option.name} />
-          ))}
-        </datalist>
         {selectedCountry ? (
           <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-sm text-white/78">
             <span>{selectedCountry.flag}</span>
             <span>{selectedCountry.name}</span>
           </div>
+        ) : null}
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          value={query}
+          onChange={(event) => handleQueryChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") {
+              return;
+            }
+
+            event.preventDefault();
+
+            const matchingCountry = findCountryByName(query);
+
+            if (matchingCountry) {
+              selectCountry(matchingCountry.name);
+            }
+          }}
+          placeholder="Search country"
+        />
+        {filteredCountries.length > 0 ? (
+          <div
+            aria-label={`${label} matches`}
+            className="grid max-h-56 gap-2 overflow-auto pr-1 sm:grid-cols-2"
+          >
+            {filteredCountries.map((option) => {
+              const active = option.name === selectedCountry?.name;
+
+              return (
+                <button
+                  key={option.name}
+                  type="button"
+                  aria-pressed={active}
+                  className={cn(
+                    "flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm transition",
+                    active ? activeOptionClassName : inactiveOptionClassName
+                  )}
+                  onClick={() => selectCountry(option.name)}
+                >
+                  <span>{option.flag}</span>
+                  <span>{option.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : query.trim() ? (
+          <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
+            No countries match that search.
+          </p>
         ) : null}
       </div>
       <FieldError message={error} />
@@ -309,24 +301,22 @@ export function CountryMultiSelectField({
   error?: string | undefined;
 }) {
   const [query, setQuery] = useState("");
-  const [addingCountry, setAddingCountry] = useState(false);
   const selectedCountries = parseCountryList(value);
-  const filteredCountries = countryOptions.filter((option) =>
-    option.name.toLowerCase().includes(query.trim().toLowerCase())
-  );
+  const filteredCountries = filterCountries(query)
+    .filter((country) => !selectedCountries.includes(country.name))
+    .slice(0, 12);
 
-  function toggleCountry(country: CountryName) {
+  function toggleCountry(country: string) {
     const nextCountries = selectedCountries.includes(country)
       ? selectedCountries.filter((item) => item !== country)
       : [...selectedCountries, country];
 
     onChange(nextCountries.join(", "));
-    setAddingCountry(false);
     setQuery("");
   }
 
   return (
-    <fieldset className="grid gap-2">
+    <fieldset className="grid gap-4">
       <legend
         className={cn(
           "text-sm font-medium text-white/78",
@@ -337,7 +327,7 @@ export function CountryMultiSelectField({
       </legend>
       <div
         className={cn(
-          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-3",
+          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-4",
           error && "border-rose-300/70 bg-rose-500/10"
         )}
       >
@@ -358,77 +348,70 @@ export function CountryMultiSelectField({
             ))}
           </div>
         ) : null}
-        {!addingCountry ? (
-          <button
-            type="button"
-            className="flex h-12 items-center justify-center rounded-2xl border border-white/14 bg-white/8 px-4 text-sm font-medium text-white/78 transition hover:border-white/28 hover:bg-white/12"
-            onClick={() => setAddingCountry(true)}
-          >
-            Add a new country
-          </button>
-        ) : (
-          <div className="grid gap-3">
-            <Input
-              aria-label={`${label} search`}
-              className={fieldControlClassName}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search country"
-            />
-            <div className="grid max-h-56 gap-2 overflow-auto pr-1 sm:grid-cols-2">
-              {filteredCountries.map((option) => {
-                const active = selectedCountries.includes(option.name);
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") {
+              return;
+            }
 
-                return (
-                  <button
-                    key={option.name}
-                    type="button"
-                    className={cn(
-                      "flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm transition",
-                      active ? activeOptionClassName : inactiveOptionClassName
-                    )}
-                    onClick={() => toggleCountry(option.name)}
-                  >
-                    <span>{option.flag}</span>
-                    <span>{option.name}</span>
-                  </button>
-                );
-              })}
-            </div>
+            event.preventDefault();
+
+            const matchingCountry = findCountryByName(query);
+
+            if (
+              matchingCountry &&
+              !selectedCountries.includes(matchingCountry.name)
+            ) {
+              toggleCountry(matchingCountry.name);
+            }
+          }}
+          placeholder="Search country"
+        />
+        {filteredCountries.length > 0 ? (
+          <div
+            aria-label={`${label} matches`}
+            className="grid max-h-56 gap-2 overflow-auto pr-1 sm:grid-cols-2"
+          >
+            {filteredCountries.map((option) => (
+              <button
+                key={option.name}
+                type="button"
+                aria-pressed={false}
+                className={cn(
+                  "flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm transition",
+                  inactiveOptionClassName
+                )}
+                onClick={() => toggleCountry(option.name)}
+              >
+                <span>{option.flag}</span>
+                <span>{option.name}</span>
+              </button>
+            ))}
           </div>
-        )}
+        ) : query.trim() ? (
+          <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
+            No countries match that search.
+          </p>
+        ) : null}
       </div>
       <FieldError message={error} />
     </fieldset>
   );
 }
 
-function splitPhoneValue(value: string) {
-  const normalized = value.trim();
-  const country =
-    phoneCountries.find((option) => normalized.startsWith(option.dialCode)) ??
-    phoneCountries[0];
-  const localNumber = normalized.startsWith(country.dialCode)
-    ? normalized.slice(country.dialCode.length).trimStart()
-    : normalized;
-
-  return { country, localNumber };
-}
-
-function parseCountryList(value: string): CountryName[] {
+function parseCountryList(value: string): string[] {
   return value
     .split(",")
     .map((item) => item.trim())
-    .filter((item): item is CountryName =>
-      countryOptions.some((option) => option.name === item)
-    );
+    .filter(countryNameExists);
 }
 
-function getCountryFlag(country: CountryName) {
-  return (
-    countryOptions.find((option) => option.name === country)?.flag ??
-    country.slice(0, 2).toUpperCase()
-  );
+function getCountryFlag(country: string) {
+  return findCountryByName(country)?.flag ?? country.slice(0, 2).toUpperCase();
 }
 
 export function OptionGroup<Option extends string>({

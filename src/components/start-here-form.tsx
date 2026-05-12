@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -48,13 +48,7 @@ export function StartHereForm() {
   const [attemptedSteps, setAttemptedSteps] = useState<Set<StepId>>(
     () => new Set()
   );
-  const [adminAvailable] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return new URLSearchParams(window.location.search).get("admin") === "1";
-  });
+  const adminAvailable = useAdminAvailable();
   const [adminMode, setAdminMode] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [submitted, setSubmitted] =
@@ -181,9 +175,7 @@ export function StartHereForm() {
   }
 
   if (submitted) {
-    return (
-      <SubmittedState submitted={submitted} onEdit={() => setSubmitted(null)} />
-    );
+    return <SubmittedState submitted={submitted} />;
   }
 
   return (
@@ -218,7 +210,7 @@ export function StartHereForm() {
                   {getStepTitle(currentStep.id)}
                 </h2>
               </div>
-              <p className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs text-white/65">
+              <p className="hidden rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs text-white/65 sm:block">
                 {stepIndex + 1} / {steps.length}
               </p>
             </div>
@@ -326,4 +318,22 @@ export function StartHereForm() {
       </form>
     </section>
   );
+}
+
+function useAdminAvailable() {
+  return useSyncExternalStore(
+    subscribeToLocationChanges,
+    getAdminAvailableSnapshot,
+    () => false
+  );
+}
+
+function subscribeToLocationChanges(onStoreChange: () => void) {
+  window.addEventListener("popstate", onStoreChange);
+
+  return () => window.removeEventListener("popstate", onStoreChange);
+}
+
+function getAdminAvailableSnapshot() {
+  return new URLSearchParams(window.location.search).get("admin") === "1";
 }

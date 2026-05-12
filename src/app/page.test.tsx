@@ -60,7 +60,9 @@ describe("Home", () => {
     await user.type(screen.getByLabelText(/first name/i), "Taylor");
     await user.type(screen.getByLabelText(/last name/i), "Rivera");
     await user.type(screen.getByLabelText(/email/i), "taylor@example.com");
-    await user.type(screen.getByLabelText(/phone number/i), "555 0100");
+    await user.clear(screen.getByLabelText(/country calling code/i));
+    await user.type(screen.getByLabelText(/country calling code/i), "+54");
+    await user.type(screen.getByLabelText(/phone number/i), "11 1234 5678");
     expect(screen.queryByText(/where are you coming from/i)).toBeNull();
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
@@ -82,10 +84,22 @@ describe("Home", () => {
     await user.click(screen.getByRole("radio", { name: /partially set up/i }));
     await user.type(
       screen.getByLabelText(/currently a resident.*search/i),
-      "Argentina"
+      "Arg"
     );
-    await user.click(
-      screen.getByRole("button", { name: /add a new country/i })
+    await user.click(screen.getByRole("button", { name: /Argentina/i }));
+    expect(
+      screen.queryByRole("button", { name: /United States/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /add a new country/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/start typing to find a country/i)
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /United States/i })).toBeNull();
+    await user.type(
+      screen.getByLabelText(/passport.*citizenship.*search/i),
+      "United"
     );
     await user.click(screen.getByRole("button", { name: /United States/i }));
     await user.click(screen.getByRole("button", { name: /continue/i }));
@@ -116,6 +130,9 @@ describe("Home", () => {
     expect(
       screen.getByRole("dialog", { name: /confirm the intake/i })
     ).toBeVisible();
+    expect(screen.getByText("Phone").closest("div")).toHaveTextContent(
+      /\+54 11 ?1234 ?5678/
+    );
 
     await user.click(
       screen.getByRole("button", { name: /confirm and continue/i })
@@ -123,10 +140,14 @@ describe("Home", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /ready to book/i,
+        name: /book a call with us/i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByText(/cal.com calendar pending/i)).toBeVisible();
+    expect(screen.getByTitle(/book a call/i)).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: /edit answers/i })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/choose a time with/i)).toBeNull();
     expect(screen.queryByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeNull();
   });
 
@@ -154,7 +175,51 @@ describe("Home", () => {
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /submission received/i })
+      screen.getByRole("link", { name: /go to the free community/i })
     ).toBeInTheDocument();
+    expect(screen.getByText("Redomiciled")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /submission received/i })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Unqualified / Not Ready")).toBeNull();
+    expect(screen.queryByText("Route")).toBeNull();
+    expect(screen.queryByText("Owner")).toBeNull();
+    expect(screen.queryByText("Timeline")).toBeNull();
+    expect(
+      screen.queryByText("No calendar is shown for this route.")
+    ).toBeNull();
+  });
+
+  it("does not submit the admin form when pressing Enter in country fields", async () => {
+    const user = userEvent.setup();
+
+    window.history.pushState({}, "", "/?admin=1");
+    render(<Home />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /choose view/i })
+    );
+    await user.click(
+      screen.getByRole("button", { name: /booked call - banking/i })
+    );
+    await user.click(
+      screen.getByRole("button", { name: /step 3.*where are you starting/i })
+    );
+
+    const residenceSearch = screen.getByLabelText(
+      /currently a resident.*search/i
+    );
+
+    await user.type(residenceSearch, "Argentina{enter}");
+
+    expect(
+      screen.getByRole("heading", { name: /where are you starting from/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /book a call with us/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: /confirm the intake/i })
+    ).toBeNull();
   });
 });

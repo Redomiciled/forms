@@ -6,8 +6,8 @@ import {
 } from "./start-here";
 
 const CALENDAR_URLS = {
-  erik: "PLACEHOLDER_CAL_COM_ERIK_URL",
-  will: "PLACEHOLDER_CAL_COM_WILL_URL",
+  erik: "https://cal.com/juan-hernandez-obduvq/30min",
+  will: "https://cal.com/juan-hernandez-obduvq/30min",
 } as const;
 
 export type StartHereRouteResult = {
