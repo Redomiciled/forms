@@ -49,10 +49,22 @@ test("prepares the Start Here intake payload", async ({ page }) => {
 
   await page.getByRole("radio", { name: /partially set up/i }).click();
   await page.getByLabel(/currently a resident.*search/i).fill("Argentina");
+  await page.getByRole("button", { name: /add a new country/i }).click();
   await page.getByRole("button", { name: /United States/i }).click();
   await page.getByRole("button", { name: /continue/i }).click();
   await expectNoHorizontalOverflow(page);
   await expectNoPageScroll(page);
+
+  await page.getByRole("button", { name: /step 2.*what path/i }).click();
+  await expect(
+    page.getByRole("heading", { name: /what path are you exploring/i })
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: /step 4.*commercial readiness/i })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: /commercial readiness/i })
+  ).toBeVisible();
 
   await page.getByRole("radio", { name: "Yes" }).first().click();
   await page.getByRole("radio", { name: /\$25k.*\$100k.*month/i }).click();

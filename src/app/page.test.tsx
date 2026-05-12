@@ -84,6 +84,9 @@ describe("Home", () => {
       screen.getByLabelText(/currently a resident.*search/i),
       "Argentina"
     );
+    await user.click(
+      screen.getByRole("button", { name: /add a new country/i })
+    );
     await user.click(screen.getByRole("button", { name: /United States/i }));
     await user.click(screen.getByRole("button", { name: /continue/i }));
 

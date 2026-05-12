@@ -71,46 +71,45 @@ export function StartHereSidebar({
           const available = availableSteps.has(step.id);
 
           return (
-            <li
-              key={step.id}
-              className={[
-                "relative flex min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 shadow-none ring-0 backdrop-blur transition lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-3",
-                active
-                  ? "border-white/38 bg-white/18 shadow-[0_0_34px_rgba(92,89,255,0.28)]"
-                  : complete
-                    ? "border-white/20 bg-white/10"
-                    : available
-                      ? "border-white/12 bg-white/7"
-                      : "border-white/8 bg-white/4 opacity-45",
-              ].join(" ")}
-            >
-              <span
-                aria-hidden="true"
-                className={[
-                  "absolute inset-y-2 left-0 hidden w-1 rounded-r-full lg:block",
-                  active
-                    ? "bg-[#A3A1FF]"
-                    : complete
-                      ? "bg-white/35"
-                      : "bg-white/12",
-                ].join(" ")}
-              />
+            <li key={step.id} className="min-w-0">
               <button
                 type="button"
-                className="min-w-0 text-left disabled:cursor-not-allowed lg:pl-2"
                 disabled={!available || active}
                 onClick={() => onStepSelect(index)}
+                className={[
+                  "relative flex w-full min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 text-left shadow-none ring-0 backdrop-blur transition disabled:cursor-not-allowed lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-3",
+                  active
+                    ? "border-white/38 bg-white/18 shadow-[0_0_34px_rgba(92,89,255,0.28)]"
+                    : complete
+                      ? "border-white/20 bg-white/10"
+                      : available
+                        ? "border-white/12 bg-white/7"
+                        : "border-white/8 bg-white/4 opacity-45",
+                ].join(" ")}
               >
-                <span className="block text-[10px] text-white/50 lg:text-xs">
-                  {step.eyebrow}
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "absolute inset-y-2 left-0 hidden w-1 rounded-r-full lg:block",
+                    active
+                      ? "bg-[#A3A1FF]"
+                      : complete
+                        ? "bg-white/35"
+                        : "bg-white/12",
+                  ].join(" ")}
+                />
+                <span className="min-w-0 lg:pl-2">
+                  <span className="block text-[10px] text-white/50 lg:text-xs">
+                    {step.eyebrow}
+                  </span>
+                  <span className="block truncate text-[11px] leading-snug font-semibold text-white sm:text-xs lg:text-sm lg:whitespace-normal">
+                    {step.label}
+                  </span>
                 </span>
-                <span className="block truncate text-[11px] leading-snug font-semibold text-white sm:text-xs lg:text-sm lg:whitespace-normal">
-                  {step.label}
+                <span className="grid size-6 shrink-0 place-items-center self-end rounded-full border border-white/20 bg-white/10 text-[10px] lg:size-7 lg:self-auto lg:text-xs">
+                  {complete ? <Check className="size-4" /> : index + 1}
                 </span>
               </button>
-              <span className="grid size-6 shrink-0 place-items-center self-end rounded-full border border-white/20 bg-white/10 text-[10px] lg:size-7 lg:self-auto lg:text-xs">
-                {complete ? <Check className="size-4" /> : index + 1}
-              </span>
             </li>
           );
         })}
