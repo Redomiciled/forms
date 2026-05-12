@@ -1,4 +1,5 @@
 import type { StartHereFormValues } from "@/lib/start-here";
+import { deriveStartHereRoute } from "@/lib/start-here-routing";
 
 import { SummaryItem } from "../fields";
 
@@ -10,14 +11,17 @@ export function ReviewStep({
   errors: Partial<Record<keyof StartHereFormValues, string>>;
 }) {
   const errorEntries = Object.entries(errors);
+  const route = deriveStartHereRoute(values);
+  const monthlyRevenue = values.businessMainSourceOfIncome
+    ? values.monthlyRevenueBand || "Not selected"
+    : "Not applicable";
 
   return (
     <div className="grid gap-5">
       <div className="rounded-2xl border border-white/12 bg-white/8 p-5">
-        <h3 className="text-lg font-semibold">Review before preparing</h3>
+        <h3 className="text-lg font-semibold">Review your answers</h3>
         <p className="mt-2 text-sm leading-6 text-white/65">
-          The next action prepares a local ClickUp payload. It does not submit
-          to a webhook, create ClickUp records, or display a live calendar.
+          Confirm the details below before we show the right next step.
         </p>
       </div>
       {errorEntries.length > 0 ? (
@@ -36,15 +40,62 @@ export function ReviewStep({
           value={`${values.firstName} ${values.lastName}`}
         />
         <SummaryItem label="Email" value={values.email} />
+        <SummaryItem label="Phone" value={values.phone} />
         <SummaryItem
-          label="Intent"
-          value={values.tryingToSolve.join(", ") || "Not selected"}
+          label="Who referred you?"
+          value={values.referralDetail || "Not provided"}
         />
-        <SummaryItem label="Setup" value={values.setupMaturity} />
-        <SummaryItem label="Timeline" value={values.timelineToAct} />
-        <SummaryItem label="Net worth" value={values.netWorthBand} />
-        <SummaryItem label="Budget readiness" value={values.budgetReadiness} />
+        <SummaryItem
+          label="Structure, bank account, or jurisdiction"
+          value={values.consideringSpecificStructure || "Not selected"}
+        />
+        <SummaryItem label="Current setup" value={values.setupMaturity} />
+        <SummaryItem
+          label="Currently a resident"
+          value={values.currentResidence}
+        />
+        <SummaryItem
+          label="Passport(s) / citizenship(s)"
+          value={values.passportsCitizenships}
+        />
+        <SummaryItem
+          label="Business is main source of income"
+          value={
+            values.businessMainSourceOfIncome === null
+              ? "Not selected"
+              : values.businessMainSourceOfIncome
+                ? "Yes"
+                : "No"
+          }
+        />
+        <SummaryItem label="Monthly revenue" value={monthlyRevenue} />
+        <SummaryItem
+          label="Net worth"
+          value={values.netWorthBand || "Not selected"}
+        />
+        <SummaryItem
+          label="Timeline"
+          value={values.timelineToAct || "Not selected"}
+        />
+        <SummaryItem
+          label="Budget readiness"
+          value={values.budgetReadiness || "Not selected"}
+        />
+        <SummaryItem label="Preview route" value={route.startHereFormRoute} />
+        <SummaryItem label="Preview owner" value={route.bookedCallOwner} />
+        <SummaryItem
+          label="Anything important"
+          value={values.importantRoutingNotes || "Not provided"}
+        />
       </dl>
+      <div className="rounded-2xl border border-white/12 bg-white/8 p-4 text-sm text-white/75">
+        <p className="font-semibold text-white">
+          What are you trying to solve?
+        </p>
+        <p className="mt-2 leading-6">
+          {values.tryingToSolve.join(", ") || "Not selected"}
+        </p>
+      </div>
     </div>
   );
 }

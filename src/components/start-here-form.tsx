@@ -295,7 +295,7 @@ export function StartHereForm() {
             <DialogHeader>
               <DialogTitle>Confirm the intake</DialogTitle>
               <DialogDescription>
-                Review the prepared answers before creating the local payload.
+                Review your answers before continuing.
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[calc(100dvh-18rem)] min-h-0">
@@ -317,7 +317,7 @@ export function StartHereForm() {
                 className="h-11 rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
                 onClick={submitForm}
               >
-                Prepare submission
+                Confirm and continue
                 <ArrowRight className="size-4" />
               </Button>
             </DialogFooter>

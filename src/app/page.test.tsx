@@ -118,7 +118,7 @@ describe("Home", () => {
     ).toBeVisible();
 
     await user.click(
-      screen.getByRole("button", { name: /prepare submission/i })
+      screen.getByRole("button", { name: /confirm and continue/i })
     );
 
     expect(
@@ -126,8 +126,8 @@ describe("Home", () => {
         name: /ready to book/i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByText(/calendar placeholder for will/i)).toBeVisible();
-    expect(screen.getByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeVisible();
+    expect(screen.getByText(/cal.com calendar pending/i)).toBeVisible();
+    expect(screen.queryByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeNull();
   });
 
   it("uses admin preview presets to show route outcomes", async () => {
@@ -145,7 +145,7 @@ describe("Home", () => {
     await user.click(screen.getByRole("button", { name: /unqualified/i }));
     await user.click(screen.getByRole("button", { name: /complete/i }));
     await user.click(
-      screen.getByRole("button", { name: /prepare submission/i })
+      screen.getByRole("button", { name: /confirm and continue/i })
     );
 
     expect(
@@ -153,6 +153,8 @@ describe("Home", () => {
         name: /free redomiciled community/i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByText(/no calendar is shown/i)).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /submission received/i })
+    ).toBeInTheDocument();
   });
 });

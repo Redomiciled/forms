@@ -197,16 +197,16 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
 ### 12. Calendar booking (only shown if the lead qualifies)
 
 - [x] If the form outcome is booked call, the last step shows the right Cal.com calendar.
-  - **Implementation:** Partial. Current app shows route-specific calendar placeholders; live Cal.com embed remains downstream.
+  - **Implementation:** Partial. Current app is Cal.com inline-embed ready and shows a polished pending state until real Erik/Will Cal.com event links replace placeholders.
 
 - [x] Default owner routing:
   - **Implementation:** Implemented in the routing engine.
 
 - [x] Banking → Will’s calendar
-  - **Implementation:** Implemented with Will owner and placeholder calendar display.
+  - **Implementation:** Implemented with Will owner and Cal.com embed-ready display.
 
 - [x] Everything else → Eric’s calendar
-  - **Implementation:** Implemented with Erik owner and placeholder calendar display for booked-call non-banking routes.
+  - **Implementation:** Implemented with Erik owner and Cal.com embed-ready display for booked-call non-banking routes.
 
 ## Outcomes
 
@@ -217,7 +217,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
   - **Implementation:** Implemented with final screen copy and no calendar.
 
 - [x] Booked call — routed to a sales / product / warm consult call.
-  - **Implementation:** Implemented with Will/Erik owner routing and route-specific calendar placeholders.
+  - **Implementation:** Implemented with Will/Erik owner routing and route-specific Cal.com embed-ready final screen.
 
 - [x] Manual triage — sent to internal review when the form indicates possible value but unclear route.
   - **Implementation:** Implemented in `deriveStartHereRoute(values)` and final screen copy.
@@ -226,7 +226,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
   - **Implementation:** Pending downstream integration. Current app prepares local payload only.
 
 - [x] If the outcome is booked call, the form shows the calendar as the final step.
-  - **Implementation:** Implemented as a route-specific calendar placeholder using the selected owner URL.
+  - **Implementation:** Implemented as a route-specific Cal.com inline embed when a real Cal link is configured; placeholder state remains until account links are known.
 
 - [x] Otherwise, no calendar is shown.
   - **Implementation:** Implemented for `Manual Triage` and `Unqualified / Not Ready`.
