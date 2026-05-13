@@ -12,8 +12,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:mobile-layout": "node --experimental-strip-types scripts/check-mobile-layout.mts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "precommit": "node scripts/pre-commit.mjs",
+    "secrets:check": "node scripts/check-secrets.mjs",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "prepare": "husky"
   },

@@ -35,7 +35,7 @@ describe("Home", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /how can redomiciled reach you/i,
+        name: /contact/i,
       })
     ).toBeInTheDocument();
     expect(

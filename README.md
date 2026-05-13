@@ -19,6 +19,7 @@ This repo is owned by PulpSense and is part of Redomiciled's Community -> Onboar
 - Vitest + React Testing Library
 - Playwright for browser-level form tests
 - ESLint + Prettier + Husky + lint-staged
+- gitleaks secret scanning
 
 ## Commands
 
@@ -36,11 +37,12 @@ npm run test:e2e
 Pre-commit runs:
 
 ```bash
-npx lint-staged
-npm run lint
-npm run typecheck
-npm run test
+npm run precommit
 ```
+
+That script runs staged formatting, secret scanning, lint, typecheck, and unit tests.
+`npm run secrets:check` scans staged changes with gitleaks using `.gitleaks.toml`.
+Install gitleaks locally first, for example with `brew install gitleaks`.
 
 Run `npm run test:e2e` before opening or merging changes that affect the form flow.
 

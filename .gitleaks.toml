@@ -1,0 +1,9 @@
+# gitleaks config for the Redomiciled Start Here form repo.
+#
+# Extends the default ruleset and keeps allowlists narrow. Add project-specific
+# allowlists here only after confirming a finding is a false positive.
+#
+# Test this file: `gitleaks git --pre-commit --staged --config .gitleaks.toml --verbose`
+
+[extend]
+useDefault = true
