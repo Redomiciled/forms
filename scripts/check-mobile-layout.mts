@@ -91,8 +91,8 @@ try {
     "Expected a visible mobile Admin button."
   );
   assert(
-    snapshot.heroHeadingDisplay === "none",
-    "Expected the hero heading to be hidden on mobile."
+    snapshot.heroHeadingDisplay !== "none",
+    "Expected the hero heading to be visible on mobile."
   );
   assert(
     snapshot.bodyOverflowY !== "hidden",
