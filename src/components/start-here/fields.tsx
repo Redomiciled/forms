@@ -227,32 +227,6 @@ export function CountrySelectField({
           error && "border-rose-300/70 bg-rose-500/10"
         )}
       >
-        {selectedCountry ? (
-          <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-sm text-white/78">
-            <span>{selectedCountry.flag}</span>
-            <span>{selectedCountry.name}</span>
-          </div>
-        ) : null}
-        <Input
-          aria-label={`${label} search`}
-          className={fieldControlClassName}
-          value={query}
-          onChange={(event) => handleQueryChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key !== "Enter") {
-              return;
-            }
-
-            event.preventDefault();
-
-            const matchingCountry = findCountryByName(query);
-
-            if (matchingCountry) {
-              selectCountry(matchingCountry.name);
-            }
-          }}
-          placeholder="Search country"
-        />
         {filteredCountries.length > 0 ? (
           <div
             aria-label={`${label} matches`}
@@ -282,6 +256,32 @@ export function CountrySelectField({
           <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
             No countries match that search.
           </p>
+        ) : null}
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          value={query}
+          onChange={(event) => handleQueryChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") {
+              return;
+            }
+
+            event.preventDefault();
+
+            const matchingCountry = findCountryByName(query);
+
+            if (matchingCountry) {
+              selectCountry(matchingCountry.name);
+            }
+          }}
+          placeholder="Search country"
+        />
+        {selectedCountry ? (
+          <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-sm text-white/78">
+            <span>{selectedCountry.flag}</span>
+            <span>{selectedCountry.name}</span>
+          </div>
         ) : null}
       </div>
       <FieldError message={error} />
@@ -331,46 +331,6 @@ export function CountryMultiSelectField({
           error && "border-rose-300/70 bg-rose-500/10"
         )}
       >
-        {selectedCountries.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {selectedCountries.map((country) => (
-              <button
-                key={country}
-                type="button"
-                aria-label={`Remove ${country}`}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/12 px-3 py-2 text-sm text-white/82 hover:border-white/24 hover:bg-white/16"
-                onClick={() => toggleCountry(country)}
-              >
-                <span>{getCountryFlag(country)}</span>
-                <span>{country}</span>
-                <span className="text-white/45">×</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-        <Input
-          aria-label={`${label} search`}
-          className={fieldControlClassName}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key !== "Enter") {
-              return;
-            }
-
-            event.preventDefault();
-
-            const matchingCountry = findCountryByName(query);
-
-            if (
-              matchingCountry &&
-              !selectedCountries.includes(matchingCountry.name)
-            ) {
-              toggleCountry(matchingCountry.name);
-            }
-          }}
-          placeholder="Search country"
-        />
         {filteredCountries.length > 0 ? (
           <div
             aria-label={`${label} matches`}
@@ -396,6 +356,46 @@ export function CountryMultiSelectField({
           <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
             No countries match that search.
           </p>
+        ) : null}
+        <Input
+          aria-label={`${label} search`}
+          className={fieldControlClassName}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") {
+              return;
+            }
+
+            event.preventDefault();
+
+            const matchingCountry = findCountryByName(query);
+
+            if (
+              matchingCountry &&
+              !selectedCountries.includes(matchingCountry.name)
+            ) {
+              toggleCountry(matchingCountry.name);
+            }
+          }}
+          placeholder="Search country"
+        />
+        {selectedCountries.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {selectedCountries.map((country) => (
+              <button
+                key={country}
+                type="button"
+                aria-label={`Remove ${country}`}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/12 px-3 py-2 text-sm text-white/82 hover:border-white/24 hover:bg-white/16"
+                onClick={() => toggleCountry(country)}
+              >
+                <span>{getCountryFlag(country)}</span>
+                <span>{country}</span>
+                <span className="text-white/45">×</span>
+              </button>
+            ))}
+          </div>
         ) : null}
       </div>
       <FieldError message={error} />

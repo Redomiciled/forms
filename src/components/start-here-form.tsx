@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +40,7 @@ import { ReviewStep } from "./start-here/steps/review-step";
 import { SubmittedState } from "./start-here/submitted-state";
 
 export function StartHereForm() {
+  const shellRef = useRef<HTMLElement>(null);
   const [values, setValues] = useState<StartHereFormValues>(
     emptyStartHereFormValues
   );
@@ -123,10 +124,19 @@ export function StartHereForm() {
     const nextIndex = Math.min(stepIndex + 1, steps.length - 1);
     setStepIndex(nextIndex);
     setMaxStepReached((current) => Math.max(current, nextIndex));
+    scrollMobileToTop();
   }
 
   function goBack() {
-    setStepIndex((current) => Math.max(current - 1, 0));
+    setStepIndex((current) => {
+      const nextIndex = Math.max(current - 1, 0);
+
+      if (nextIndex !== current) {
+        scrollMobileToTop();
+      }
+
+      return nextIndex;
+    });
   }
 
   function goToStep(index: number) {
@@ -137,6 +147,7 @@ export function StartHereForm() {
     }
 
     setStepIndex(index);
+    scrollMobileToTop();
   }
 
   function submitForm() {
@@ -171,6 +182,19 @@ export function StartHereForm() {
       const next = new Set(current);
       next.add(step);
       return next;
+    });
+  }
+
+  function scrollMobileToTop() {
+    if (!globalThis.matchMedia?.("(max-width: 639px)").matches) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      shellRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   }
 
@@ -216,7 +240,10 @@ export function StartHereForm() {
   );
 
   return (
-    <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-2 overflow-visible px-5 py-4 text-white sm:h-dvh sm:gap-4 sm:overflow-hidden sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10">
+    <section
+      ref={shellRef}
+      className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-2 overflow-visible px-5 py-4 text-white sm:h-dvh sm:gap-4 sm:overflow-hidden sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10"
+    >
       <StartHereSidebar
         stepIndex={stepIndex}
         completedSteps={completedSteps}
