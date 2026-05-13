@@ -9,7 +9,10 @@ type MobileLayoutSnapshot = {
   documentClientHeight: number;
   documentOverflowY: string;
   documentScrollHeight: number;
+  heroHeadingDisplay: string | null;
+  mobileErrorVisibleAfterContinue: boolean;
   scrollAreaClientHeight: number | null;
+  scrollAreaDisplay: string | null;
   scrollAreaScrollHeight: number | null;
   stepListDisplay: string | null;
   title: string | null;
@@ -29,6 +32,7 @@ const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ isMobile: true, viewport });
   await page.goto(url, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Continue" }).click();
 
   const snapshot = await page.evaluate<MobileLayoutSnapshot>(() => {
     const stepList = document.querySelector("ol");
@@ -37,6 +41,15 @@ try {
     );
     const scrollArea = document.querySelector<HTMLElement>(
       '[data-slot="scroll-area-viewport"]'
+    );
+    const heroHeading = Array.from(document.querySelectorAll("h1")).find(
+      (heading) => heading.textContent?.trim() === "Begin your global journey."
+    );
+    const mobileError = Array.from(document.querySelectorAll("p")).find(
+      (paragraph) =>
+        paragraph.textContent?.trim() ===
+          "Please complete the highlighted fields before continuing." &&
+        getComputedStyle(paragraph).display !== "none"
     );
 
     return {
@@ -52,7 +65,14 @@ try {
       documentClientHeight: document.documentElement.clientHeight,
       documentOverflowY: getComputedStyle(document.documentElement).overflowY,
       documentScrollHeight: document.documentElement.scrollHeight,
+      heroHeadingDisplay: heroHeading
+        ? getComputedStyle(heroHeading).display
+        : null,
+      mobileErrorVisibleAfterContinue: Boolean(mobileError),
       scrollAreaClientHeight: scrollArea?.clientHeight ?? null,
+      scrollAreaDisplay: scrollArea
+        ? getComputedStyle(scrollArea).display
+        : null,
       scrollAreaScrollHeight: scrollArea?.scrollHeight ?? null,
       stepListDisplay: stepList ? getComputedStyle(stepList).display : null,
       title: document.querySelector("h2")?.textContent?.trim() ?? null,
@@ -63,29 +83,30 @@ try {
 
   assert(snapshot.title === "Contact", "Expected Step 1 title to be Contact.");
   assert(
-    snapshot.stepListDisplay === "none",
-    "Expected the step navigation list to be hidden on mobile."
+    snapshot.stepListDisplay === "grid",
+    "Expected the step navigation list to be visible on mobile."
   );
   assert(
     snapshot.adminButtonText === "Admin" && snapshot.adminButtonVisible,
     "Expected a visible mobile Admin button."
   );
   assert(
-    snapshot.bodyOverflowY === "hidden",
-    "Expected mobile body vertical overflow to be hidden."
+    snapshot.heroHeadingDisplay === "none",
+    "Expected the hero heading to be hidden on mobile."
   );
   assert(
-    snapshot.documentScrollHeight <= snapshot.documentClientHeight,
-    "Expected no document-level vertical scroll on mobile."
-  );
-  assert(
-    snapshot.bodyScrollHeight <= snapshot.bodyClientHeight,
-    "Expected no body-level vertical scroll on mobile."
+    snapshot.bodyOverflowY !== "hidden",
+    "Expected mobile body vertical overflow to use native page scrolling."
   );
   assert(
     snapshot.scrollAreaClientHeight !== null &&
-      snapshot.scrollAreaScrollHeight !== null,
-    "Expected the step card scroll area to exist."
+      snapshot.scrollAreaScrollHeight !== null &&
+      snapshot.scrollAreaScrollHeight <= snapshot.scrollAreaClientHeight,
+    "Expected the step-card area to expand instead of scrolling independently on mobile."
+  );
+  assert(
+    snapshot.mobileErrorVisibleAfterContinue,
+    "Expected the validation warning to appear near the mobile action buttons."
   );
 } finally {
   await browser.close();
