@@ -110,7 +110,7 @@ export function PhoneField({
             "border-rose-300/70 bg-rose-500/10 focus-within:border-rose-200 focus-within:ring-rose-400/25"
         )}
       >
-        <div className="flex h-12 w-36 shrink-0 items-center border-r border-white/25 bg-white/6 pl-4">
+        <div className="flex h-12 w-24 shrink-0 items-center border-r border-white/25 bg-white/6 pl-3 sm:w-36 sm:pl-4">
           <span
             aria-label={activeCountry?.name ?? "Unknown country"}
             className="w-7 text-base"
@@ -119,7 +119,7 @@ export function PhoneField({
           </span>
           <Input
             aria-label="Country calling code"
-            className="h-12 w-full rounded-none border-0 bg-transparent px-1 text-sm font-medium text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
+            className="h-12 w-full rounded-none border-0 bg-transparent px-1 text-base font-medium text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
             value={dialCode}
             onChange={(event) =>
               onChange(joinPhoneValue(event.target.value, localNumber))
@@ -133,7 +133,7 @@ export function PhoneField({
         <Input
           aria-label="Phone number"
           aria-invalid={Boolean(error)}
-          className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-4 text-base text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
+          className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-3 text-base text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0 sm:px-4"
           value={localNumber}
           onChange={(event) =>
             onChange(joinPhoneValue(dialCode, event.target.value))

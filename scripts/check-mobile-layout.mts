@@ -11,6 +11,7 @@ type MobileLayoutSnapshot = {
   documentScrollHeight: number;
   heroHeadingDisplay: string | null;
   mobileErrorVisibleAfterContinue: boolean;
+  undersizedTextControls: string[];
   scrollAreaClientHeight: number | null;
   scrollAreaDisplay: string | null;
   scrollAreaScrollHeight: number | null;
@@ -51,6 +52,19 @@ try {
           "Please complete the highlighted fields before continuing." &&
         getComputedStyle(paragraph).display !== "none"
     );
+    const undersizedTextControls = Array.from(
+      document.querySelectorAll<HTMLElement>("input, textarea")
+    )
+      .filter((control) => {
+        const rect = control.getBoundingClientRect();
+
+        return (
+          rect.width > 0 &&
+          rect.height > 0 &&
+          Number.parseFloat(getComputedStyle(control).fontSize) < 16
+        );
+      })
+      .map((control) => control.getAttribute("aria-label") ?? control.id);
 
     return {
       adminButtonText: adminButton?.textContent?.trim() ?? null,
@@ -76,6 +90,7 @@ try {
       scrollAreaScrollHeight: scrollArea?.scrollHeight ?? null,
       stepListDisplay: stepList ? getComputedStyle(stepList).display : null,
       title: document.querySelector("h2")?.textContent?.trim() ?? null,
+      undersizedTextControls,
     };
   });
 
@@ -91,8 +106,8 @@ try {
     "Expected a visible mobile Admin button."
   );
   assert(
-    snapshot.heroHeadingDisplay === "none",
-    "Expected the hero heading to be hidden on mobile."
+    snapshot.heroHeadingDisplay !== "none",
+    "Expected the hero heading to be visible on mobile."
   );
   assert(
     snapshot.bodyOverflowY !== "hidden",
@@ -107,6 +122,10 @@ try {
   assert(
     snapshot.mobileErrorVisibleAfterContinue,
     "Expected the validation warning to appear near the mobile action buttons."
+  );
+  assert(
+    snapshot.undersizedTextControls.length === 0,
+    `Expected mobile text controls to use at least 16px font size: ${snapshot.undersizedTextControls.join(", ")}`
   );
 } finally {
   await browser.close();

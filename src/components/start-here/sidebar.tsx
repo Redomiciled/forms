@@ -59,7 +59,7 @@ export function StartHereSidebar({
               Redomiciled
             </p>
           </div>
-          <h1 className="hidden max-w-2xl leading-tight font-semibold sm:block sm:text-4xl lg:text-6xl">
+          <h1 className="max-w-2xl text-2xl leading-tight font-semibold sm:text-4xl lg:text-6xl">
             Begin your global journey.
           </h1>
           <p className="hidden max-w-xl text-sm leading-6 text-white/72 sm:block sm:text-base lg:text-lg lg:leading-7">
