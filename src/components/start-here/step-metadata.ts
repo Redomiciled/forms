@@ -29,7 +29,7 @@ export const stepFields: Record<StepId, Array<keyof StartHereFormValues>> = {
 export function getStepTitle(step: StepId) {
   switch (step) {
     case "contact":
-      return "How can Redomiciled reach you?";
+      return "Contact";
     case "intent":
       return "What path are you exploring?";
     case "profile":
