@@ -178,8 +178,45 @@ export function StartHereForm() {
     return <SubmittedState submitted={submitted} />;
   }
 
+  const stepContent = (
+    <div className="p-5 sm:p-7">
+      {currentStep.id === "contact" ? (
+        <ContactStep
+          values={values}
+          updateValue={updateValue}
+          errors={currentStepErrors}
+        />
+      ) : null}
+
+      {currentStep.id === "intent" ? (
+        <IntentStep
+          values={values}
+          updateValue={updateValue}
+          toggleTryingToSolve={toggleTryingToSolve}
+          errors={currentStepErrors}
+        />
+      ) : null}
+
+      {currentStep.id === "profile" ? (
+        <ProfileStep
+          values={values}
+          updateValue={updateValue}
+          errors={currentStepErrors}
+        />
+      ) : null}
+
+      {currentStep.id === "commercial" ? (
+        <CommercialStep
+          values={values}
+          updateValue={updateValue}
+          errors={currentStepErrors}
+        />
+      ) : null}
+    </div>
+  );
+
   return (
-    <section className="mx-auto flex h-dvh w-full max-w-7xl flex-col gap-4 overflow-hidden px-5 py-4 text-white sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10">
+    <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-2 overflow-visible px-5 py-4 text-white sm:h-dvh sm:gap-4 sm:overflow-hidden sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10">
       <StartHereSidebar
         stepIndex={stepIndex}
         completedSteps={completedSteps}
@@ -193,13 +230,13 @@ export function StartHereForm() {
       />
 
       <form
-        className="flex min-h-0 flex-1 flex-col rounded-3xl border border-white/16 bg-white/12 p-4 shadow-2xl backdrop-blur-2xl sm:p-6"
+        className="flex flex-col rounded-3xl border border-white/16 bg-white/12 p-4 shadow-2xl backdrop-blur-2xl sm:min-h-0 sm:flex-1 sm:p-6"
         onSubmit={(event) => {
           event.preventDefault();
           submitForm();
         }}
       >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0C0C2E]/45">
+        <div className="flex flex-col rounded-2xl border border-white/10 bg-[#0C0C2E]/45 sm:min-h-0 sm:flex-1 sm:overflow-hidden">
           <div className="border-b border-white/10 p-5 sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -214,52 +251,16 @@ export function StartHereForm() {
                 {stepIndex + 1} / {steps.length}
               </p>
             </div>
-            <div>
-              {currentStepHasErrors ? (
-                <p className="mx-auto mt-3 max-w-md text-center text-sm font-medium text-rose-100">
-                  Please complete the highlighted fields before continuing.
-                </p>
-              ) : null}
-            </div>
           </div>
 
-          <ScrollArea className="min-h-0 flex-1">
-            <div className="p-5 sm:p-7">
-              {currentStep.id === "contact" ? (
-                <ContactStep
-                  values={values}
-                  updateValue={updateValue}
-                  errors={currentStepErrors}
-                />
-              ) : null}
-
-              {currentStep.id === "intent" ? (
-                <IntentStep
-                  values={values}
-                  updateValue={updateValue}
-                  toggleTryingToSolve={toggleTryingToSolve}
-                  errors={currentStepErrors}
-                />
-              ) : null}
-
-              {currentStep.id === "profile" ? (
-                <ProfileStep
-                  values={values}
-                  updateValue={updateValue}
-                  errors={currentStepErrors}
-                />
-              ) : null}
-
-              {currentStep.id === "commercial" ? (
-                <CommercialStep
-                  values={values}
-                  updateValue={updateValue}
-                  errors={currentStepErrors}
-                />
-              ) : null}
-            </div>
-          </ScrollArea>
+          <ScrollArea className="min-h-0 sm:flex-1">{stepContent}</ScrollArea>
         </div>
+
+        {currentStepHasErrors ? (
+          <p className="mx-auto mt-4 max-w-md text-center text-sm font-medium text-rose-100">
+            Please complete the highlighted fields before continuing.
+          </p>
+        ) : null}
 
         <div className="mt-4 flex shrink-0 items-center justify-between gap-3 rounded-2xl border border-white/12 bg-[#090923]/80 p-3 shadow-2xl backdrop-blur-xl">
           <Button
