@@ -1,34 +1,35 @@
 # Start Here Form ClickUp Field Map
 
-This repo-local map is limited to values the Start Here form collects or prepares at submission time. It intentionally excludes downstream funnel fields such as Brevo sync, MSA, payment, purchased service path, and recommendation call state.
+This repo-local map is limited to values the Start Here form collects or prepares at submission time. It intentionally excludes downstream funnel fields such as Brevo sync, MSA, payment, purchased service path, and recommendation call state. Keep it in sync with the live client-level field map when ClickUp schema IDs or options change.
 
 ## Integration Placeholders
 
-- `CLICKUP_LIST_ID`: `PLACEHOLDER_CLICKUP_CRM_LIST_ID`
-- `CLICKUP_FIELD_ID_FIRST_NAME`: `PLACEHOLDER_CLICKUP_FIELD_ID_FIRST_NAME`
-- `CLICKUP_FIELD_ID_LAST_NAME`: `PLACEHOLDER_CLICKUP_FIELD_ID_LAST_NAME`
-- `CLICKUP_FIELD_ID_EMAIL`: `PLACEHOLDER_CLICKUP_FIELD_ID_EMAIL`
-- `CLICKUP_FIELD_ID_PHONE`: `PLACEHOLDER_CLICKUP_FIELD_ID_PHONE`
-- `CLICKUP_FIELD_ID_LEAD_SOURCE`: `PLACEHOLDER_CLICKUP_FIELD_ID_LEAD_SOURCE`
-- `CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`: `PLACEHOLDER_CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`
-- `CLICKUP_FIELD_ID_REFERRAL_DETAIL`: `PLACEHOLDER_CLICKUP_FIELD_ID_REFERRAL_DETAIL`
-- `CLICKUP_FIELD_ID_WARM_OVERRIDE`: `PLACEHOLDER_CLICKUP_FIELD_ID_WARM_OVERRIDE`
-- `CLICKUP_FIELD_ID_CONSIDERING_SPECIFIC_STRUCTURE`: `PLACEHOLDER_CLICKUP_FIELD_ID_CONSIDERING_SPECIFIC_STRUCTURE`
-- `CLICKUP_FIELD_ID_TRYING_TO_SOLVE`: `PLACEHOLDER_CLICKUP_FIELD_ID_TRYING_TO_SOLVE`
-- `CLICKUP_FIELD_ID_SETUP_MATURITY`: `PLACEHOLDER_CLICKUP_FIELD_ID_SETUP_MATURITY`
-- `CLICKUP_FIELD_ID_CURRENT_RESIDENCE`: `PLACEHOLDER_CLICKUP_FIELD_ID_CURRENT_RESIDENCE`
-- `CLICKUP_FIELD_ID_PASSPORTS_CITIZENSHIPS`: `PLACEHOLDER_CLICKUP_FIELD_ID_PASSPORTS_CITIZENSHIPS`
-- `CLICKUP_FIELD_ID_BUSINESS_MAIN_SOURCE_OF_INCOME`: `PLACEHOLDER_CLICKUP_FIELD_ID_BUSINESS_MAIN_SOURCE_OF_INCOME`
-- `CLICKUP_FIELD_ID_MONTHLY_REVENUE_BAND`: `PLACEHOLDER_CLICKUP_FIELD_ID_MONTHLY_REVENUE_BAND`
-- `CLICKUP_FIELD_ID_NET_WORTH_BAND`: `PLACEHOLDER_CLICKUP_FIELD_ID_NET_WORTH_BAND`
-- `CLICKUP_FIELD_ID_TIMELINE_TO_ACT`: `PLACEHOLDER_CLICKUP_FIELD_ID_TIMELINE_TO_ACT`
-- `CLICKUP_FIELD_ID_BUDGET_READINESS`: `PLACEHOLDER_CLICKUP_FIELD_ID_BUDGET_READINESS`
-- `CLICKUP_FIELD_ID_IMPORTANT_ROUTING_NOTES`: `PLACEHOLDER_CLICKUP_FIELD_ID_IMPORTANT_ROUTING_NOTES`
-- `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE`: `PLACEHOLDER_CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE`
-- `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE_REASON`: `PLACEHOLDER_CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE_REASON`
-- `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`: `PLACEHOLDER_CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`
-- `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`: `PLACEHOLDER_CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`
-- `CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`: `PLACEHOLDER_CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`
+- `CLICKUP_LIST_ID`: `901217458864`
+- `CLICKUP_LEAD_TASK_TYPE_ID`: `1001`
+- `CLICKUP_FIELD_ID_FIRST_NAME`: `b6b2590d-58a3-463b-8e38-691c791e0f7f`
+- `CLICKUP_FIELD_ID_LAST_NAME`: `c63b5e5a-220f-49f2-8b0f-1da4137139d1`
+- `CLICKUP_FIELD_ID_EMAIL`: `cfe207d1-c5a3-47b7-bd72-eae0d5c0c708`
+- `CLICKUP_FIELD_ID_PHONE`: `3a356107-fadc-41c2-90fd-46b4af007fdf`
+- `CLICKUP_FIELD_ID_LEAD_SOURCE`: `f4b729b2-a300-4bb0-a465-08c51e7ad441`
+- `CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`: `428ab3fa-d1de-464b-b4d5-4785a51012d0`
+- `CLICKUP_FIELD_ID_REFERRAL_DETAIL`: `9eabae2e-f35e-40ab-8284-05526f4e223c`
+- `CLICKUP_FIELD_ID_WARM_OVERRIDE`: `2b9bb488-1791-40cf-9f51-9cc1883de459`
+- `CLICKUP_FIELD_ID_CONSIDERING_SPECIFIC_STRUCTURE`: `11af648c-f959-4155-a431-19b173c2f43c`
+- `CLICKUP_FIELD_ID_TRYING_TO_SOLVE`: `f84cb55a-383d-4e72-9423-f17321324b1c`
+- `CLICKUP_FIELD_ID_SETUP_MATURITY`: `bbf53e18-3edc-428c-97f7-e30af56da120`
+- `CLICKUP_FIELD_ID_CURRENT_RESIDENCE`: `793483e6-ff19-4d4b-ac56-d36cc0cb2ec0`
+- `CLICKUP_FIELD_ID_PASSPORTS_CITIZENSHIPS`: `af5c8a0b-acbf-4ed7-a0ae-b9d1c2ec8dde`
+- `CLICKUP_FIELD_ID_BUSINESS_MAIN_SOURCE_OF_INCOME`: `c41d84b5-6db8-4d04-b8e5-d88396e5b5d3`
+- `CLICKUP_FIELD_ID_MONTHLY_REVENUE_BAND`: `42ae346a-bd16-47a9-bb06-b4a50ace0e2c`
+- `CLICKUP_FIELD_ID_NET_WORTH_BAND`: `57525f9d-ec68-423a-a4c8-3207c778e5ae`
+- `CLICKUP_FIELD_ID_TIMELINE_TO_ACT`: `a06451f1-e78d-46e7-aa53-826c54628f1a`
+- `CLICKUP_FIELD_ID_BUDGET_READINESS`: `c0107b5f-5049-4613-a588-2cc4ca62e997`
+- `CLICKUP_FIELD_ID_IMPORTANT_ROUTING_NOTES`: `e54df295-82b9-43e0-b6ef-daee240eef04`
+- `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE`: `0ed775f3-ae23-43ea-8f70-d1ecd161a301`
+- `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE_REASON`: `86714782-7be3-4823-9095-de518c8057c5`
+- `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`: `aa730523-3be9-4f95-abe4-82548635ddda`
+- `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`: `580ba4f1-6479-4255-a0c5-be049e3b4e21`
+- `CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`: `7d5007ea-07e9-4796-a656-49e8548a032c`
 - `CAL_COM_OWNER_ERIK_URL`: `PLACEHOLDER_CAL_COM_ERIK_URL`
 - `CAL_COM_OWNER_WILL_URL`: `PLACEHOLDER_CAL_COM_WILL_URL`
 
@@ -66,6 +67,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_LEAD_SOURCE`
   - **Type:** dropdown
   - **Submitted value:** `Start Here Form`
+  - **QA submitted value:** `Test (Ignore)` for production-list integration tests only.
 
 - `leadSourceDetail`
   - **ClickUp field:** `Lead Source Detail`
@@ -107,7 +109,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
   - **Options:** `New to this`, `Partially set up`, `Sophisticated setup`
 
 - `currentResidence`
-  - **ClickUp field:** `Current Residence`
+  - **ClickUp field:** `Current Residency`
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_CURRENT_RESIDENCE`
   - **Type:** short text
 
@@ -177,7 +179,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`
   - **Type:** People
   - **Prepared value:** `Will` for banking-led booked-call outcomes; `Erik` for all other booked-call outcomes.
-  - **Placeholder:** actual ClickUp user IDs are not known yet.
+  - **ClickUp user IDs:** `Will` = `296457746`; `Erik` = `99702565`.
 
 - `calComBookingId`
   - **ClickUp field:** `Cal.com Booking ID`
@@ -187,4 +189,4 @@ This repo-local map is limited to values the Start Here form collects or prepare
 
 ## Routing Scope
 
-The form may prepare a local route preview and payload for review. It must not create ClickUp records, call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.
+The form prepares the route preview in the browser, then posts the validated answers to the server route. In `live` write mode, the server route creates or updates the Redomiciled ClickUp CRM record directly. In `dry_run` mode, it returns the same routed response without writing ClickUp. The form still does not call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.

@@ -15,13 +15,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   emptyStartHereFormValues,
-  prepareStartHereSubmission,
   tryingToSolveOptions,
   validateStartHereValues,
   type StartHereFormValues,
-  type StartHerePreparedSubmission,
 } from "@/lib/start-here";
 import { adminPresets, type AdminPreset } from "@/lib/start-here-admin";
+import type {
+  StartHereSubmissionResponse,
+  StartHereSubmissionSuccessResponse,
+} from "@/lib/start-here-submission";
 
 import {
   getFirstErrorStep,
@@ -53,7 +55,9 @@ export function StartHereForm() {
   const [adminMode, setAdminMode] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [submitted, setSubmitted] =
-    useState<StartHerePreparedSubmission | null>(null);
+    useState<StartHereSubmissionSuccessResponse | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const validation = useMemo(() => validateStartHereValues(values), [values]);
   const completedSteps = useMemo(() => {
     return new Set(
@@ -150,7 +154,11 @@ export function StartHereForm() {
     scrollMobileToTop();
   }
 
-  function submitForm() {
+  async function submitForm() {
+    if (submitting) {
+      return;
+    }
+
     const nextValidation = validateStartHereValues(values);
 
     if (!adminMode && !nextValidation.ok) {
@@ -164,7 +172,37 @@ export function StartHereForm() {
       return;
     }
 
-    setSubmitted(prepareStartHereSubmission(values));
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const response = await fetch("/api/start-here/submissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ values, adminMode }),
+      });
+      const result = (await response.json()) as StartHereSubmissionResponse;
+
+      if (!response.ok || !result.ok) {
+        throw new Error(
+          !result.ok
+            ? result.error.message
+            : "We could not submit the form. Please try again."
+        );
+      }
+
+      setSubmitted(result);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "We could not submit the form. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function applyAdminPreset(preset: AdminPreset) {
@@ -172,6 +210,7 @@ export function StartHereForm() {
     setValues(preset.values);
     setAttemptedSteps(new Set());
     setSubmitted(null);
+    setSubmitError("");
     setReviewOpen(false);
     setMaxStepReached(steps.length - 1);
     setStepIndex(steps.length - 1);
@@ -324,11 +363,15 @@ export function StartHereForm() {
               </div>
             </ScrollArea>
             <DialogFooter>
+              {submitError ? (
+                <p className="text-sm leading-5 text-rose-100">{submitError}</p>
+              ) : null}
               <Button
                 type="button"
                 variant="ghost"
                 className="h-11 rounded-xl px-4 text-white hover:bg-white/10 hover:text-white"
                 onClick={() => setReviewOpen(false)}
+                disabled={submitting}
               >
                 Keep editing
               </Button>
@@ -336,8 +379,9 @@ export function StartHereForm() {
                 type="button"
                 className="h-11 rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
                 onClick={submitForm}
+                disabled={submitting}
               >
-                Confirm and continue
+                {submitting ? "Submitting..." : "Confirm and continue"}
                 <ArrowRight className="size-4" />
               </Button>
             </DialogFooter>

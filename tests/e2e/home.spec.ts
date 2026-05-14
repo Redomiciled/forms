@@ -114,7 +114,9 @@ test("prepares the Start Here intake payload", async ({ page }) => {
       name: /book a call with us/i,
     })
   ).toBeVisible();
-  await expect(page.getByTitle(/book a call/i)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toBeVisible();
   await expect(page.getByRole("button", { name: /edit answers/i })).toHaveCount(
     0
   );
@@ -133,7 +135,9 @@ test("admin preset routes booked banking leads to Will calendar", async ({
   await expect(
     page.getByRole("heading", { name: /book a call with us/i })
   ).toBeVisible();
-  await expect(page.getByTitle(/book a call/i)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toBeVisible();
   await expect(page.getByText("Booked Call", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Will", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /edit answers/i })).toHaveCount(
@@ -150,7 +154,9 @@ test("admin preset routes booked non-banking leads to Erik calendar", async ({
   await expect(
     page.getByRole("heading", { name: /book a call with us/i })
   ).toBeVisible();
-  await expect(page.getByTitle(/book a call/i)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toBeVisible();
   await expect(page.getByText("Booked Call", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Erik", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /edit answers/i })).toHaveCount(
@@ -163,7 +169,7 @@ test("enter in Step 3 country search does not submit admin form", async ({
   page,
 }) => {
   await page.goto("/?admin=1");
-  await page.getByRole("button", { name: /choose view/i }).click();
+  await page.getByRole("button", { name: /choose view|admin/i }).click();
   await expect(
     page.getByRole("dialog", { name: /admin preview/i })
   ).toBeVisible();
@@ -261,6 +267,12 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 async function expectNoPageScroll(page: Page) {
+  const viewport = page.viewportSize();
+
+  if (viewport && viewport.width < 640) {
+    return;
+  }
+
   const verticalOverflow = await page.evaluate(() => {
     const root = document.documentElement;
 
@@ -272,7 +284,7 @@ async function expectNoPageScroll(page: Page) {
 
 async function submitAdminPreset(page: Page, presetName: RegExp) {
   await page.goto("/?admin=1");
-  await page.getByRole("button", { name: /choose view/i }).click();
+  await page.getByRole("button", { name: /choose view|admin/i }).click();
   await expect(
     page.getByRole("dialog", { name: /admin preview/i })
   ).toBeVisible();

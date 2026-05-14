@@ -1,10 +1,32 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { prepareStartHereSubmission } from "@/lib/start-here";
 
 import Home from "./page";
 
 describe("Home", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+        const body =
+          typeof init?.body === "string" ? JSON.parse(init.body) : null;
+
+        return Response.json({
+          ok: true,
+          submission: prepareStartHereSubmission(body.values),
+          persistence: {
+            submissionId: "test-submission-id",
+            mode: "dry_run",
+            action: "dry_run",
+          },
+        });
+      })
+    );
+  });
+
   it("renders the Start Here intake shell", () => {
     window.history.pushState({}, "", "/");
     render(<Home />);
@@ -143,7 +165,9 @@ describe("Home", () => {
         name: /book a call with us/i,
       })
     ).toBeInTheDocument();
-    expect(screen.getByTitle(/book a call/i)).toBeVisible();
+    expect(
+      screen.getByRole("region", { name: /booking calendar/i })
+    ).toBeVisible();
     expect(
       screen.queryByRole("button", { name: /edit answers/i })
     ).not.toBeInTheDocument();
