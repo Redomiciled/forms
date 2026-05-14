@@ -7,6 +7,7 @@ import {
   prepareStartHereSubmission,
   type RoutingDecisionSignal,
   type SetupMaturity,
+  type StartHereFormRoute,
   type StartHereFormValues,
   type StartHerePreparedSubmission,
   type TimelineToAct,
@@ -141,6 +142,12 @@ const ROUTE_OPTIONS = {
   "Manual Triage": "05d90179-eaea-4880-930f-8134a683b5f5",
 } as const;
 
+const NATIVE_STATUS_BY_ROUTE: Record<StartHereFormRoute, string> = {
+  "Booked Call": "MEETING BOOKED",
+  "Manual Triage": "MANUAL TRIAGE",
+  "Unqualified / Not Ready": "NOT READY",
+};
+
 const ROUTING_SIGNAL_OPTIONS: Record<RoutingDecisionSignal, string> = {
   "Warm source": "454af5ca-f08a-434a-8dfd-210470459274",
   "Known product/path": "278d9d11-58eb-4dd5-9f1f-1dacdcb6889b",
@@ -233,9 +240,17 @@ export async function persistStartHereSubmission(
   }
 
   const existingTask = matches[0];
+  const taskStatus = getNativeClickUpStatus(
+    submission.fields.startHereFormRoute
+  );
   const taskId = existingTask
-    ? await client.updateTask(existingTask.id, taskName, taskDescription)
-    : await client.createTask(taskName, taskDescription);
+    ? await client.updateTask(
+        existingTask.id,
+        taskName,
+        taskDescription,
+        taskStatus
+      )
+    : await client.createTask(taskName, taskDescription, taskStatus);
 
   if (!existingTask) {
     await delay(1_000);
@@ -352,6 +367,10 @@ export function buildClickUpFieldValues(
   ];
 }
 
+export function getNativeClickUpStatus(route: StartHereFormRoute) {
+  return NATIVE_STATUS_BY_ROUTE[route];
+}
+
 function getClickUpConfig(adminMode: boolean): ClickUpConfig {
   const writeMode = getWriteMode(adminMode);
 
@@ -464,7 +483,7 @@ class ClickUpClient {
     return matches;
   }
 
-  async createTask(name: string, description: string) {
+  async createTask(name: string, description: string, status: string) {
     const data = await this.request<{ id?: string }>(
       "/list/" + this.config.listId + "/task",
       {
@@ -472,6 +491,7 @@ class ClickUpClient {
         body: JSON.stringify({
           name,
           description,
+          status,
           custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
           notify_all: false,
         }),
@@ -488,12 +508,18 @@ class ClickUpClient {
     return data.id;
   }
 
-  async updateTask(taskId: string, name: string, description: string) {
+  async updateTask(
+    taskId: string,
+    name: string,
+    description: string,
+    status: string
+  ) {
     await this.request(`/task/${taskId}`, {
       method: "PUT",
       body: JSON.stringify({
         name,
         description,
+        status,
       }),
     });
 

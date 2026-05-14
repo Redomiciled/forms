@@ -30,8 +30,32 @@ This repo-local map is limited to values the Start Here form collects or prepare
 - `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`: `aa730523-3be9-4f95-abe4-82548635ddda`
 - `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`: `580ba4f1-6479-4255-a0c5-be049e3b4e21`
 - `CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`: `7d5007ea-07e9-4796-a656-49e8548a032c`
-- `CAL_COM_OWNER_ERIK_URL`: `PLACEHOLDER_CAL_COM_ERIK_URL`
-- `CAL_COM_OWNER_WILL_URL`: `PLACEHOLDER_CAL_COM_WILL_URL`
+- `CAL_COM_OWNER_ERIK_URL`: `https://cal.com/erik-redomiciled/30min`
+- `CAL_COM_OWNER_WILL_URL`: `https://cal.com/william-denton-redomiciled/30min`
+
+## Native ClickUp Status Mapping
+
+The form preserves `Start Here Form Route` as a custom field for routing/audit history, and separately sets the ClickUp task's native status when creating or updating the CRM task.
+
+| Start Here route          | Native ClickUp status |
+| ------------------------- | --------------------- |
+| `Booked Call`             | `MEETING BOOKED`      |
+| `Manual Triage`           | `MANUAL TRIAGE`       |
+| `Unqualified / Not Ready` | `NOT READY`           |
+
+Current confirmed CRM native statuses:
+
+- `MEETING BOOKED`
+- `NOT READY`
+- `MANUAL TRIAGE`
+- `AWAITING PROPOSAL`
+- `PROPOSAL SENT`
+- `MSA SIGNED`
+- `INVOICE SENT`
+- `LOST`
+- `WON`
+
+The Start Here form only sets the three intake statuses mapped above. Downstream statuses (`AWAITING PROPOSAL`, `PROPOSAL SENT`, `MSA SIGNED`, `INVOICE SENT`, `LOST`, `WON`) belong to later sales, MSA, invoice, win/loss, or manual pipeline actions and are not set by this form.
 
 ## Submitted Field Map
 
@@ -189,4 +213,4 @@ This repo-local map is limited to values the Start Here form collects or prepare
 
 ## Routing Scope
 
-The form prepares the route preview in the browser, then posts the validated answers to the server route. In `live` write mode, the server route creates or updates the Redomiciled ClickUp CRM record directly. In `dry_run` mode, it returns the same routed response without writing ClickUp. The form still does not call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.
+The form prepares the route preview in the browser, then posts the validated answers to the server route. In `live` write mode, the server route creates or updates the Redomiciled ClickUp CRM record directly, sets the native ClickUp intake status from the route mapping above, then writes submitted/prepared custom fields. In `dry_run` mode, it returns the same routed response without writing ClickUp. The form still does not call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.

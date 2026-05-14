@@ -35,10 +35,10 @@ The persistence layer creates a local submission ID, prepares routing, writes/up
 >
 > - Source: `src/lib/start-here-clickup.ts` (lines 199-200, 241-248)
 
-Booked-call routes currently select Will for banking and Erik for everything else, but both point to the same placeholder/test Cal URL:
+Booked-call routes select Will for banking and Erik for everything else:
 
-> "erik: \"https://cal.com/juan-hernandez-obduvq/30min\","  
-> "will: \"https://cal.com/juan-hernandez-obduvq/30min\","
+> "erik: \"https://cal.com/erik-redomiciled/30min\","  
+> "will: \"https://cal.com/william-denton-redomiciled/30min\","
 >
 > - Source: `src/lib/start-here-routing.ts` (lines 8-10)
 
@@ -175,8 +175,8 @@ ClickUp currently has `Cal.com Booking ID`, but the local field map does not lis
 
 ## Will / Erik Account Checks
 
-- Replace the current shared placeholder URL with Will's real Cal event link for banking routes.
-- Confirm whether "Erik's account" is the Cal host account for non-banking routes, and resolve the name mismatch in docs/code (`Eric` vs `Erik`) before wiring production owner IDs.
+- Will's real Cal event link is used for banking routes.
+- Erik's real Cal event link is used for non-banking booked-call routes.
 - In each account/event type, confirm webhook access and whether the event type requires confirmation. `bookingSuccessfulV2` can fire even when the booking might not be confirmed, so status handling matters.
 - Create a test booking through each embedded link and verify:
   - metadata lands in the booking/webhook payload,
