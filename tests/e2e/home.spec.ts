@@ -252,7 +252,7 @@ test("admin preset routes manual triage without showing a calendar", async ({
   ).toBeVisible();
   await expect(page.getByText("Redomiciled", { exact: true })).toBeVisible();
   await expect(
-    page.getByText(/we.ll review the details and follow up/i)
+    page.getByText(/we.ll review the details and follow up with the right next step/i)
   ).toBeVisible();
   await expect(page.getByText("Manual Triage", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Route", { exact: true })).toHaveCount(0);

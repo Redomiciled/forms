@@ -50,7 +50,7 @@ export function SubmittedState({
     : "Submission received";
   const description = isUnqualified
     ? "Based on your answers, the best next step is to keep using the free community for now. If your situation changes, or if you’re ready to invest at least €1,500 in professional support, you can submit again and we’ll route you to the right next step."
-    : "We’ve received your submission. We’ll review the details and follow up if there is a clear next step.";
+    : "We’ve received your submission. We’ll review the details and follow up with the right next step.";
 
   if (isUnqualified) {
     return (
