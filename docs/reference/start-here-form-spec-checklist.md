@@ -10,7 +10,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
   - **Implementation:** Implemented as the root form experience.
 
 - [x] It has two jobs:
-  - **Implementation:** Implemented for in-app intake and routing. Downstream ClickUp/Cal.com persistence still uses placeholders.
+  - **Implementation:** Implemented for in-app intake, routing, ClickUp persistence, and Cal.com embed routing.
 
 - [x] Route serious leads to the right next step.
   - **Implementation:** Implemented in `deriveStartHereRoute(values)` with booked-call, manual-triage, and unqualified outcomes.
@@ -197,7 +197,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
 ### 12. Calendar booking (only shown if the lead qualifies)
 
 - [x] If the form outcome is booked call, the last step shows the right Cal.com calendar.
-  - **Implementation:** Partial. Current app is Cal.com inline-embed ready and shows a polished pending state until real Erik/Will Cal.com event links replace placeholders.
+  - **Implementation:** Implemented with real Will/Erik Cal.com event links.
 
 - [x] Default owner routing:
   - **Implementation:** Implemented in the routing engine.
@@ -226,7 +226,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
   - **Implementation:** Pending downstream integration. Current app prepares local payload only.
 
 - [x] If the outcome is booked call, the form shows the calendar as the final step.
-  - **Implementation:** Implemented as a route-specific Cal.com inline embed when a real Cal link is configured; placeholder state remains until account links are known.
+  - **Implementation:** Implemented as a route-specific Cal.com inline embed using Will's calendar for banking and Erik's calendar for other booked calls.
 
 - [x] Otherwise, no calendar is shown.
   - **Implementation:** Implemented for `Manual Triage` and `Unqualified / Not Ready`.

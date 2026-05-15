@@ -7,8 +7,8 @@ import {
 
 export const PLACEHOLDERS = {
   clickUpListId: "PLACEHOLDER_CLICKUP_CRM_LIST_ID",
-  erikCalendarUrl: "PLACEHOLDER_CAL_COM_ERIK_URL",
-  willCalendarUrl: "PLACEHOLDER_CAL_COM_WILL_URL",
+  erikCalendarUrl: "https://cal.com/erik-redomiciled/30min",
+  willCalendarUrl: "https://cal.com/william-denton-redomiciled/30min",
 } as const;
 
 export const leadSourceDetails = [

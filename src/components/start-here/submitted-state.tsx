@@ -2,34 +2,34 @@ import { ArrowUpRight, ClipboardCheck } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
-import type { StartHerePreparedSubmission } from "@/lib/start-here";
+import type { StartHereSubmissionSuccessResponse } from "@/lib/start-here-submission";
 
 import { CalInlineEmbed } from "./cal-inline-embed";
 
 export function SubmittedState({
   submitted,
 }: {
-  submitted: StartHerePreparedSubmission;
+  submitted: StartHereSubmissionSuccessResponse;
 }) {
-  const route = submitted.fields.startHereFormRoute;
+  const route = submitted.submission.fields.startHereFormRoute;
   const isBookedCall = route === "Booked Call";
   const isUnqualified = route === "Unqualified / Not Ready";
 
   if (isBookedCall) {
     return (
-      <section className="mx-auto flex h-dvh w-full max-w-7xl flex-col justify-center overflow-hidden px-4 py-3 text-white sm:px-6 lg:px-8">
-        <div className="grid min-h-0 gap-3">
-          <div className="space-y-3 text-center">
+      <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-start px-4 py-7 text-white sm:px-6 sm:py-8 lg:justify-center lg:px-8">
+        <div className="grid gap-4 sm:gap-5">
+          <div className="space-y-3 text-center sm:space-y-4">
             <div className="mx-auto flex w-fit items-center justify-center gap-3">
               <Image
                 src="/redomiciled-logo.png"
                 alt=""
                 width={40}
                 height={34}
-                className="h-8 w-auto shrink-0 sm:h-9"
+                className="h-7 w-auto shrink-0 sm:h-9"
                 priority
               />
-              <p className="text-base font-semibold text-white sm:text-lg">
+              <p className="text-sm font-semibold text-white sm:text-lg">
                 Redomiciled
               </p>
             </div>
@@ -37,7 +37,7 @@ export function SubmittedState({
               Book a call with us
             </h1>
           </div>
-          <div className="min-h-0 overflow-hidden rounded-3xl border border-white/15 bg-black/18 p-2 shadow-2xl backdrop-blur-xl sm:p-3">
+          <div className="mx-auto w-full max-w-5xl overflow-visible rounded-3xl border border-white/15 bg-black/18 p-2 shadow-2xl backdrop-blur-xl sm:p-3">
             <CalInlineEmbed submitted={submitted} />
           </div>
         </div>

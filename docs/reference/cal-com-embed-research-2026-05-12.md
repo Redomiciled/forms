@@ -27,7 +27,7 @@ Cal.com's inline instruction accepts an `elementOrSelector` and a `calLink`.
 >
 > - Source: [Embed instructions](https://cal.com/help/embedding/embed-instructions)
 
-**Reasoning:** The app can store full placeholder URLs for now, but the embed component should normalize real `https://cal.com/owner/event` URLs into `owner/event` before calling Cal.
+**Reasoning:** The app stores full Cal.com URLs, but the embed component should normalize real `https://cal.com/owner/event` URLs into `owner/event` before calling Cal.
 
 ### Prefill Lead Data And Metadata
 
@@ -59,5 +59,5 @@ The React package install currently fails in this repo with `npm error Invalid V
 
 - [x] Add a booked-call final-screen panel that renders the Cal.com inline embed when a real Cal link is configured.
 - [x] Keep a polished placeholder state while Erik/Will Cal.com links are unknown.
-- [ ] Replace `PLACEHOLDER_CAL_COM_ERIK_URL` and `PLACEHOLDER_CAL_COM_WILL_URL` with real event-type links.
+- [x] Replace placeholder/test links with the real event-type links: Will `https://cal.com/william-denton-redomiciled/30min`, Erik `https://cal.com/erik-redomiciled/30min`.
 - [ ] Add booking-success event handling once the webhook/ClickUp persistence path exists.
