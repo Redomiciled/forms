@@ -28,7 +28,6 @@ export async function POST(request: Request) {
 
   try {
     const result = await persistStartHereSubmission(parsed.data.values, {
-      adminMode: parsed.data.adminMode,
       qaMode: parsed.data.qaMode,
     });
 

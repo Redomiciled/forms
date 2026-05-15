@@ -17,8 +17,8 @@ export type StartHereSubmissionRequest = z.infer<
 
 export type StartHerePersistenceResult = {
   submissionId: string;
-  mode: "dry_run" | "live";
-  action: "dry_run" | "created" | "updated";
+  mode: "live";
+  action: "created";
   taskId?: string;
 };
 
@@ -31,9 +31,7 @@ export type StartHereSubmissionSuccessResponse = {
 export type StartHereSubmissionErrorCode =
   | "VALIDATION_FAILED"
   | "CLICKUP_CONFIG_MISSING"
-  | "CLICKUP_MATCH_COLLISION"
   | "CLICKUP_CREATE_FAILED"
-  | "CLICKUP_UPDATE_FAILED"
   | "CLICKUP_FIELD_UPDATE_FAILED"
   | "CLICKUP_REQUEST_FAILED"
   | "SUBMISSION_FAILED";

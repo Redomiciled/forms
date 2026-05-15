@@ -19,7 +19,7 @@ export type AdminPreset = {
 export const adminPresets: AdminPreset[] = [
   {
     id: "booked-banking",
-    label: "Booked call - banking",
+    label: "TEST - Booked call - banking",
     values: makePreset({
       consideringSpecificStructure:
         "Yes — I know what structure I want, or I know I need a bank account",
@@ -31,7 +31,7 @@ export const adminPresets: AdminPreset[] = [
   },
   {
     id: "booked-non-banking",
-    label: "Booked call - non-banking",
+    label: "TEST - Booked call - non-banking",
     values: makePreset({
       consideringSpecificStructure:
         "Yes — I know what structure I want, or I know I need a bank account",
@@ -43,7 +43,7 @@ export const adminPresets: AdminPreset[] = [
   },
   {
     id: "manual-triage",
-    label: "Manual triage",
+    label: "TEST - Manual triage",
     values: makePreset({
       consideringSpecificStructure: "No — I want help finding the right path",
       tryingToSolve: ["Relocate my individual tax residency"],
@@ -55,7 +55,7 @@ export const adminPresets: AdminPreset[] = [
   },
   {
     id: "unqualified",
-    label: "Unqualified",
+    label: "TEST - Unqualified",
     values: makePreset({
       consideringSpecificStructure: "No — I want help finding the right path",
       tryingToSolve: [
@@ -70,7 +70,7 @@ export const adminPresets: AdminPreset[] = [
   },
   {
     id: "warm-referral",
-    label: "Warm referral",
+    label: "TEST - Warm referral",
     values: makePreset({
       referralDetail: "Introduced by Alex",
       consideringSpecificStructure: "No — I want help finding the right path",
@@ -91,7 +91,7 @@ function makePreset(
 ): StartHereFormValues {
   return {
     ...emptyStartHereFormValues,
-    firstName: "Taylor",
+    firstName: "TEST Taylor",
     lastName: "Rivera",
     email: "taylor@example.com",
     phone: "+1 555 0100",

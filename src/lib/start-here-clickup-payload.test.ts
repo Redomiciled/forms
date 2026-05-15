@@ -12,8 +12,6 @@ import {
 
 const REDOMICILED_CRM_LIST_ID = "901217458864";
 const REDOMICILED_LEAD_TASK_TYPE_ID = 1001;
-const EMAIL_FIELD_ID = "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708";
-
 const ROUTE_CASES: Array<{
   label: string;
   route: StartHereFormRoute;
@@ -88,7 +86,6 @@ describe("Start Here ClickUp task payloads", () => {
       const fetchMock = makeClickUpFetchMock();
 
       const result = await persistStartHereSubmission(values, {
-        adminMode: false,
         fetchImpl: fetchMock.fetchImpl,
         qaMode: true,
       });
@@ -100,54 +97,39 @@ describe("Start Here ClickUp task payloads", () => {
         custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
         notify_all: false,
       });
+      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(24);
     }
   );
 
-  it.each(ROUTE_CASES)(
-    "sets native status to $status when updating a $label task",
-    async ({ route, status, values }) => {
-      configureLiveWrites();
+  it("creates the task with all custom fields in the create request", async () => {
+    configureLiveWrites();
 
-      const fetchMock = makeClickUpFetchMock({
-        existingTaskEmail: values.email,
-      });
+    const fetchMock = makeClickUpFetchMock();
 
-      const result = await persistStartHereSubmission(values, {
-        adminMode: false,
-        fetchImpl: fetchMock.fetchImpl,
-        qaMode: true,
-      });
+    await persistStartHereSubmission(makeValues(), {
+      fetchImpl: fetchMock.fetchImpl,
+      qaMode: true,
+    });
 
-      expect(result.submission.fields.startHereFormRoute).toBe(route);
-      expect(fetchMock.updateBodies).toHaveLength(1);
-      expect(fetchMock.updateBodies[0]).toMatchObject({
-        status,
-      });
-      expect(fetchMock.createBodies).toHaveLength(0);
-    }
-  );
+    expect(fetchMock.listSearchCount).toBe(0);
+    expect(fetchMock.createBodies).toHaveLength(1);
+    expect(getCreateCustomFields(fetchMock.createBodies[0])).toContainEqual({
+      id: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
+      value: "taylor@example.com",
+    });
+  });
 });
 
-function makeClickUpFetchMock(options: { existingTaskEmail?: string } = {}) {
+function makeClickUpFetchMock() {
   const createBodies: unknown[] = [];
-  const updateBodies: unknown[] = [];
-  const existingTask = options.existingTaskEmail
-    ? {
-        id: "existing-start-here-task",
-        custom_fields: [
-          {
-            id: EMAIL_FIELD_ID,
-            value: options.existingTaskEmail.toLowerCase(),
-          },
-        ],
-      }
-    : undefined;
+  let listSearchCount = 0;
 
   const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
     const url = String(input);
 
     if (url.includes(`/list/${REDOMICILED_CRM_LIST_ID}/task?`)) {
-      return jsonResponse({ tasks: existingTask ? [existingTask] : [] });
+      listSearchCount += 1;
+      return jsonResponse({ tasks: [] });
     }
 
     if (
@@ -159,35 +141,19 @@ function makeClickUpFetchMock(options: { existingTaskEmail?: string } = {}) {
       return jsonResponse({ id: "created-start-here-task" });
     }
 
-    if (
-      url.endsWith("/task/existing-start-here-task") &&
-      init?.method === "PUT"
-    ) {
-      updateBodies.push(JSON.parse(String(init.body)));
-
-      return jsonResponse({});
-    }
-
-    if (
-      (url.includes("/task/created-start-here-task/field/") ||
-        url.includes("/task/existing-start-here-task/field/")) &&
-      init?.method === "POST"
-    ) {
-      return jsonResponse({});
-    }
-
     throw new Error(`Unexpected ClickUp mock request: ${url}`);
   });
 
   return {
     createBodies,
-    updateBodies,
+    get listSearchCount() {
+      return listSearchCount;
+    },
     fetchImpl,
   };
 }
 
 function configureLiveWrites() {
-  process.env["REDOMICILED_START_HERE_WRITE_MODE"] = "live";
   process.env["REDOMICILED_CLICKUP_API_TOKEN"] = "mock-clickup-token";
   process.env["REDOMICILED_CLICKUP_CRM_LIST_ID"] = REDOMICILED_CRM_LIST_ID;
 }
@@ -223,4 +189,18 @@ function jsonResponse(body: unknown) {
       "Content-Type": "application/json",
     },
   });
+}
+
+function getCreateCustomFields(body: unknown) {
+  if (!body || typeof body !== "object" || !("custom_fields" in body)) {
+    throw new Error("ClickUp create body did not include custom_fields.");
+  }
+
+  const customFields = (body as { custom_fields?: unknown }).custom_fields;
+
+  if (!Array.isArray(customFields)) {
+    throw new Error("ClickUp create body custom_fields was not an array.");
+  }
+
+  return customFields;
 }

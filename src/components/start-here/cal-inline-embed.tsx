@@ -11,8 +11,7 @@ type CalInlineConfig = {
     value: "phone";
     optionValue: string;
   };
-  metadata: Record<string, string>;
-};
+} & Record<`metadata[${string}]`, string>;
 
 type CalEmbedOptions = {
   calLink: string;
@@ -186,7 +185,8 @@ export function getCalEmbedOptions(
         value: "phone",
         optionValue: submission.fields.phone,
       },
-      metadata: removeEmptyValues({
+      ...toCalMetadataConfig({
+        source: "start-here-form",
         startHereSubmissionId: submitted.persistence.submissionId,
         clickUpTaskId: submitted.persistence.taskId ?? "",
         startHereFormRoute: submission.fields.startHereFormRoute,
@@ -221,6 +221,15 @@ function removeEmptyValues(values: Record<string, string>) {
       Boolean(entry[1])
     )
   );
+}
+
+function toCalMetadataConfig(values: Record<string, string>) {
+  return Object.fromEntries(
+    Object.entries(removeEmptyValues(values)).map(([key, value]) => [
+      `metadata[${key}]`,
+      value,
+    ])
+  ) as Record<`metadata[${string}]`, string>;
 }
 
 function callCal(

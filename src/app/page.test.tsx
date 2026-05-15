@@ -19,8 +19,9 @@ describe("Home", () => {
           submission: prepareStartHereSubmission(body.values),
           persistence: {
             submissionId: "test-submission-id",
-            mode: "dry_run",
-            action: "dry_run",
+            mode: "live",
+            action: "created",
+            taskId: "test-task-id",
           },
         });
       })

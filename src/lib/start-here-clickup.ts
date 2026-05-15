@@ -173,24 +173,13 @@ export type ClickUpFieldValue = {
 };
 
 export type PersistStartHereOptions = {
-  adminMode: boolean;
   fetchImpl?: typeof fetch;
   qaMode?: boolean;
-};
-
-type ClickUpTask = {
-  id: string;
-  name?: string;
-  custom_fields?: Array<{
-    id: string;
-    value?: unknown;
-  }>;
 };
 
 type ClickUpConfig = {
   apiToken: string;
   listId: string;
-  writeMode: "dry_run" | "live";
 };
 
 export class StartHereClickUpError extends Error {
@@ -213,52 +202,22 @@ export async function persistStartHereSubmission(
 }> {
   const submissionId = globalThis.crypto.randomUUID();
   const submission = prepareStartHereSubmission(values);
-  const config = getClickUpConfig(options.adminMode);
-
-  if (config.writeMode === "dry_run") {
-    return {
-      submission,
-      persistence: {
-        submissionId,
-        mode: "dry_run",
-        action: "dry_run",
-      },
-    };
-  }
+  const config = getClickUpConfig();
 
   const client = new ClickUpClient(config, options.fetchImpl ?? fetch);
   const taskName = getTaskName(submission);
   const taskDescription = getTaskDescription(submission, submissionId);
-  const matches = await client.findTasksByEmail(submission.fields.email);
-
-  if (matches.length > 1) {
-    throw new StartHereClickUpError(
-      "CLICKUP_MATCH_COLLISION",
-      "Multiple ClickUp records already use that email. We need to review this manually before routing the submission.",
-      409
-    );
-  }
-
-  const existingTask = matches[0];
   const taskStatus = getNativeClickUpStatus(
     submission.fields.startHereFormRoute
   );
-  const taskId = existingTask
-    ? await client.updateTask(
-        existingTask.id,
-        taskName,
-        taskDescription,
-        taskStatus
-      )
-    : await client.createTask(taskName, taskDescription, taskStatus);
-
-  if (!existingTask) {
-    await delay(1_000);
-  }
-
-  await client.setCustomFields(
-    taskId,
-    buildClickUpFieldValues(submission, { qaMode: options.qaMode === true })
+  const customFields = buildClickUpFieldValues(submission, {
+    qaMode: options.qaMode === true,
+  });
+  const taskId = await client.createTask(
+    taskName,
+    taskDescription,
+    taskStatus,
+    customFields
   );
 
   return {
@@ -266,7 +225,7 @@ export async function persistStartHereSubmission(
     persistence: {
       submissionId,
       mode: "live",
-      action: existingTask ? "updated" : "created",
+      action: "created",
       taskId,
     },
   };
@@ -371,19 +330,7 @@ export function getNativeClickUpStatus(route: StartHereFormRoute) {
   return NATIVE_STATUS_BY_ROUTE[route];
 }
 
-function getClickUpConfig(adminMode: boolean): ClickUpConfig {
-  const writeMode = getWriteMode(adminMode);
-
-  if (writeMode === "dry_run") {
-    return {
-      apiToken: "",
-      listId:
-        process.env["REDOMICILED_CLICKUP_CRM_LIST_ID"] ??
-        REDOMICILED_CRM_LIST_ID,
-      writeMode,
-    };
-  }
-
+function getClickUpConfig(): ClickUpConfig {
   const apiToken = process.env["REDOMICILED_CLICKUP_API_TOKEN"];
 
   if (!apiToken) {
@@ -397,24 +344,7 @@ function getClickUpConfig(adminMode: boolean): ClickUpConfig {
     apiToken,
     listId:
       process.env["REDOMICILED_CLICKUP_CRM_LIST_ID"] ?? REDOMICILED_CRM_LIST_ID,
-    writeMode,
   };
-}
-
-function getWriteMode(adminMode: boolean): "dry_run" | "live" {
-  const requestedMode =
-    process.env["REDOMICILED_START_HERE_WRITE_MODE"] === "live"
-      ? "live"
-      : "dry_run";
-
-  if (
-    adminMode &&
-    process.env["REDOMICILED_START_HERE_ALLOW_ADMIN_LIVE_WRITES"] !== "true"
-  ) {
-    return "dry_run";
-  }
-
-  return requestedMode;
 }
 
 function getTaskName(submission: StartHerePreparedSubmission) {
@@ -458,32 +388,12 @@ class ClickUpClient {
     private readonly fetchImpl: typeof fetch
   ) {}
 
-  async findTasksByEmail(email: string) {
-    const matches: ClickUpTask[] = [];
-    let page = 0;
-
-    while (page < 20) {
-      const data = await this.request<{ tasks?: ClickUpTask[] }>(
-        `/list/${this.config.listId}/task?include_closed=true&subtasks=false&page=${page}`,
-        { method: "GET" }
-      );
-      const tasks = data.tasks ?? [];
-
-      matches.push(
-        ...tasks.filter((task) => getTaskEmail(task) === email.toLowerCase())
-      );
-
-      if (tasks.length < 100) {
-        break;
-      }
-
-      page += 1;
-    }
-
-    return matches;
-  }
-
-  async createTask(name: string, description: string, status: string) {
+  async createTask(
+    name: string,
+    description: string,
+    status: string,
+    customFields: ClickUpFieldValue[]
+  ) {
     const data = await this.request<{ id?: string }>(
       "/list/" + this.config.listId + "/task",
       {
@@ -493,6 +403,7 @@ class ClickUpClient {
           description,
           status,
           custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
+          custom_fields: customFields,
           notify_all: false,
         }),
       }
@@ -506,52 +417,6 @@ class ClickUpClient {
     }
 
     return data.id;
-  }
-
-  async updateTask(
-    taskId: string,
-    name: string,
-    description: string,
-    status: string
-  ) {
-    await this.request(`/task/${taskId}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        name,
-        description,
-        status,
-      }),
-    });
-
-    return taskId;
-  }
-
-  async setCustomFields(taskId: string, fields: ClickUpFieldValue[]) {
-    const failed: string[] = [];
-
-    for (const field of fields) {
-      try {
-        await this.request(`/task/${taskId}/field/${field.id}`, {
-          method: "POST",
-          body: JSON.stringify({ value: field.value }),
-        });
-      } catch (error) {
-        failed.push(
-          error instanceof StartHereClickUpError
-            ? `${field.id} (${error.message})`
-            : field.id
-        );
-      }
-    }
-
-    if (failed.length > 0) {
-      throw new StartHereClickUpError(
-        "CLICKUP_FIELD_UPDATE_FAILED",
-        `ClickUp task was created or updated, but ${failed.length} custom field update(s) failed: ${failed.join(", ")}.`,
-        502,
-        taskId
-      );
-    }
   }
 
   private async request<T>(path: string, init: RequestInit): Promise<T> {
@@ -595,24 +460,4 @@ function delay(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-}
-
-function getTaskEmail(task: ClickUpTask) {
-  const field = task.custom_fields?.find((item) => item.id === FIELD_IDS.email);
-  const value = field?.value;
-
-  if (typeof value === "string") {
-    return value.trim().toLowerCase();
-  }
-
-  if (
-    value &&
-    typeof value === "object" &&
-    "email" in value &&
-    typeof value.email === "string"
-  ) {
-    return value.email.trim().toLowerCase();
-  }
-
-  return "";
 }

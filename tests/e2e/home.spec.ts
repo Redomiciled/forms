@@ -1,4 +1,52 @@
-import { expect, test, type Page } from "@playwright/test";
+import {
+  expect,
+  test,
+  type APIRequestContext,
+  type Page,
+} from "@playwright/test";
+
+const CLICKUP_API_BASE_URL = "https://api.clickup.com/api/v2";
+const e2eCreatedTaskIds = new WeakMap<Page, Set<string>>();
+const e2eResponseTrackers = new WeakMap<Page, Array<Promise<void>>>();
+
+test.beforeEach(async ({ page }) => {
+  const createdTaskIds = new Set<string>();
+  const responseTrackers: Array<Promise<void>> = [];
+
+  e2eCreatedTaskIds.set(page, createdTaskIds);
+  e2eResponseTrackers.set(page, responseTrackers);
+
+  page.on("response", (response) => {
+    if (
+      !response.url().includes("/api/start-here/submissions") ||
+      response.request().method() !== "POST"
+    ) {
+      return;
+    }
+
+    responseTrackers.push(
+      response
+        .json()
+        .then((body: unknown) => {
+          const taskId = getSubmissionTaskId(body);
+
+          if (taskId) {
+            createdTaskIds.add(taskId);
+          }
+        })
+        .catch(() => {
+          // Failed submissions are asserted by the test itself.
+        })
+    );
+  });
+});
+
+test.afterEach(async ({ page, request }) => {
+  await Promise.allSettled(e2eResponseTrackers.get(page) ?? []);
+  await deleteE2eClickUpTasks(request, [
+    ...(e2eCreatedTaskIds.get(page) ?? []),
+  ]);
+});
 
 test("prepares the Start Here intake payload", async ({ page }) => {
   await page.goto("/");
@@ -27,9 +75,11 @@ test("prepares the Start Here intake payload", async ({ page }) => {
     0
   );
 
-  await page.getByLabel(/first name/i).fill("Taylor");
+  await page.getByLabel(/first name/i).fill("TEST Taylor");
   await page.getByLabel(/last name/i).fill("Rivera");
-  await page.getByLabel(/email/i).fill("taylor@example.com");
+  await page
+    .getByLabel(/email/i)
+    .fill(`qa-start-here-e2e-${Date.now()}@example.com`);
   await page.getByLabel(/country calling code/i).fill("+54");
   await page.getByLabel(/phone number/i).fill("11 1234 5678");
   await expect(page.getByText(/where are you coming from/i)).toHaveCount(0);
@@ -294,4 +344,99 @@ async function submitAdminPreset(page: Page, presetName: RegExp) {
     page.getByRole("dialog", { name: /confirm the intake/i })
   ).toBeVisible();
   await page.getByRole("button", { name: /confirm and continue/i }).click();
+}
+
+function getSubmissionTaskId(body: unknown) {
+  if (!body || typeof body !== "object" || !("ok" in body)) {
+    return "";
+  }
+
+  const response = body as {
+    ok?: unknown;
+    persistence?: { taskId?: unknown };
+    taskId?: unknown;
+  };
+
+  if (typeof response.persistence?.taskId === "string") {
+    return response.persistence.taskId;
+  }
+
+  if (typeof response.taskId === "string") {
+    return response.taskId;
+  }
+
+  return "";
+}
+
+async function deleteE2eClickUpTasks(
+  request: APIRequestContext,
+  taskIds: string[]
+) {
+  if (taskIds.length === 0) {
+    return;
+  }
+
+  const apiToken = process.env["REDOMICILED_CLICKUP_API_TOKEN"];
+
+  if (!apiToken) {
+    throw new Error(
+      `E2E created ClickUp task(s) ${taskIds.join(", ")} but REDOMICILED_CLICKUP_API_TOKEN is missing, so cleanup cannot run.`
+    );
+  }
+
+  for (const taskId of taskIds) {
+    await deleteE2eClickUpTask(request, apiToken, taskId);
+  }
+}
+
+async function deleteE2eClickUpTask(
+  request: APIRequestContext,
+  apiToken: string,
+  taskId: string
+) {
+  const taskResponse = await request.get(
+    `${CLICKUP_API_BASE_URL}/task/${taskId}`,
+    {
+      headers: clickUpHeaders(apiToken),
+    }
+  );
+
+  if (taskResponse.status() === 404) {
+    return;
+  }
+
+  if (!taskResponse.ok()) {
+    throw new Error(
+      `Failed to verify E2E ClickUp task ${taskId} before cleanup: ${taskResponse.status()}.`
+    );
+  }
+
+  const task = (await taskResponse.json()) as { name?: unknown };
+  const taskName = typeof task.name === "string" ? task.name : "";
+
+  if (!taskName.startsWith("TEST ")) {
+    throw new Error(
+      `Refusing to delete ClickUp task ${taskId} because it is not test-marked. Task name: ${taskName}`
+    );
+  }
+
+  const deleteResponse = await request.delete(
+    `${CLICKUP_API_BASE_URL}/task/${taskId}`,
+    {
+      headers: clickUpHeaders(apiToken),
+    }
+  );
+
+  if (!deleteResponse.ok() && deleteResponse.status() !== 404) {
+    throw new Error(
+      `Failed to delete E2E ClickUp task ${taskId}: ${deleteResponse.status()}.`
+    );
+  }
+}
+
+function clickUpHeaders(apiToken: string) {
+  return {
+    Authorization: apiToken,
+    "Content-Type": "application/json",
+  };
 }

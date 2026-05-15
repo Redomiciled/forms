@@ -181,7 +181,7 @@ export function StartHereForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ values, adminMode }),
+        body: JSON.stringify({ values, adminMode, qaMode: adminMode }),
       });
       const result = (await response.json()) as StartHereSubmissionResponse;
 

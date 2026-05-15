@@ -317,15 +317,10 @@ describe("Start Here ClickUp API persistence", () => {
         return jsonResponse({ id: "qa-lead-task" });
       }
 
-      if (url.includes("/task/qa-lead-task/field/")) {
-        return jsonResponse({});
-      }
-
       throw new Error(`Unexpected ClickUp mock request: ${url}`);
     });
 
     await persistStartHereSubmission(makeValues(), {
-      adminMode: false,
       fetchImpl,
       qaMode: true,
     });
@@ -335,9 +330,17 @@ describe("Start Here ClickUp API persistence", () => {
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
     });
+    expect(getCreateCustomFields(createBodies[0])).toContainEqual({
+      id: FIELD_IDS.email,
+      value: "taylor@example.com",
+    });
+    expect(getCreateCustomFields(createBodies[0])).toContainEqual({
+      id: FIELD_IDS.leadSource,
+      value: OPTION_IDS.leadSource.testIgnore,
+    });
   });
 
-  it("creates, updates, verifies, and deletes a production-list QA task through the API route", async () => {
+  it("creates, verifies, and deletes a production-list QA task through the API route", async () => {
     const apiToken = requireClickUpApiToken();
     const testRunId = globalThis.crypto.randomUUID();
     const email = `qa-start-here-${testRunId}@example.com`;
@@ -441,37 +444,40 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.calComBookingId]: "",
       });
 
-      const updateResponse = await postStartHereSubmission(
+      const secondCreateResponse = await postStartHereSubmission(
         makeQaValues(testRunId, {
           email,
           phone: "+1 555 0199",
           tryingToSolve: ["Get a second passport"],
           importantRoutingNotes:
-            "Updated by automated QA test. Safe to delete.",
+            "Second automated ClickUp integration test. Safe to delete.",
         })
       );
 
-      if (!updateResponse.ok) {
-        if (updateResponse.taskId) {
-          createdTaskIds.add(updateResponse.taskId);
+      if (!secondCreateResponse.ok) {
+        if (secondCreateResponse.taskId) {
+          createdTaskIds.add(secondCreateResponse.taskId);
         }
 
-        throw new Error(updateResponse.error.message);
+        throw new Error(secondCreateResponse.error.message);
       }
-      expect(updateResponse.ok).toBe(true);
+      expect(secondCreateResponse.ok).toBe(true);
 
-      expect(updateResponse.persistence).toMatchObject({
+      const secondTaskId = requireTaskId(secondCreateResponse);
+
+      expect(secondCreateResponse.persistence).toMatchObject({
         mode: "live",
-        action: "updated",
-        taskId,
+        action: "created",
       });
+      expect(secondTaskId).not.toBe(taskId);
+      createdTaskIds.add(secondTaskId);
 
-      const updatedTask = await clickUpRequest<ClickUpTask>(
+      const secondTask = await clickUpRequest<ClickUpTask>(
         apiToken,
-        `/task/${taskId}`
+        `/task/${secondTaskId}`
       );
 
-      assertCustomFields(updatedTask, {
+      assertCustomFields(secondTask, {
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0199",
         [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
@@ -479,7 +485,7 @@ describe("Start Here ClickUp API persistence", () => {
         ]),
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Erik],
         [FIELD_IDS.importantRoutingNotes]:
-          "Updated by automated QA test. Safe to delete.",
+          "Second automated ClickUp integration test. Safe to delete.",
       });
     } finally {
       await deleteAndVerifyQaTasks(apiToken, [...createdTaskIds]);
@@ -681,8 +687,6 @@ function makeQaValues(
 }
 
 function configureLiveWrites() {
-  process.env["REDOMICILED_START_HERE_WRITE_MODE"] = "live";
-  process.env["REDOMICILED_START_HERE_ALLOW_ADMIN_LIVE_WRITES"] = "true";
   process.env["REDOMICILED_CLICKUP_CRM_LIST_ID"] = REDOMICILED_CRM_LIST_ID;
 }
 
@@ -937,6 +941,20 @@ async function clickUpRequest<T>(apiToken: string, path: string): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+function getCreateCustomFields(body: unknown) {
+  if (!body || typeof body !== "object" || !("custom_fields" in body)) {
+    throw new Error("ClickUp create body did not include custom_fields.");
+  }
+
+  const customFields = (body as { custom_fields?: unknown }).custom_fields;
+
+  if (!Array.isArray(customFields)) {
+    throw new Error("ClickUp create body custom_fields was not an array.");
+  }
+
+  return customFields;
 }
 
 function jsonResponse(body: unknown) {

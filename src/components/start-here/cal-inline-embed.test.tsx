@@ -18,13 +18,12 @@ describe("getCalEmbedOptions", () => {
           value: "phone",
           optionValue: "+54 11 1234 5678",
         },
-        metadata: {
-          startHereSubmissionId: "submission-123",
-          clickUpTaskId: "task-456",
-          startHereFormRoute: "Booked Call",
-          bookedCallOwner: "Will",
-          leadSourceDetail: "Other",
-        },
+        "metadata[source]": "start-here-form",
+        "metadata[startHereSubmissionId]": "submission-123",
+        "metadata[clickUpTaskId]": "task-456",
+        "metadata[startHereFormRoute]": "Booked Call",
+        "metadata[bookedCallOwner]": "Will",
+        "metadata[leadSourceDetail]": "Other",
       },
     });
   });
@@ -57,24 +56,22 @@ describe("getCalEmbedOptions", () => {
     expect(getCalEmbedOptions(result)).toMatchObject({
       calLink: "erik-redomiciled/30min",
       config: {
-        metadata: {
-          bookedCallOwner: "Erik",
-        },
+        "metadata[bookedCallOwner]": "Erik",
       },
     });
   });
 
-  it("omits an empty ClickUp task ID for dry-run submissions", () => {
+  it("omits an empty ClickUp task ID", () => {
     const result = makeSubmittedResult({
       persistence: {
         submissionId: "submission-123",
-        mode: "dry_run",
-        action: "dry_run",
+        mode: "live",
+        action: "created",
       },
     });
 
-    expect(getCalEmbedOptions(result)?.config.metadata).not.toHaveProperty(
-      "clickUpTaskId"
+    expect(getCalEmbedOptions(result)?.config).not.toHaveProperty(
+      "metadata[clickUpTaskId]"
     );
   });
 });
