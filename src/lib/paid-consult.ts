@@ -1,7 +1,10 @@
 export type PaidConsultConfig = {
+  bookedCallOwner: PaidConsultOwner;
   tallyFormId: string;
   calLink: string;
 };
+
+export type PaidConsultOwner = "Erik" | "Will";
 
 export type PaidConsultStep = 1 | 2;
 
@@ -16,19 +19,32 @@ export type PaidConsultCalEmbedOptions = {
 
 export const paidConsultOriginPage = "/paid-consult";
 export const paidConsultSource = "paid-consult";
-export const paidConsultCalLink =
-  "https://cal.com/william-denton-redomiciled/paid-consult";
+export const paidConsultBookedCallOwnerFieldId =
+  "580ba4f1-6479-4255-a0c5-be049e3b4e21";
+export const paidConsultOwnerUserIds: Record<PaidConsultOwner, number> = {
+  Erik: 99702565,
+  Will: 296457746,
+};
+export const paidConsultCalLinks: Record<PaidConsultOwner, string> = {
+  Erik: "https://cal.com/erik-redomiciled/paid-consult",
+  Will: "https://cal.com/william-denton-redomiciled/paid-consult",
+};
 export const paidConsultTallyFormId = "PdOAkB";
 
 const taskIdPattern = /^[A-Za-z0-9_-]{3,128}$/;
 
-export function getPaidConsultConfig(): PaidConsultConfig {
+export function getPaidConsultConfig({
+  bookedCallOwner = "Will",
+}: {
+  bookedCallOwner?: PaidConsultOwner;
+} = {}): PaidConsultConfig {
   return {
+    bookedCallOwner,
     tallyFormId:
       cleanConfigValue(
         process.env["NEXT_PUBLIC_REDOMICILED_PAID_CONSULT_TALLY_FORM_ID"]
       ) || paidConsultTallyFormId,
-    calLink: normalizeCalLink(paidConsultCalLink),
+    calLink: normalizeCalLink(paidConsultCalLinks[bookedCallOwner]),
   };
 }
 
@@ -87,9 +103,11 @@ export function buildTallyMsaEmbedUrl({
 }
 
 export function getPaidConsultCalEmbedOptions({
+  bookedCallOwner,
   calLink,
   taskId,
 }: {
+  bookedCallOwner: PaidConsultOwner;
   calLink: string;
   taskId: string;
 }): PaidConsultCalEmbedOptions | null {
@@ -104,9 +122,31 @@ export function getPaidConsultCalEmbedOptions({
     config: toCalMetadataConfig({
       source: paidConsultSource,
       clickUpTaskId: taskId,
+      bookedCallOwner,
       originPage: paidConsultOriginPage,
     }),
   };
+}
+
+export type PaidConsultClickUpCustomField = {
+  id?: string;
+  name?: string;
+  value?: unknown;
+};
+
+export function resolvePaidConsultOwnerFromCustomFields(
+  customFields: PaidConsultClickUpCustomField[] | undefined
+): PaidConsultOwner {
+  const ownerField = customFields?.find(
+    (field) => field.id === paidConsultBookedCallOwnerFieldId
+  );
+  const userIds = extractClickUpPeopleUserIds(ownerField?.value);
+
+  if (userIds.includes(paidConsultOwnerUserIds.Erik)) {
+    return "Erik";
+  }
+
+  return "Will";
 }
 
 export function normalizeCalLink(value: string | undefined) {
@@ -147,6 +187,33 @@ function stripCalLink(value: string) {
       .replace(/^(app\.)?cal\.com\//, "")
       .replace(/^\/|\/$/g, "") ?? ""
   );
+}
+
+function extractClickUpPeopleUserIds(value: unknown): number[] {
+  if (typeof value === "number") {
+    return [value];
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? [parsed] : [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => extractClickUpPeopleUserIds(item));
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return [
+      ...extractClickUpPeopleUserIds(record["id"]),
+      ...extractClickUpPeopleUserIds(record["user_id"]),
+      ...extractClickUpPeopleUserIds(record["userid"]),
+      ...extractClickUpPeopleUserIds(record["user"] ?? record["member"]),
+    ];
+  }
+
+  return [];
 }
 
 function toCalMetadataConfig(values: Record<string, string>) {

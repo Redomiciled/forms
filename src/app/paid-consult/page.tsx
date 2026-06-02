@@ -32,6 +32,7 @@ export default async function PaidConsultPage({
       : parsePaidConsultPreviewState(
           params["previewState"] ?? params["previewStep"]
         );
+  const bookedCallOwner = "Will";
 
   return (
     <main className="relative min-h-dvh bg-[#070720] lg:h-dvh lg:overflow-hidden">
@@ -39,7 +40,7 @@ export default async function PaidConsultPage({
       <div className="pointer-events-none absolute inset-0 [background-image:linear-gradient(125deg,transparent_0%,rgba(255,255,255,0.13)_46%,transparent_70%)] opacity-35" />
       <div className="relative lg:h-full">
         <PaidConsultFlow
-          config={getPaidConsultConfig()}
+          config={getPaidConsultConfig({ bookedCallOwner })}
           hasInvalidTaskId={Boolean(rawTaskId && !taskId)}
           previewState={previewStep}
           taskId={taskId}

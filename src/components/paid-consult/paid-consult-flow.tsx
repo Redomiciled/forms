@@ -56,10 +56,11 @@ export function PaidConsultFlow({
     }
 
     return getPaidConsultCalEmbedOptions({
+      bookedCallOwner: config.bookedCallOwner,
       calLink: config.calLink,
       taskId,
     });
-  }, [config.calLink, taskId]);
+  }, [config.bookedCallOwner, config.calLink, taskId]);
 
   return (
     <section className="mx-auto grid min-h-dvh w-full max-w-[96rem] gap-5 px-5 py-5 text-white sm:px-8 sm:py-7 lg:h-dvh lg:min-h-0 lg:grid-cols-[0.52fr_1.48fr] lg:gap-6 lg:overflow-hidden lg:px-6 lg:py-4 xl:max-w-[104rem]">
@@ -223,7 +224,7 @@ function PanelHeader({
         {icon}
       </div>
       <div className="min-w-0 space-y-0.5">
-        <h2 className="text-xl font-semibold leading-tight text-white">
+        <h2 className="text-xl leading-tight font-semibold text-white">
           {title}
         </h2>
         <p className="max-w-2xl text-sm leading-5 text-white/68">
