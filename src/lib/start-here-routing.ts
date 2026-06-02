@@ -50,7 +50,6 @@ export function deriveStartHereRoute(
   if (warm) {
     if (hasSpecificPath && productCommercialFit) {
       return bookedCall(
-        values,
         signals,
         "Warm lead with clear product/path intent and enough commercial signal."
       );
@@ -64,7 +63,6 @@ export function deriveStartHereRoute(
 
   if (hasSpecificPath && productCommercialFit) {
     return bookedCall(
-      values,
       signals,
       "Specific product/path intent with enough revenue or net worth signal."
     );
@@ -72,7 +70,6 @@ export function deriveStartHereRoute(
 
   if (hasSpecificPath && !productCommercialFit && urgent) {
     return bookedCall(
-      values,
       signals,
       "Specific product/path intent is urgent, so it should not be hard-disqualified on commercial signal alone."
     );
@@ -91,7 +88,6 @@ export function deriveStartHereRoute(
 
   if (hasComplex && complexCommercialFit) {
     return bookedCall(
-      values,
       signals,
       "Complex or guidance-led intent with enough revenue or net worth signal."
     );
@@ -101,7 +97,6 @@ export function deriveStartHereRoute(
     if (values.budgetReadiness === "Yes") {
       if (hasSpecificPath) {
         return bookedCall(
-          values,
           signals,
           "Low commercial signal and low urgency, but budget readiness plus clear path allows a call."
         );
@@ -129,7 +124,6 @@ export function deriveStartHereRoute(
   if (lowCommercial && urgent) {
     if (hasSpecificPath) {
       return bookedCall(
-        values,
         signals,
         "Urgent low-commercial lead with clear product/path intent."
       );
@@ -295,11 +289,10 @@ export function netWorthBelow250k(values: StartHereFormValues) {
 }
 
 function bookedCall(
-  values: StartHereFormValues,
   signals: RoutingDecisionSignal[],
   reason: string
 ): StartHereRouteResult {
-  const owner = hasBankingIntent(values) ? "Will" : "Erik";
+  const owner = "Will";
 
   return {
     startHereFormRoute: "Booked Call",

@@ -483,7 +483,7 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
           OPTION_IDS.tryingToSolve.secondPassport,
         ]),
-        [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Erik],
+        [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.importantRoutingNotes]:
           "Second automated ClickUp integration test. Safe to delete.",
       });
