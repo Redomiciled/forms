@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { PaidConsultFlow } from "@/components/paid-consult/paid-consult-flow";
-import { getPaidConsultOwnerFromClickUpTask } from "@/lib/paid-consult-clickup";
 import {
   getFirstSearchParam,
   getPaidConsultConfig,
@@ -33,11 +32,7 @@ export default async function PaidConsultPage({
       : parsePaidConsultPreviewState(
           params["previewState"] ?? params["previewStep"]
         );
-  const bookedCallOwner = taskId
-    ? await getPaidConsultOwnerFromClickUpTask(taskId).catch(
-        () => "Will" as const
-      )
-    : "Will";
+  const bookedCallOwner = "Will";
 
   return (
     <main className="relative min-h-dvh bg-[#070720] lg:h-dvh lg:overflow-hidden">
