@@ -196,7 +196,7 @@ test("admin preset routes booked banking leads to Will calendar", async ({
   await expectNoHorizontalOverflow(page);
 });
 
-test("admin preset routes booked non-banking leads to Erik calendar", async ({
+test("admin preset routes booked non-banking leads to Will calendar", async ({
   page,
 }) => {
   await submitAdminPreset(page, /booked call - non-banking/i);
@@ -208,7 +208,7 @@ test("admin preset routes booked non-banking leads to Erik calendar", async ({
     page.getByRole("region", { name: /booking calendar/i })
   ).toBeVisible();
   await expect(page.getByText("Booked Call", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Erik", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Will", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /edit answers/i })).toHaveCount(
     0
   );
@@ -252,7 +252,9 @@ test("admin preset routes manual triage without showing a calendar", async ({
   ).toBeVisible();
   await expect(page.getByText("Redomiciled", { exact: true })).toBeVisible();
   await expect(
-    page.getByText(/we.ll review the details and follow up with the right next step/i)
+    page.getByText(
+      /we.ll review the details and follow up with the right next step/i
+    )
   ).toBeVisible();
   await expect(page.getByText("Manual Triage", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Route", { exact: true })).toHaveCount(0);
