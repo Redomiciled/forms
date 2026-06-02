@@ -5,9 +5,12 @@ import {
   getPaidConsultConfig,
   getPaidConsultCalEmbedOptions,
   normalizeCalLink,
+  paidConsultBookedCallOwnerFieldId,
+  paidConsultOwnerUserIds,
   paidConsultTallyFormId,
   parsePaidConsultPreviewState,
   parsePaidConsultTaskId,
+  resolvePaidConsultOwnerFromCustomFields,
 } from "./paid-consult";
 
 describe("paid consult route helpers", () => {
@@ -61,10 +64,20 @@ describe("paid consult route helpers", () => {
     expect(normalizeCalLink("PLACEHOLDER_CAL_LINK")).toBe("");
   });
 
-  it("uses Will's verified paid consult Cal.com link", () => {
+  it("uses Will's verified paid consult Cal.com link by default", () => {
     expect(getPaidConsultConfig().calLink).toBe(
       "william-denton-redomiciled/paid-consult"
     );
+    expect(getPaidConsultConfig().bookedCallOwner).toBe("Will");
+  });
+
+  it("uses Eric's paid consult Cal.com link when the task owner is Erik", () => {
+    expect(getPaidConsultConfig({ bookedCallOwner: "Erik" }).calLink).toBe(
+      "erik-redomiciled/paid-consult"
+    );
+    expect(
+      getPaidConsultConfig({ bookedCallOwner: "Erik" }).bookedCallOwner
+    ).toBe("Erik");
   });
 
   it("uses the MSA Tally form handled by the n8n MSA workflow", () => {
@@ -79,6 +92,7 @@ describe("paid consult route helpers", () => {
   it("builds paid Cal.com metadata for webhook reconciliation", () => {
     expect(
       getPaidConsultCalEmbedOptions({
+        bookedCallOwner: "Erik",
         calLink: "https://cal.com/redomiciled/paid",
         taskId: "CU-123",
       })
@@ -87,8 +101,32 @@ describe("paid consult route helpers", () => {
       config: {
         "metadata[source]": "paid-consult",
         "metadata[clickUpTaskId]": "CU-123",
+        "metadata[bookedCallOwner]": "Erik",
         "metadata[originPage]": "/paid-consult",
       },
     });
+  });
+
+  it("resolves Erik from the ClickUp booked-call owner people field", () => {
+    expect(
+      resolvePaidConsultOwnerFromCustomFields([
+        {
+          id: paidConsultBookedCallOwnerFieldId,
+          value: [{ id: paidConsultOwnerUserIds.Erik }],
+        },
+      ])
+    ).toBe("Erik");
+  });
+
+  it("defaults paid consult ownership to Will when the task has no Erik owner", () => {
+    expect(resolvePaidConsultOwnerFromCustomFields([])).toBe("Will");
+    expect(
+      resolvePaidConsultOwnerFromCustomFields([
+        {
+          id: paidConsultBookedCallOwnerFieldId,
+          value: [paidConsultOwnerUserIds.Will],
+        },
+      ])
+    ).toBe("Will");
   });
 });
