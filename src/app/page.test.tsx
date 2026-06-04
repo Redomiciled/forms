@@ -196,11 +196,20 @@ describe("Home", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /free redomiciled community/i,
+        name: /we’ve received your start here answers/i,
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /go to the free community/i })
+      screen.getByText(/free redomiciled community for more details/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/ready to invest at least €1,500/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /visit free community/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /review answers/i })
     ).toBeInTheDocument();
     expect(screen.getByText("Redomiciled")).toBeInTheDocument();
     expect(
@@ -213,6 +222,30 @@ describe("Home", () => {
     expect(
       screen.queryByText("No calendar is shown for this route.")
     ).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: /review answers/i }));
+    expect(
+      screen.getByRole("dialog", { name: /confirm the intake/i })
+    ).toBeVisible();
+    expect(
+      screen.getByText("Budget readiness").closest("div")
+    ).toHaveTextContent(/no/i);
+
+    await user.click(
+      screen.getByRole("button", { name: /confirm and continue/i })
+    );
+    expect(
+      screen.getByRole("heading", {
+        name: /we’ve received your start here answers/i,
+      })
+    ).toBeInTheDocument();
+
+    const fetchMock = vi.mocked(fetch);
+    const latestRequestBody = JSON.parse(
+      String(fetchMock.mock.calls.at(-1)?.[1]?.body)
+    ) as { taskId?: string };
+
+    expect(latestRequestBody.taskId).toBe("test-task-id");
   });
 
   it("does not submit the admin form when pressing Enter in country fields", async () => {

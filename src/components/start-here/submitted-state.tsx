@@ -1,4 +1,4 @@
-import { ArrowUpRight, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ClipboardCheck } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,10 @@ import type { StartHereSubmissionSuccessResponse } from "@/lib/start-here-submis
 import { CalInlineEmbed } from "./cal-inline-embed";
 
 export function SubmittedState({
+  onReviewAnswers,
   submitted,
 }: {
+  onReviewAnswers: () => void;
   submitted: StartHereSubmissionSuccessResponse;
 }) {
   const route = submitted.submission.fields.startHereFormRoute;
@@ -46,10 +48,10 @@ export function SubmittedState({
   }
 
   const title = isUnqualified
-    ? "Keep using the free Redomiciled community for now."
+    ? "We’ve received your Start Here answers."
     : "Submission received";
   const description = isUnqualified
-    ? "Based on your answers, the best next step is to keep using the free community for now. If your situation changes, or if you’re ready to invest at least €1,500 in professional support, you can submit again and we’ll route you to the right next step."
+    ? "Based on what you shared, the best next step for now is to use the free Redomiciled community for more details and general guidance. If your situation changes, or you feel ready to invest at least €1,500 in professional support, you can review your answers and submit again so we can route you to the right next step."
     : "We’ve received your submission. We’ll review the details and follow up with the right next step.";
 
   if (isUnqualified) {
@@ -79,15 +81,26 @@ export function SubmittedState({
               </p>
             </div>
           </div>
-          <Button
-            asChild
-            className="h-12 w-fit rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
-          >
-            <a href="https://www.skool.com/redomiciled" target="_blank">
-              Go to the free community
-              <ArrowUpRight className="size-4" />
-            </a>
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 w-fit rounded-xl border-white/20 bg-white/8 px-5 font-semibold text-white hover:bg-white/14 hover:text-white"
+              onClick={onReviewAnswers}
+            >
+              <ArrowLeft className="size-4" />
+              Review answers
+            </Button>
+            <Button
+              asChild
+              className="h-12 w-fit rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
+            >
+              <a href="https://www.skool.com/redomiciled" target="_blank">
+                Visit free community
+                <ArrowUpRight className="size-4" />
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     );

@@ -111,7 +111,7 @@ describe("Start Here ClickUp task payloads", () => {
       qaMode: true,
     });
 
-    expect(fetchMock.listSearchCount).toBe(0);
+    expect(fetchMock.listSearchCount).toBe(1);
     expect(fetchMock.createBodies).toHaveLength(1);
     expect(getCreateCustomFields(fetchMock.createBodies[0])).toContainEqual({
       id: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",

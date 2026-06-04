@@ -202,7 +202,7 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
   - **ClickUp field:** `Booked Call Owner`
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`
   - **Type:** People
-  - **Prepared value:** `Will` for banking-led booked-call outcomes; `Erik` for all other booked-call outcomes.
+  - **Prepared value:** `Will` for all booked-call outcomes under the temporary 2026-06-01 routing rule.
   - **ClickUp user IDs:** `Will` = `296457746`; `Erik` = `99702565`.
 
 - `calComBookingId`
@@ -213,4 +213,4 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
 
 ## Routing Scope
 
-The form prepares the route preview in the browser, then posts the validated answers to the server route. The server route creates a new Redomiciled ClickUp CRM record directly, sets the native ClickUp intake status from the route mapping above, then writes submitted/prepared custom fields. A successful booked-call submission only shows the Cal.com embed after the ClickUp task is created and a task ID is available for Cal.com metadata. The form still does not call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.
+The form prepares the route preview in the browser, then posts the validated answers to the server route. On resubmission, the server updates the provided ClickUp task ID first. When no task ID is available, it searches for an existing Redomiciled ClickUp CRM record by email, updates it when found, or creates a new Lead task when no match exists. It sets the native ClickUp intake status from the route mapping above, then writes submitted/prepared custom fields. A successful booked-call submission only shows the Cal.com embed after the ClickUp task is created or updated and a task ID is available for Cal.com metadata. The form still does not call webhooks, book Cal.com events, sync Brevo, or automate downstream funnel routing in this slice.

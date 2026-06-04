@@ -24,6 +24,7 @@ describe("getCalEmbedOptions", () => {
         "metadata[startHereFormRoute]": "Booked Call",
         "metadata[bookedCallOwner]": "Will",
         "metadata[leadSourceDetail]": "Other",
+        "metadata[minimumSchedulingNotice]": "1-day",
       },
     });
   });

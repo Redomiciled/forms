@@ -56,6 +56,9 @@ export function StartHereForm() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [submitted, setSubmitted] =
     useState<StartHereSubmissionSuccessResponse | null>(null);
+  const [resubmissionTaskId, setResubmissionTaskId] = useState<string | null>(
+    null
+  );
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const validation = useMemo(() => validateStartHereValues(values), [values]);
@@ -181,7 +184,12 @@ export function StartHereForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ values, adminMode, qaMode: adminMode }),
+        body: JSON.stringify({
+          values,
+          adminMode,
+          qaMode: adminMode,
+          ...(resubmissionTaskId ? { taskId: resubmissionTaskId } : {}),
+        }),
       });
       const result = (await response.json()) as StartHereSubmissionResponse;
 
@@ -194,6 +202,7 @@ export function StartHereForm() {
       }
 
       setSubmitted(result);
+      setResubmissionTaskId(result.persistence.taskId ?? null);
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -210,10 +219,21 @@ export function StartHereForm() {
     setValues(preset.values);
     setAttemptedSteps(new Set());
     setSubmitted(null);
+    setResubmissionTaskId(null);
     setSubmitError("");
     setReviewOpen(false);
     setMaxStepReached(steps.length - 1);
     setStepIndex(steps.length - 1);
+  }
+
+  function reviewSubmittedAnswers() {
+    setResubmissionTaskId(submitted?.persistence.taskId ?? null);
+    setSubmitted(null);
+    setSubmitError("");
+    setReviewOpen(true);
+    setMaxStepReached(steps.length - 1);
+    setStepIndex(steps.length - 1);
+    scrollMobileToTop();
   }
 
   function markStepAttempted(step: StepId) {
@@ -238,7 +258,12 @@ export function StartHereForm() {
   }
 
   if (submitted) {
-    return <SubmittedState submitted={submitted} />;
+    return (
+      <SubmittedState
+        submitted={submitted}
+        onReviewAnswers={reviewSubmittedAnswers}
+      />
+    );
   }
 
   const stepContent = (

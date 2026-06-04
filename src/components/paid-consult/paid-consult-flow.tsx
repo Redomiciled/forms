@@ -16,6 +16,7 @@ import {
   getPaidConsultCalEmbedOptions,
   isPaidConsultConfigured,
   type PaidConsultConfig,
+  type PaidConsultPrefill,
   type PaidConsultPreviewState,
 } from "@/lib/paid-consult";
 
@@ -25,6 +26,7 @@ import { TallyMsaEmbed } from "./tally-msa-embed";
 type PaidConsultFlowProps = {
   config: PaidConsultConfig;
   hasInvalidTaskId: boolean;
+  prefill?: PaidConsultPrefill | null;
   previewState?: PaidConsultPreviewState | null;
   taskId: string | null;
 };
@@ -32,6 +34,7 @@ type PaidConsultFlowProps = {
 export function PaidConsultFlow({
   config,
   hasInvalidTaskId,
+  prefill = null,
   previewState = null,
   taskId,
 }: PaidConsultFlowProps) {
@@ -47,9 +50,10 @@ export function PaidConsultFlow({
 
     return buildTallyMsaEmbedUrl({
       formId: config.tallyFormId,
+      prefill,
       taskId,
     });
-  }, [config.tallyFormId, taskId]);
+  }, [config.tallyFormId, prefill, taskId]);
   const calEmbedOptions = useMemo(() => {
     if (!taskId || !config.calLink) {
       return null;
@@ -58,9 +62,10 @@ export function PaidConsultFlow({
     return getPaidConsultCalEmbedOptions({
       bookedCallOwner: config.bookedCallOwner,
       calLink: config.calLink,
+      prefill,
       taskId,
     });
-  }, [config.bookedCallOwner, config.calLink, taskId]);
+  }, [config.bookedCallOwner, config.calLink, prefill, taskId]);
 
   return (
     <section className="mx-auto grid min-h-dvh w-full max-w-[96rem] gap-5 px-5 py-5 text-white sm:px-8 sm:py-7 lg:h-dvh lg:min-h-0 lg:grid-cols-[0.52fr_1.48fr] lg:gap-6 lg:overflow-hidden lg:px-6 lg:py-4 xl:max-w-[104rem]">

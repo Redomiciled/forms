@@ -5,10 +5,13 @@ import {
   type StartHerePreparedSubmission,
 } from "./start-here";
 
+const clickUpTaskIdSchema = z.string().regex(/^[A-Za-z0-9_-]{3,128}$/);
+
 export const startHereSubmissionRequestSchema = z.object({
   values: startHereFormSchema,
   adminMode: z.boolean().optional().default(false),
   qaMode: z.boolean().optional().default(false),
+  taskId: clickUpTaskIdSchema.optional(),
 });
 
 export type StartHereSubmissionRequest = z.infer<
@@ -18,7 +21,7 @@ export type StartHereSubmissionRequest = z.infer<
 export type StartHerePersistenceResult = {
   submissionId: string;
   mode: "live";
-  action: "created";
+  action: "created" | "updated";
   taskId?: string;
 };
 
