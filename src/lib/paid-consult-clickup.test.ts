@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getPaidConsultOwnerFromClickUpTask } from "./paid-consult-clickup";
+import {
+  getPaidConsultContextFromClickUpTask,
+  getPaidConsultOwnerFromClickUpTask,
+} from "./paid-consult-clickup";
 import {
   paidConsultBookedCallOwnerFieldId,
   paidConsultOwnerUserIds,
@@ -52,5 +55,29 @@ describe("paid consult ClickUp owner lookup", () => {
     await expect(
       getPaidConsultOwnerFromClickUpTask("CU-404", { fetchImpl })
     ).resolves.toBe("Will");
+  });
+
+  it("returns safe name and email prefill from ClickUp custom fields", async () => {
+    const fetchImpl = vi.fn(async () =>
+      Response.json({
+        custom_fields: [
+          { name: "First Name", value: "Juan Cruz" },
+          { name: "Last Name", value: "Hernandez" },
+          { name: "Email", value: "JUAN.H@PULPSENSE.COM" },
+        ],
+      })
+    ) as unknown as typeof fetch;
+
+    await expect(
+      getPaidConsultContextFromClickUpTask("CU-123", { fetchImpl })
+    ).resolves.toEqual({
+      bookedCallOwner: "Will",
+      prefill: {
+        email: "juan.h@pulpsense.com",
+        firstName: "Juan Cruz",
+        lastName: "Hernandez",
+        name: "Juan Cruz Hernandez",
+      },
+    });
   });
 });

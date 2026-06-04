@@ -7,6 +7,7 @@ import {
   parsePaidConsultPreviewState,
   parsePaidConsultTaskId,
 } from "@/lib/paid-consult";
+import { getPaidConsultContextFromClickUpTask } from "@/lib/paid-consult-clickup";
 
 type PaidConsultSearchParams = Promise<{
   id?: string | string[];
@@ -32,6 +33,9 @@ export default async function PaidConsultPage({
       : parsePaidConsultPreviewState(
           params["previewState"] ?? params["previewStep"]
         );
+  const taskContext = taskId
+    ? await getPaidConsultContextFromClickUpTask(taskId)
+    : null;
   const bookedCallOwner = "Will";
 
   return (
@@ -42,6 +46,7 @@ export default async function PaidConsultPage({
         <PaidConsultFlow
           config={getPaidConsultConfig({ bookedCallOwner })}
           hasInvalidTaskId={Boolean(rawTaskId && !taskId)}
+          prefill={taskContext?.prefill ?? null}
           previewState={previewStep}
           taskId={taskId}
         />

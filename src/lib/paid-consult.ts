@@ -1,3 +1,5 @@
+import { paidConsultMinimumSchedulingNoticeMetadataValue } from "./scheduling";
+
 export type PaidConsultConfig = {
   bookedCallOwner: PaidConsultOwner;
   tallyFormId: string;
@@ -10,7 +12,17 @@ export type PaidConsultStep = 1 | 2;
 
 export type PaidConsultPreviewState = PaidConsultStep | "complete";
 
-export type PaidConsultCalInlineConfig = Record<`metadata[${string}]`, string>;
+export type PaidConsultPrefill = {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+};
+
+export type PaidConsultCalInlineConfig = {
+  email?: string;
+  name?: string;
+} & Record<`metadata[${string}]`, string>;
 
 export type PaidConsultCalEmbedOptions = {
   calLink: string;
@@ -84,9 +96,11 @@ export function isPaidConsultConfigured(config: PaidConsultConfig) {
 
 export function buildTallyMsaEmbedUrl({
   formId,
+  prefill,
   taskId,
 }: {
   formId: string;
+  prefill?: PaidConsultPrefill | null;
   taskId: string;
 }) {
   const url = new URL(`https://tally.so/embed/${encodeURIComponent(formId)}`);
@@ -98,6 +112,10 @@ export function buildTallyMsaEmbedUrl({
   url.searchParams.set("id", taskId);
   url.searchParams.set("source", paidConsultSource);
   url.searchParams.set("originPage", paidConsultOriginPage);
+  setNonEmptySearchParam(url, "name", prefill?.name);
+  setNonEmptySearchParam(url, "firstName", prefill?.firstName);
+  setNonEmptySearchParam(url, "lastName", prefill?.lastName);
+  setNonEmptySearchParam(url, "email", prefill?.email);
 
   return url.toString();
 }
@@ -105,10 +123,12 @@ export function buildTallyMsaEmbedUrl({
 export function getPaidConsultCalEmbedOptions({
   bookedCallOwner,
   calLink,
+  prefill,
   taskId,
 }: {
   bookedCallOwner: PaidConsultOwner;
   calLink: string;
+  prefill?: PaidConsultPrefill | null;
   taskId: string;
 }): PaidConsultCalEmbedOptions | null {
   const normalizedCalLink = normalizeCalLink(calLink);
@@ -119,12 +139,17 @@ export function getPaidConsultCalEmbedOptions({
 
   return {
     calLink: normalizedCalLink,
-    config: toCalMetadataConfig({
-      source: paidConsultSource,
-      clickUpTaskId: taskId,
-      bookedCallOwner,
-      originPage: paidConsultOriginPage,
-    }),
+    config: {
+      ...toCalPrefillConfig(prefill),
+      ...toCalMetadataConfig({
+        source: paidConsultSource,
+        clickUpTaskId: taskId,
+        bookedCallOwner,
+        originPage: paidConsultOriginPage,
+        minimumSchedulingNotice:
+          paidConsultMinimumSchedulingNoticeMetadataValue,
+      }),
+    },
   };
 }
 
@@ -189,6 +214,18 @@ function stripCalLink(value: string) {
   );
 }
 
+function setNonEmptySearchParam(
+  url: URL,
+  key: string,
+  value: string | undefined
+) {
+  const normalized = value?.trim();
+
+  if (normalized) {
+    url.searchParams.set(key, normalized);
+  }
+}
+
 function extractClickUpPeopleUserIds(value: unknown): number[] {
   if (typeof value === "number") {
     return [value];
@@ -222,4 +259,11 @@ function toCalMetadataConfig(values: Record<string, string>) {
       .filter((entry): entry is [string, string] => Boolean(entry[1]))
       .map(([key, value]) => [`metadata[${key}]`, value])
   ) as PaidConsultCalInlineConfig;
+}
+
+function toCalPrefillConfig(prefill: PaidConsultPrefill | null | undefined) {
+  return {
+    ...(prefill?.name ? { name: prefill.name } : {}),
+    ...(prefill?.email ? { email: prefill.email } : {}),
+  };
 }

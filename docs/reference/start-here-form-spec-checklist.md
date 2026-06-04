@@ -197,7 +197,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
 ### 12. Calendar booking (only shown if the lead qualifies)
 
 - [x] If the form outcome is booked call, the last step shows the right Cal.com calendar.
-  - **Implementation:** Implemented with real Will/Erik Cal.com event links.
+  - **Implementation:** Implemented with Will's Cal.com event link under the temporary 2026-06-01 routing rule.
 
 - [x] Default owner routing:
   - **Implementation:** Implemented in the routing engine.
@@ -205,8 +205,8 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
 - [x] Banking → Will’s calendar
   - **Implementation:** Implemented with Will owner and Cal.com embed-ready display.
 
-- [x] Everything else → Eric’s calendar
-  - **Implementation:** Implemented with Erik owner and Cal.com embed-ready display for booked-call non-banking routes.
+- [x] Everything else → Will’s calendar while Eric’s calendar is protected
+  - **Implementation:** Implemented with Will owner and Cal.com embed-ready display for booked-call non-banking routes.
 
 ## Outcomes
 
@@ -217,16 +217,16 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
   - **Implementation:** Implemented with final screen copy and no calendar.
 
 - [x] Booked call — routed to a sales / product / warm consult call.
-  - **Implementation:** Implemented with Will/Erik owner routing and route-specific Cal.com embed-ready final screen.
+  - **Implementation:** Implemented with Will owner routing and route-specific Cal.com embed-ready final screen.
 
 - [x] Manual triage — sent to internal review when the form indicates possible value but unclear route.
   - **Implementation:** Implemented in `deriveStartHereRoute(values)` and final screen copy.
 
 - [x] The form should create or update the ClickUp deal once, after submission, with the final route and reason.
-  - **Implementation:** Pending downstream integration. Current app prepares local payload only.
+  - **Implementation:** Implemented by updating the known ClickUp task ID on resubmission, falling back to email upsert when no task ID is available, then writing the final route and reason.
 
 - [x] If the outcome is booked call, the form shows the calendar as the final step.
-  - **Implementation:** Implemented as a route-specific Cal.com inline embed using Will's calendar for banking and Erik's calendar for other booked calls.
+  - **Implementation:** Implemented as a route-specific Cal.com inline embed using Will's calendar for booked calls.
 
 - [x] Otherwise, no calendar is shown.
   - **Implementation:** Implemented for `Manual Triage` and `Unqualified / Not Ready`.
@@ -345,7 +345,7 @@ This checklist tracks source coverage from the original DOCX. Checked boxes mean
 - [x] Recommended copy:
   - **Implementation:** Implemented on the `Unqualified / Not Ready` final screen.
 
-- [x] “Based on your answers, the best next step is to keep using the free Redomiciled community for now. If your situation changes, or if you’re ready to invest at least €1,500 in professional support, you can submit again and we’ll route you to the right next step.”
+- [x] “We’ve received your Start Here answers. Based on what you shared, the best next step for now is to use the free Redomiciled community for more details and general guidance. If your situation changes, or you feel ready to invest at least €1,500 in professional support, you can review your answers and submit again so we can route you to the right next step.”
   - **Implementation:** Implemented with exact copy.
 
 ## Precise Routing Implementation Steps

@@ -320,11 +320,15 @@ describe("Start Here ClickUp API persistence", () => {
       throw new Error(`Unexpected ClickUp mock request: ${url}`);
     });
 
-    await persistStartHereSubmission(makeValues(), {
+    const result = await persistStartHereSubmission(makeValues(), {
       fetchImpl,
       qaMode: true,
     });
 
+    expect(result.persistence).toMatchObject({
+      action: "created",
+      taskId: "qa-lead-task",
+    });
     expect(createBodies).toHaveLength(1);
     expect(createBodies[0]).toMatchObject({
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
@@ -338,6 +342,186 @@ describe("Start Here ClickUp API persistence", () => {
       id: FIELD_IDS.leadSource,
       value: OPTION_IDS.leadSource.testIgnore,
     });
+  });
+
+  it("updates an existing CRM record when the email already exists", async () => {
+    const updateBodies: unknown[] = [];
+    const fieldUpdateBodies: Array<{ fieldId: string; body: unknown }> = [];
+
+    configureLiveWrites();
+
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      const url = String(input);
+
+      if (url.includes(`/list/${REDOMICILED_CRM_LIST_ID}/task?`)) {
+        return jsonResponse({
+          tasks: [
+            {
+              id: "existing-lead-task",
+              custom_fields: [
+                {
+                  id: FIELD_IDS.email,
+                  value: "taylor@example.com",
+                },
+              ],
+            },
+          ],
+        });
+      }
+
+      if (url.endsWith("/task/existing-lead-task") && init?.method === "PUT") {
+        updateBodies.push(JSON.parse(String(init.body)));
+
+        return jsonResponse({ id: "existing-lead-task" });
+      }
+
+      if (
+        url.includes("/task/existing-lead-task/field/") &&
+        init?.method === "POST"
+      ) {
+        fieldUpdateBodies.push({
+          fieldId: url.split("/field/")[1] ?? "",
+          body: JSON.parse(String(init.body)),
+        });
+
+        return jsonResponse({});
+      }
+
+      throw new Error(`Unexpected ClickUp mock request: ${url}`);
+    });
+
+    const result = await persistStartHereSubmission(
+      makeValues({ phone: "+1 555 0199" }),
+      {
+        fetchImpl,
+        qaMode: true,
+      }
+    );
+
+    expect(result.persistence).toMatchObject({
+      action: "updated",
+      taskId: "existing-lead-task",
+    });
+    expect(updateBodies).toHaveLength(1);
+    expect(updateBodies[0]).toMatchObject({
+      status: "MEETING BOOKED",
+    });
+    expect(fieldUpdateBodies).toContainEqual({
+      fieldId: FIELD_IDS.phone,
+      body: { value: "+1 555 0199" },
+    });
+    expect(fieldUpdateBodies).toContainEqual({
+      fieldId: FIELD_IDS.email,
+      body: { value: "taylor@example.com" },
+    });
+  });
+
+  it("updates the supplied ClickUp task ID before falling back to email lookup", async () => {
+    const updateBodies: unknown[] = [];
+    const fieldUpdateBodies: Array<{ fieldId: string; body: unknown }> = [];
+
+    configureLiveWrites();
+
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      const url = String(input);
+
+      if (url.includes(`/list/${REDOMICILED_CRM_LIST_ID}/task?`)) {
+        throw new Error("Email lookup should not run when taskId is supplied.");
+      }
+
+      if (url.endsWith("/task/known-lead-task") && init?.method === "PUT") {
+        updateBodies.push(JSON.parse(String(init.body)));
+
+        return jsonResponse({ id: "known-lead-task" });
+      }
+
+      if (
+        url.includes("/task/known-lead-task/field/") &&
+        init?.method === "POST"
+      ) {
+        fieldUpdateBodies.push({
+          fieldId: url.split("/field/")[1] ?? "",
+          body: JSON.parse(String(init.body)),
+        });
+
+        return jsonResponse({});
+      }
+
+      throw new Error(`Unexpected ClickUp mock request: ${url}`);
+    });
+
+    const result = await persistStartHereSubmission(
+      makeValues({ email: "changed@example.com" }),
+      {
+        fetchImpl,
+        qaMode: true,
+        taskId: "known-lead-task",
+      }
+    );
+
+    expect(result.persistence).toMatchObject({
+      action: "updated",
+      taskId: "known-lead-task",
+    });
+    expect(updateBodies).toHaveLength(1);
+    expect(fieldUpdateBodies).toContainEqual({
+      fieldId: FIELD_IDS.email,
+      body: { value: "changed@example.com" },
+    });
+  });
+
+  it("updates ClickUp custom fields with bounded parallel requests", async () => {
+    let activeFieldRequests = 0;
+    let maxActiveFieldRequests = 0;
+    let fieldRequestCount = 0;
+
+    configureLiveWrites();
+
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      const url = String(input);
+
+      if (url.includes(`/list/${REDOMICILED_CRM_LIST_ID}/task?`)) {
+        throw new Error("Email lookup should not run when taskId is supplied.");
+      }
+
+      if (url.endsWith("/task/known-lead-task") && init?.method === "PUT") {
+        return jsonResponse({ id: "known-lead-task" });
+      }
+
+      if (
+        url.includes("/task/known-lead-task/field/") &&
+        init?.method === "POST"
+      ) {
+        activeFieldRequests += 1;
+        maxActiveFieldRequests = Math.max(
+          maxActiveFieldRequests,
+          activeFieldRequests
+        );
+        fieldRequestCount += 1;
+        await wait(5);
+        activeFieldRequests -= 1;
+
+        return jsonResponse({});
+      }
+
+      throw new Error(`Unexpected ClickUp mock request: ${url}`);
+    });
+
+    const values = makeValues({ email: "changed@example.com" });
+    const expectedFieldCount = buildClickUpFieldValues(
+      prepareStartHereSubmission(values),
+      { qaMode: true }
+    ).length;
+
+    await persistStartHereSubmission(values, {
+      fetchImpl,
+      qaMode: true,
+      taskId: "known-lead-task",
+    });
+
+    expect(fieldRequestCount).toBe(expectedFieldCount);
+    expect(maxActiveFieldRequests).toBeGreaterThan(1);
+    expect(maxActiveFieldRequests).toBeLessThanOrEqual(6);
   });
 
   it("creates, verifies, and deletes a production-list QA task through the API route", async () => {
@@ -444,7 +628,7 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.calComBookingId]: "",
       });
 
-      const secondCreateResponse = await postStartHereSubmission(
+      const updateResponse = await postStartHereSubmission(
         makeQaValues(testRunId, {
           email,
           phone: "+1 555 0199",
@@ -454,30 +638,29 @@ describe("Start Here ClickUp API persistence", () => {
         })
       );
 
-      if (!secondCreateResponse.ok) {
-        if (secondCreateResponse.taskId) {
-          createdTaskIds.add(secondCreateResponse.taskId);
+      if (!updateResponse.ok) {
+        if (updateResponse.taskId) {
+          createdTaskIds.add(updateResponse.taskId);
         }
 
-        throw new Error(secondCreateResponse.error.message);
+        throw new Error(updateResponse.error.message);
       }
-      expect(secondCreateResponse.ok).toBe(true);
+      expect(updateResponse.ok).toBe(true);
 
-      const secondTaskId = requireTaskId(secondCreateResponse);
+      const updatedTaskId = requireTaskId(updateResponse);
 
-      expect(secondCreateResponse.persistence).toMatchObject({
+      expect(updateResponse.persistence).toMatchObject({
         mode: "live",
-        action: "created",
+        action: "updated",
       });
-      expect(secondTaskId).not.toBe(taskId);
-      createdTaskIds.add(secondTaskId);
+      expect(updatedTaskId).toBe(taskId);
 
-      const secondTask = await clickUpRequest<ClickUpTask>(
+      const updatedTask = await clickUpRequest<ClickUpTask>(
         apiToken,
-        `/task/${secondTaskId}`
+        `/task/${updatedTaskId}`
       );
 
-      assertCustomFields(secondTask, {
+      assertCustomFields(updatedTask, {
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0199",
         [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
@@ -962,6 +1145,12 @@ function jsonResponse(body: unknown) {
     headers: {
       "Content-Type": "application/json",
     },
+  });
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
 }
 

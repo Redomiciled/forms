@@ -29,6 +29,7 @@ export async function POST(request: Request) {
   try {
     const result = await persistStartHereSubmission(parsed.data.values, {
       qaMode: parsed.data.qaMode,
+      ...(parsed.data.taskId ? { taskId: parsed.data.taskId } : {}),
     });
 
     return json<StartHereSubmissionResponse>({

@@ -19,6 +19,7 @@ import {
 } from "./start-here-submission";
 
 const CLICKUP_API_BASE_URL = "https://api.clickup.com/api/v2";
+const CLICKUP_CUSTOM_FIELD_UPDATE_CONCURRENCY = 6;
 
 const REDOMICILED_CRM_LIST_ID = "901217458864";
 const REDOMICILED_LEAD_TASK_TYPE_ID = 1001;
@@ -175,6 +176,7 @@ export type ClickUpFieldValue = {
 export type PersistStartHereOptions = {
   fetchImpl?: typeof fetch;
   qaMode?: boolean;
+  taskId?: string;
 };
 
 type ClickUpConfig = {
@@ -213,19 +215,30 @@ export async function persistStartHereSubmission(
   const customFields = buildClickUpFieldValues(submission, {
     qaMode: options.qaMode === true,
   });
-  const taskId = await client.createTask(
-    taskName,
-    taskDescription,
-    taskStatus,
-    customFields
-  );
+  const existingTaskId =
+    options.taskId ?? (await client.findTaskIdByEmail(submission.fields.email));
+  const action = existingTaskId ? "updated" : "created";
+  const taskId = existingTaskId
+    ? await client.updateTask(
+        existingTaskId,
+        taskName,
+        taskDescription,
+        taskStatus,
+        customFields
+      )
+    : await client.createTask(
+        taskName,
+        taskDescription,
+        taskStatus,
+        customFields
+      );
 
   return {
     submission,
     persistence: {
       submissionId,
       mode: "live",
-      action: "created",
+      action,
       taskId,
     },
   };
@@ -388,6 +401,32 @@ class ClickUpClient {
     private readonly fetchImpl: typeof fetch
   ) {}
 
+  async findTaskIdByEmail(email: string) {
+    const params = new URLSearchParams({
+      include_closed: "true",
+      page: "0",
+      custom_fields: JSON.stringify([
+        {
+          field_id: FIELD_IDS.email,
+          operator: "=",
+          value: email,
+        },
+      ]),
+    });
+    const data = await this.request<{
+      tasks?: Array<{
+        id?: string;
+        custom_fields?: Array<{ id: string; value?: unknown }>;
+      }>;
+    }>("/list/" + this.config.listId + "/task?" + params.toString(), {
+      method: "GET",
+    });
+    const tasks = data.tasks ?? [];
+    const exactMatch = tasks.find((task) => taskMatchesEmail(task, email));
+
+    return exactMatch?.id ?? tasks.find((task) => task.id)?.id ?? null;
+  }
+
   async createTask(
     name: string,
     description: string,
@@ -419,6 +458,39 @@ class ClickUpClient {
     return data.id;
   }
 
+  async updateTask(
+    taskId: string,
+    name: string,
+    description: string,
+    status: string,
+    customFields: ClickUpFieldValue[]
+  ) {
+    await this.request<Record<string, unknown>>("/task/" + taskId, {
+      method: "PUT",
+      body: JSON.stringify({
+        name,
+        description,
+        status,
+      }),
+    });
+
+    await runWithConcurrency(
+      customFields,
+      CLICKUP_CUSTOM_FIELD_UPDATE_CONCURRENCY,
+      async (field) => {
+        await this.request<Record<string, unknown>>(
+          "/task/" + taskId + "/field/" + field.id,
+          {
+            method: "POST",
+            body: JSON.stringify({ value: field.value }),
+          }
+        );
+      }
+    );
+
+    return taskId;
+  }
+
   private async request<T>(path: string, init: RequestInit): Promise<T> {
     let response: Response | undefined;
 
@@ -448,8 +520,32 @@ class ClickUpClient {
       );
     }
 
-    return (await response.json()) as T;
+    const responseText = await response.text();
+
+    if (!responseText) {
+      return {} as T;
+    }
+
+    return JSON.parse(responseText) as T;
   }
+}
+
+function taskMatchesEmail(
+  task: {
+    id?: string;
+    custom_fields?: Array<{ id: string; value?: unknown }>;
+  },
+  email: string
+) {
+  const taskEmail = task.custom_fields?.find(
+    (field) => field.id === FIELD_IDS.email
+  )?.value;
+
+  return (
+    Boolean(task.id) &&
+    typeof taskEmail === "string" &&
+    taskEmail.trim().toLowerCase() === email
+  );
 }
 
 function shouldRetryClickUpRequest(status: number) {
@@ -460,4 +556,24 @@ function delay(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+async function runWithConcurrency<T>(
+  items: T[],
+  concurrency: number,
+  handler: (item: T) => Promise<void>
+) {
+  const workerCount = Math.min(concurrency, items.length);
+
+  await Promise.all(
+    Array.from({ length: workerCount }, async (_, workerIndex) => {
+      for (
+        let index = workerIndex;
+        index < items.length;
+        index += workerCount
+      ) {
+        await handler(items[index]!);
+      }
+    })
+  );
 }

@@ -52,6 +52,26 @@ describe("paid consult route helpers", () => {
     expect(url.searchParams.get("dynamicHeight")).toBe("1");
   });
 
+  it("adds safe task prefill fields to the Tally embed URL when available", () => {
+    const url = new URL(
+      buildTallyMsaEmbedUrl({
+        formId: "abc123",
+        prefill: {
+          name: "Juan Cruz Hernandez",
+          firstName: "Juan Cruz",
+          lastName: "Hernandez",
+          email: "juan.h@pulpsense.com",
+        },
+        taskId: "CU-123",
+      })
+    );
+
+    expect(url.searchParams.get("name")).toBe("Juan Cruz Hernandez");
+    expect(url.searchParams.get("firstName")).toBe("Juan Cruz");
+    expect(url.searchParams.get("lastName")).toBe("Hernandez");
+    expect(url.searchParams.get("email")).toBe("juan.h@pulpsense.com");
+  });
+
   it("normalizes Cal.com links and rejects non-Cal URLs", () => {
     expect(normalizeCalLink("https://cal.com/redomiciled/paid")).toBe(
       "redomiciled/paid"
@@ -94,15 +114,22 @@ describe("paid consult route helpers", () => {
       getPaidConsultCalEmbedOptions({
         bookedCallOwner: "Erik",
         calLink: "https://cal.com/redomiciled/paid",
+        prefill: {
+          name: "Juan Cruz Hernandez",
+          email: "juan.h@pulpsense.com",
+        },
         taskId: "CU-123",
       })
     ).toEqual({
       calLink: "redomiciled/paid",
       config: {
+        name: "Juan Cruz Hernandez",
+        email: "juan.h@pulpsense.com",
         "metadata[source]": "paid-consult",
         "metadata[clickUpTaskId]": "CU-123",
         "metadata[bookedCallOwner]": "Erik",
         "metadata[originPage]": "/paid-consult",
+        "metadata[minimumSchedulingNotice]": "3-business-days",
       },
     });
   });

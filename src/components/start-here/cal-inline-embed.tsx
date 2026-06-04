@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { warmCallMinimumSchedulingNoticeMetadataValue } from "@/lib/scheduling";
 import type { StartHereSubmissionSuccessResponse } from "@/lib/start-here-submission";
 
 type CalInlineConfig = {
@@ -192,6 +193,7 @@ export function getCalEmbedOptions(
         startHereFormRoute: submission.fields.startHereFormRoute,
         bookedCallOwner: submission.fields.bookedCallOwner,
         leadSourceDetail: submission.fields.leadSourceDetail,
+        minimumSchedulingNotice: warmCallMinimumSchedulingNoticeMetadataValue,
       }),
     },
   };
