@@ -8,7 +8,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ export function PaidConsultFlow({
   taskId,
 }: PaidConsultFlowProps) {
   const [msaSubmitted, setMsaSubmitted] = useState(false);
+  const [bookingSubmitted, setBookingSubmitted] = useState(false);
   const [bookingCompleted, setBookingCompleted] = useState(false);
   const configured = isPaidConsultConfigured(config);
   const visibleState =
@@ -66,6 +67,75 @@ export function PaidConsultFlow({
       taskId,
     });
   }, [config.bookedCallOwner, config.calLink, prefill, taskId]);
+  const handleBookingSubmitted = useCallback(() => {
+    setBookingSubmitted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!taskId || !configured || bookingCompleted) {
+      return;
+    }
+
+    let active = true;
+
+    async function checkExistingCompletion() {
+      try {
+        if (!(await fetchPaidConsultCompletion(taskId!))) {
+          return;
+        }
+
+        if (active) {
+          setBookingCompleted(true);
+        }
+      } catch {
+        // If the status check is unavailable, keep the normal agreement flow visible.
+      }
+    }
+
+    void checkExistingCompletion();
+
+    return () => {
+      active = false;
+    };
+  }, [bookingCompleted, configured, taskId]);
+
+  useEffect(() => {
+    if (!bookingSubmitted || !taskId || bookingCompleted) {
+      return;
+    }
+
+    let active = true;
+    let timeoutId: number | undefined;
+
+    async function checkCompletion() {
+      try {
+        if (await fetchPaidConsultCompletion(taskId!)) {
+          if (!active) {
+            return;
+          }
+
+          setBookingCompleted(true);
+          return;
+        }
+      } catch {
+        // Keep the calendar visible; the webhook/ClickUp path is the source of truth.
+      }
+
+      if (active) {
+        timeoutId = window.setTimeout(checkCompletion, 3000);
+      }
+    }
+
+    void checkCompletion();
+
+    return () => {
+      active = false;
+
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [bookingCompleted, bookingSubmitted, taskId]);
 
   return (
     <section className="mx-auto grid min-h-dvh w-full max-w-[96rem] gap-5 px-5 py-5 text-white sm:px-8 sm:py-7 lg:h-dvh lg:min-h-0 lg:grid-cols-[0.52fr_1.48fr] lg:gap-6 lg:overflow-hidden lg:px-6 lg:py-4 xl:max-w-[104rem]">
@@ -141,9 +211,18 @@ export function PaidConsultFlow({
                   title="Book and pay for your consult"
                   description="Choose an available time and complete payment through Redomiciled's booking calendar."
                 />
+                {bookingSubmitted ? (
+                  <p
+                    role="status"
+                    className="rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-sm text-white/72"
+                  >
+                    Confirming your paid booking with Redomiciled. Keep this
+                    page open for a moment.
+                  </p>
+                ) : null}
                 <PaidCalInlineEmbed
                   embedOptions={calEmbedOptions}
-                  onBookingCompleted={() => setBookingCompleted(true)}
+                  onBookingSubmitted={handleBookingSubmitted}
                 />
               </div>
             ) : (
@@ -154,6 +233,20 @@ export function PaidConsultFlow({
       </div>
     </section>
   );
+}
+
+async function fetchPaidConsultCompletion(taskId: string) {
+  const response = await fetch(
+    `/api/paid-consult/status?id=${encodeURIComponent(taskId)}`,
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    return false;
+  }
+
+  const data = (await response.json()) as { completed?: unknown };
+  return data.completed === true;
 }
 
 function BookingCompleteState() {
@@ -170,8 +263,8 @@ function BookingCompleteState() {
         <div className="space-y-2">
           <h2 className="text-3xl font-semibold">Booking received.</h2>
           <p className="text-sm leading-6 text-black/65 sm:text-base">
-            Your paid consult booking has been submitted. Redomiciled will send
-            the correct follow-up details for your consult route.
+            Your paid consult is confirmed. Redomiciled will send the next form
+            for your consult route shortly.
           </p>
         </div>
       </div>

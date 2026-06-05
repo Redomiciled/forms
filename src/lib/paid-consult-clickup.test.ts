@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  getPaidConsultCompletionFromClickUpTask,
   getPaidConsultContextFromClickUpTask,
   getPaidConsultOwnerFromClickUpTask,
 } from "./paid-consult-clickup";
@@ -78,6 +79,59 @@ describe("paid consult ClickUp owner lookup", () => {
         lastName: "Hernandez",
         name: "Juan Cruz Hernandez",
       },
+    });
+  });
+
+  it("reports the paid consult as complete only after ClickUp has the paid status fields", async () => {
+    const fetchImpl = vi.fn(async () =>
+      Response.json({
+        status: { status: "consult paid" },
+        custom_fields: [
+          { name: "Paid Consult Booking ID", value: "20529043" },
+          {
+            name: "Payment Status",
+            value: "paid-option-id",
+            type_config: {
+              options: [{ id: "paid-option-id", name: "Paid" }],
+            },
+          },
+          {
+            name: "Meeting URL",
+            value: "https://app.cal.com/video/eV7MX86odUSc4cp8sCTjSf",
+          },
+        ],
+      })
+    ) as unknown as typeof fetch;
+
+    await expect(
+      getPaidConsultCompletionFromClickUpTask("CU-123", { fetchImpl })
+    ).resolves.toEqual({
+      completed: true,
+      meetingUrl: "https://app.cal.com/video/eV7MX86odUSc4cp8sCTjSf",
+      paidConsultBookingId: "20529043",
+      paymentStatus: "Paid",
+      reason: "paid",
+      status: "consult paid",
+    });
+  });
+
+  it("keeps the paid consult pending when ClickUp has not confirmed payment", async () => {
+    const fetchImpl = vi.fn(async () =>
+      Response.json({
+        status: { status: "paid consult sent" },
+        custom_fields: [
+          { name: "Paid Consult Booking ID", value: "" },
+          { name: "Payment Status", value: "" },
+        ],
+      })
+    ) as unknown as typeof fetch;
+
+    await expect(
+      getPaidConsultCompletionFromClickUpTask("CU-123", { fetchImpl })
+    ).resolves.toMatchObject({
+      completed: false,
+      reason: "pending",
+      status: "paid consult sent",
     });
   });
 });
