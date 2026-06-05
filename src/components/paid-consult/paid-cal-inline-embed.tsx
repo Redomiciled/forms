@@ -26,9 +26,17 @@ type PaidCalApi = {
     method: "on",
     config: {
       action: "bookingSuccessfulV2";
-      callback: () => void;
+      callback: (event: PaidCalEvent) => void;
     }
   ): void;
+};
+
+type PaidCalEvent = {
+  detail?: {
+    data?: unknown;
+    namespace?: string;
+    type?: string;
+  };
 };
 
 type QueuedPaidCalApi = PaidCalApi & {
@@ -48,10 +56,10 @@ type CalWindow = Window &
 
 export function PaidCalInlineEmbed({
   embedOptions,
-  onBookingCompleted,
+  onBookingSubmitted,
 }: {
   embedOptions: PaidConsultCalEmbedOptions | null;
-  onBookingCompleted: () => void;
+  onBookingSubmitted: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [embedFailed, setEmbedFailed] = useState(false);
@@ -83,9 +91,11 @@ export function PaidCalInlineEmbed({
     callCal(Cal, embedId, "on", {
       action: "bookingSuccessfulV2",
       callback: () => {
-        if (active) {
-          onBookingCompleted();
+        if (!active) {
+          return;
         }
+
+        onBookingSubmitted();
       },
     });
 
@@ -94,7 +104,7 @@ export function PaidCalInlineEmbed({
       removeQueuedCalInstructions(embedId);
       container.innerHTML = "";
     };
-  }, [embedOptions, onBookingCompleted]);
+  }, [embedOptions, onBookingSubmitted]);
 
   if (!embedOptions) {
     return (

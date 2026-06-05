@@ -109,33 +109,54 @@ function loadTallyEmbeds(onError: () => void) {
 }
 
 function isTallySubmittedEvent(value: unknown) {
+  const event = getTallyEventRecord(value);
+
   return (
-    isRecord(value) &&
-    typeof value["event"] === "string" &&
-    value["event"] === "Tally.FormSubmitted"
+    event !== null &&
+    typeof event["event"] === "string" &&
+    event["event"] === "Tally.FormSubmitted"
   );
 }
 
 function getTallyEventFormId(value: unknown) {
-  if (!isRecord(value)) {
+  const event = getTallyEventRecord(value);
+
+  if (!event) {
     return "";
   }
 
-  const formId = getStringValue(value["formId"]);
+  const formId = getStringValue(event["formId"]);
 
   if (formId) {
     return formId;
   }
 
-  if (isRecord(value["form"])) {
-    return getStringValue(value["form"]["id"]);
+  if (isRecord(event["form"])) {
+    return getStringValue(event["form"]["id"]);
   }
 
-  if (isRecord(value["payload"])) {
-    return getStringValue(value["payload"]["formId"]);
+  if (isRecord(event["payload"])) {
+    return getStringValue(event["payload"]["formId"]);
   }
 
   return "";
+}
+
+function getTallyEventRecord(value: unknown): Record<string, unknown> | null {
+  if (isRecord(value)) {
+    return value;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 function getStringValue(value: unknown) {
