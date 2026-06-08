@@ -6,6 +6,7 @@ import {
   type NetWorthBand,
   prepareStartHereSubmission,
   type RoutingDecisionSignal,
+  type ServicePath,
   type SetupMaturity,
   type StartHereFormRoute,
   type StartHereFormValues,
@@ -47,6 +48,7 @@ const FIELD_IDS = {
   startHereFormRoute: "0ed775f3-ae23-43ea-8f70-d1ecd161a301",
   startHereFormRouteReason: "86714782-7be3-4823-9095-de518c8057c5",
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
+  servicePath: "f8578a38-9aa4-4355-bf75-72eeb780fbc2",
   bookedCallOwner: "580ba4f1-6479-4255-a0c5-be049e3b4e21",
   calComBookingId: "7d5007ea-07e9-4796-a656-49e8548a032c",
 } as const;
@@ -158,6 +160,13 @@ const ROUTING_SIGNAL_OPTIONS: Record<RoutingDecisionSignal, string> = {
   "Low commercial signal": "9d1e5bfc-c9a3-4eab-8aff-e20a7e79538b",
   "Urgent low commercial signal": "014a2e08-21b9-4cb0-bc07-80ec0bb2548a",
   "Budget readiness rescue": "17b7d2c4-faaf-4a17-8edf-d3c912d31b08",
+};
+
+const SERVICE_PATH_OPTIONS: Record<ServicePath, string> = {
+  Banking: "83b016f6-27e2-4211-9a69-4e50d5caf066",
+  "Bespoke plan": "d5bcdf8f-e800-4d33-b6c0-7f4a830297b0",
+  "Other / manual review": "7a457ec8-5484-42be-86a1-1ca0578682a1",
+  Unknown: "a6623135-d2a7-43b3-8013-c52a77562f88",
 };
 
 export type ClickUpFieldValue = {
@@ -325,6 +334,10 @@ export function buildClickUpFieldValues(
       value: fields.routingDecisionSignals.map(
         (signal) => ROUTING_SIGNAL_OPTIONS[signal]
       ),
+    },
+    {
+      id: FIELD_IDS.servicePath,
+      value: SERVICE_PATH_OPTIONS[fields.servicePath],
     },
     {
       id: FIELD_IDS.bookedCallOwner,

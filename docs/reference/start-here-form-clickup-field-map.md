@@ -1,6 +1,6 @@
 # Start Here Form ClickUp Field Map
 
-This repo-local map is limited to values the Start Here form collects or prepares at submission time. It intentionally excludes downstream funnel fields such as Brevo sync, MSA, payment, purchased service path, and recommendation call state. Keep it in sync with the live client-level field map when ClickUp schema IDs or options change.
+This repo-local map is limited to values the Start Here form collects or prepares at submission time. It intentionally excludes downstream funnel fields such as Brevo sync, MSA, payment, and recommendation call state. Keep it in sync with the live client-level field map when ClickUp schema IDs or options change.
 
 ## Integration Placeholders
 
@@ -28,6 +28,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
 - `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE`: `0ed775f3-ae23-43ea-8f70-d1ecd161a301`
 - `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE_REASON`: `86714782-7be3-4823-9095-de518c8057c5`
 - `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`: `aa730523-3be9-4f95-abe4-82548635ddda`
+- `CLICKUP_FIELD_ID_SERVICE_PATH`: `f8578a38-9aa4-4355-bf75-72eeb780fbc2`
 - `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`: `580ba4f1-6479-4255-a0c5-be049e3b4e21`
 - `CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`: `7d5007ea-07e9-4796-a656-49e8548a032c`
 - `CAL_COM_OWNER_ERIK_URL`: `https://cal.com/erik-redomiciled/30min`
@@ -197,6 +198,13 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`
   - **Type:** labels
   - **Options:** `Warm source`, `Known product/path`, `Complex / Guidance-led`, `Mixed / Unclear answers`, `No clear path`, `Low commercial signal`, `Urgent low commercial signal`, `Budget readiness rescue`
+
+- `servicePath`
+  - **ClickUp field:** `Service Path`
+  - **ClickUp field ID:** `CLICKUP_FIELD_ID_SERVICE_PATH`
+  - **Type:** dropdown
+  - **Options:** `Banking`, `Bespoke plan`, `Other / manual review`, `Unknown`
+  - **Prepared value:** `Banking` when `tryingToSolve` includes `New bank account`; otherwise `Bespoke plan` for booked-call leads, `Other / manual review` for manual-triage leads, and `Unknown` for unqualified leads.
 
 - `bookedCallOwner`
   - **ClickUp field:** `Booked Call Owner`
