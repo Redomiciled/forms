@@ -89,6 +89,13 @@ export const routingDecisionSignalOptions = [
   "Budget readiness rescue",
 ] as const;
 
+export const servicePathOptions = [
+  "Banking",
+  "Bespoke plan",
+  "Other / manual review",
+  "Unknown",
+] as const;
+
 export type LeadSourceDetail = (typeof leadSourceDetails)[number];
 export type ConsideringSpecificStructure =
   (typeof consideringSpecificStructureOptions)[number];
@@ -101,6 +108,7 @@ export type BudgetReadiness = (typeof budgetReadinessOptions)[number];
 export type StartHereFormRoute = (typeof startHereFormRouteOptions)[number];
 export type RoutingDecisionSignal =
   (typeof routingDecisionSignalOptions)[number];
+export type ServicePath = (typeof servicePathOptions)[number];
 
 const emptyString = z.literal("");
 
@@ -242,6 +250,7 @@ export type StartHerePreparedSubmission = {
     startHereFormRoute: StartHereFormRoute;
     startHereFormRouteReason: string;
     routingDecisionSignals: RoutingDecisionSignal[];
+    servicePath: ServicePath;
     bookedCallOwner: "Erik" | "Will" | "Not assigned";
     calendarUrl: string;
     calComBookingId: "";
@@ -338,11 +347,31 @@ export function prepareStartHereSubmission(
       startHereFormRoute: route.startHereFormRoute,
       startHereFormRouteReason: route.startHereFormRouteReason,
       routingDecisionSignals: route.routingDecisionSignals,
+      servicePath: deriveServicePath(values, route.startHereFormRoute),
       bookedCallOwner: route.bookedCallOwner,
       calendarUrl: route.calendarUrl,
       calComBookingId: "",
     },
   };
+}
+
+export function deriveServicePath(
+  values: StartHereFormValues,
+  route: StartHereFormRoute
+): ServicePath {
+  if (values.tryingToSolve.includes("New bank account")) {
+    return "Banking";
+  }
+
+  if (route === "Booked Call") {
+    return "Bespoke plan";
+  }
+
+  if (route === "Manual Triage") {
+    return "Other / manual review";
+  }
+
+  return "Unknown";
 }
 
 function requireValue<T>(value: T | ""): T {

@@ -39,6 +39,7 @@ const FIELD_IDS = {
   startHereFormRoute: "0ed775f3-ae23-43ea-8f70-d1ecd161a301",
   startHereFormRouteReason: "86714782-7be3-4823-9095-de518c8057c5",
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
+  servicePath: "f8578a38-9aa4-4355-bf75-72eeb780fbc2",
   bookedCallOwner: "580ba4f1-6479-4255-a0c5-be049e3b4e21",
   calComBookingId: "7d5007ea-07e9-4796-a656-49e8548a032c",
 } as const;
@@ -117,6 +118,12 @@ const OPTION_IDS = {
     urgentLowCommercialSignal: "014a2e08-21b9-4cb0-bc07-80ec0bb2548a",
     budgetReadinessRescue: "17b7d2c4-faaf-4a17-8edf-d3c912d31b08",
   },
+  servicePath: {
+    banking: "83b016f6-27e2-4211-9a69-4e50d5caf066",
+    bespokePlan: "d5bcdf8f-e800-4d33-b6c0-7f4a830297b0",
+    otherManualReview: "7a457ec8-5484-42be-86a1-1ca0578682a1",
+    unknown: "a6623135-d2a7-43b3-8013-c52a77562f88",
+  },
 } as const;
 
 const CLICKUP_FIELD_CONTRACT: Array<{
@@ -182,6 +189,10 @@ const CLICKUP_FIELD_CONTRACT: Array<{
     fieldId: FIELD_IDS.routingDecisionSignals,
     optionIds: Object.values(OPTION_IDS.routingDecisionSignals),
   },
+  {
+    fieldId: FIELD_IDS.servicePath,
+    optionIds: Object.values(OPTION_IDS.servicePath),
+  },
   { fieldId: FIELD_IDS.bookedCallOwner },
   { fieldId: FIELD_IDS.calComBookingId },
 ] as const;
@@ -234,6 +245,10 @@ describe("buildClickUpFieldValues", () => {
       value: [OPTION_IDS.tryingToSolve.newBankAccount],
     });
     expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.servicePath,
+      value: OPTION_IDS.servicePath.banking,
+    });
+    expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.monthlyRevenueBand,
       value: OPTION_IDS.monthlyRevenueBand.twentyFiveToOneHundred,
     });
@@ -266,6 +281,47 @@ describe("buildClickUpFieldValues", () => {
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.leadSource,
       value: OPTION_IDS.leadSource.testIgnore,
+    });
+  });
+
+  it("maps non-banking booked calls to Bespoke plan", () => {
+    const clickUpFields = buildClickUpFieldValues(
+      prepareStartHereSubmission(
+        makeValues({
+          tryingToSolve: ["Get a second passport"],
+          monthlyRevenueBand: "$25k–$100k / month",
+        })
+      )
+    );
+
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.servicePath,
+      value: OPTION_IDS.servicePath.bespokePlan,
+    });
+  });
+
+  it("maps manual triage to Other / manual review", () => {
+    const clickUpFields = buildClickUpFieldValues(
+      prepareStartHereSubmission(
+        makeValues({
+          referralDetail: "Introduced by Alex",
+          consideringSpecificStructure:
+            "No — I want help finding the right path",
+          tryingToSolve: [
+            "Diversify my assets globally without changing where I live",
+          ],
+          businessMainSourceOfIncome: false,
+          monthlyRevenueBand: "",
+          netWorthBand: "$0–$50k",
+          timelineToAct: "Just exploring",
+          budgetReadiness: "No",
+        })
+      )
+    );
+
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.servicePath,
+      value: OPTION_IDS.servicePath.otherManualReview,
     });
   });
 });
@@ -624,6 +680,10 @@ describe("Start Here ClickUp API persistence", () => {
             OPTION_IDS.routingDecisionSignals.urgentLowCommercialSignal,
           ]
         ),
+        [FIELD_IDS.servicePath]: optionReadValue(
+          FIELD_IDS.servicePath,
+          OPTION_IDS.servicePath.banking
+        ),
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.calComBookingId]: "",
       });
@@ -666,6 +726,10 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
           OPTION_IDS.tryingToSolve.secondPassport,
         ]),
+        [FIELD_IDS.servicePath]: optionReadValue(
+          FIELD_IDS.servicePath,
+          OPTION_IDS.servicePath.bespokePlan
+        ),
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.importantRoutingNotes]:
           "Second automated ClickUp integration test. Safe to delete.",
@@ -753,6 +817,10 @@ describe("Start Here ClickUp API persistence", () => {
             OPTION_IDS.routingDecisionSignals.lowCommercialSignal,
           ]
         ),
+        [FIELD_IDS.servicePath]: optionReadValue(
+          FIELD_IDS.servicePath,
+          OPTION_IDS.servicePath.otherManualReview
+        ),
         [FIELD_IDS.bookedCallOwner]: [],
       });
     } finally {
@@ -821,6 +889,10 @@ describe("Start Here ClickUp API persistence", () => {
             OPTION_IDS.routingDecisionSignals.noClearPath,
             OPTION_IDS.routingDecisionSignals.lowCommercialSignal,
           ]
+        ),
+        [FIELD_IDS.servicePath]: optionReadValue(
+          FIELD_IDS.servicePath,
+          OPTION_IDS.servicePath.unknown
         ),
         [FIELD_IDS.bookedCallOwner]: [],
       });

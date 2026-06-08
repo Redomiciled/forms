@@ -97,7 +97,7 @@ describe("Start Here ClickUp task payloads", () => {
         custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
         notify_all: false,
       });
-      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(24);
+      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(25);
     }
   );
 
