@@ -163,13 +163,23 @@ test("prepares the Start Here intake payload", async ({ page }) => {
   await expect(prepareSubmission.or(submissionPrepared)).toBeVisible();
 
   if (await prepareSubmission.isVisible()) {
-    await prepareSubmission.click();
+    await submitAndReadSubmission(page);
   }
 
+  await expect(page.getByTitle(/banking path video/i)).toBeVisible();
   await expect(
-    page.getByRole("heading", {
-      name: /book a call with us/i,
-    })
+    page.getByRole("region", { name: /pre-booking video/i })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  await expectNoPageScroll(page);
+
+  await page.getByRole("button", { name: /book a meeting/i }).click();
+
+  await expect(
+    page.getByRole("heading", { name: /book a call with us/i })
   ).toBeVisible();
   await expect(
     page.getByRole("region", { name: /booking calendar/i })
@@ -189,6 +199,20 @@ test("admin preset routes booked banking leads to Will calendar", async ({
 }) => {
   await submitAdminPreset(page, /booked call - banking/i);
 
+  await expect(page.getByTitle(/banking path video/i)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /pre-booking video/i })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toHaveCount(0);
+  await expect(page.getByText("Booked Call", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Will", { exact: true })).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  await expectNoPageScroll(page);
+
+  await page.getByRole("button", { name: /book a meeting/i }).click();
+
   await expect(
     page.getByRole("heading", { name: /book a call with us/i })
   ).toBeVisible();
@@ -207,6 +231,20 @@ test("admin preset routes booked non-banking leads to Will calendar", async ({
   page,
 }) => {
   await submitAdminPreset(page, /booked call - non-banking/i);
+
+  await expect(page.getByTitle(/bespoke path video/i)).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /pre-booking video/i })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: /booking calendar/i })
+  ).toHaveCount(0);
+  await expect(page.getByText("Booked Call", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Will", { exact: true })).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
+  await expectNoPageScroll(page);
+
+  await page.getByRole("button", { name: /book a meeting/i }).click();
 
   await expect(
     page.getByRole("heading", { name: /book a call with us/i })
@@ -277,16 +315,16 @@ test("admin preset routes manual triage without showing a calendar", async ({
 test("admin preset routes unqualified leads to the disqualification screen", async ({
   page,
 }) => {
-  await submitAdminPreset(page, /^unqualified$/i);
+  await submitAdminPreset(page, /unqualified/i);
 
   await expect(
     page.getByRole("heading", {
-      name: /free redomiciled community/i,
+      name: /we’ve received your start here answers/i,
     })
   ).toBeVisible();
   await expect(page.getByText("Redomiciled", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /go to the free community/i })
+    page.getByRole("link", { name: /visit free community/i })
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: /review answers/i })
@@ -422,7 +460,7 @@ async function submitAdminPreset(page: Page, presetName: RegExp) {
   await expect(
     page.getByRole("dialog", { name: /confirm the intake/i })
   ).toBeVisible();
-  await page.getByRole("button", { name: /confirm and continue/i }).click();
+  await submitAndReadSubmission(page);
 }
 
 async function submitAndReadSubmission(page: Page) {
@@ -436,9 +474,11 @@ async function submitAndReadSubmission(page: Page) {
   await page.getByRole("button", { name: /confirm and continue/i }).click();
 
   const response = await responsePromise;
-  expect(response.ok()).toBe(true);
+  const body = (await response.json()) as E2eSubmissionResponse;
 
-  return (await response.json()) as E2eSubmissionResponse;
+  expect(response.ok(), JSON.stringify(body)).toBe(true);
+
+  return body;
 }
 
 function getSubmissionTaskId(body: unknown) {

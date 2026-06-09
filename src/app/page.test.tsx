@@ -161,10 +161,21 @@ describe("Home", () => {
       screen.getByRole("button", { name: /confirm and continue/i })
     );
 
+    expect(screen.getByTitle(/banking path video/i)).toHaveAttribute(
+      "src",
+      "https://drive.google.com/file/d/1rYeAgJjCDyQjogm8ynmVLX1mBRm53lmc/preview"
+    );
     expect(
-      screen.getByRole("heading", {
-        name: /book a call with us/i,
-      })
+      screen.getByRole("region", { name: /pre-booking video/i })
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("region", { name: /booking calendar/i })
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /book a meeting/i }));
+
+    expect(
+      screen.getByRole("heading", { name: /book a call with us/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("region", { name: /booking calendar/i })
