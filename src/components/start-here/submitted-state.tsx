@@ -1,5 +1,13 @@
-import { ArrowLeft, ArrowUpRight, ClipboardCheck } from "lucide-react";
+"use client";
+
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  CalendarCheck,
+  ClipboardCheck,
+} from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { StartHereSubmissionSuccessResponse } from "@/lib/start-here-submission";
@@ -16,11 +24,48 @@ export function SubmittedState({
   const route = submitted.submission.fields.startHereFormRoute;
   const isBookedCall = route === "Booked Call";
   const isUnqualified = route === "Unqualified / Not Ready";
+  const preBookingVideo = getPreBookingVideo(submitted);
+  const [showBookingCalendar, setShowBookingCalendar] =
+    useState(!preBookingVideo);
+
+  if (isBookedCall && !showBookingCalendar && preBookingVideo) {
+    return (
+      <section className="mx-auto grid min-h-dvh w-full max-w-6xl place-items-center px-4 py-6 text-white sm:px-6 lg:h-dvh lg:min-h-0 lg:overflow-hidden lg:px-8">
+        <h1 className="sr-only">{preBookingVideo.title}</h1>
+        <div className="mx-auto grid w-full gap-4 sm:gap-5 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto] lg:items-center lg:gap-4">
+          <div
+            role="region"
+            aria-label="Pre-booking video"
+            className="mx-auto w-full max-w-full overflow-hidden lg:rounded-3xl lg:border lg:border-white/15 lg:bg-black/18 lg:p-3 lg:shadow-2xl lg:backdrop-blur-xl"
+          >
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black sm:aspect-[16/10] lg:aspect-video lg:max-h-[calc(100dvh-9rem)]">
+              <iframe
+                title={preBookingVideo.title}
+                src={preBookingVideo.embedUrl}
+                className="h-full w-full border-0"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            </div>
+          </div>
+          <Button
+            type="button"
+            className="mx-auto h-12 rounded-xl bg-white px-6 font-semibold text-[#2422A1] hover:bg-white/90"
+            onClick={() => setShowBookingCalendar(true)}
+          >
+            <CalendarCheck className="size-4" />
+            Book a Meeting
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   if (isBookedCall) {
     return (
-      <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-start px-4 py-7 text-white sm:px-6 sm:py-8 lg:justify-center lg:px-8">
-        <div className="grid gap-4 sm:gap-5">
+      <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-start px-4 py-7 text-white sm:px-6 sm:py-8 lg:h-dvh lg:min-h-0 lg:justify-center lg:overflow-hidden lg:px-8 lg:py-6">
+        <div className="grid gap-4 sm:gap-5 lg:h-full lg:min-h-0 lg:w-full lg:grid-rows-[auto_minmax(0,1fr)]">
           <div className="space-y-3 text-center sm:space-y-4">
             <div className="mx-auto flex w-fit items-center justify-center gap-3">
               <Image
@@ -39,7 +84,7 @@ export function SubmittedState({
               Book a call with us
             </h1>
           </div>
-          <div className="mx-auto w-full max-w-5xl overflow-visible rounded-3xl border border-white/15 bg-black/18 p-2 shadow-2xl backdrop-blur-xl sm:p-3">
+          <div className="mx-auto w-full max-w-5xl overflow-visible rounded-3xl border border-white/15 bg-black/18 p-2 shadow-2xl backdrop-blur-xl sm:p-3 lg:h-full lg:min-h-0 lg:overflow-hidden">
             <CalInlineEmbed submitted={submitted} />
           </div>
         </div>
@@ -136,4 +181,26 @@ export function SubmittedState({
       </div>
     </section>
   );
+}
+
+function getPreBookingVideo(submitted: StartHereSubmissionSuccessResponse) {
+  const servicePath = submitted.submission.fields.servicePath;
+
+  if (servicePath === "Banking") {
+    return {
+      title: "Banking path video",
+      embedUrl:
+        "https://drive.google.com/file/d/1rYeAgJjCDyQjogm8ynmVLX1mBRm53lmc/preview",
+    };
+  }
+
+  if (servicePath === "Bespoke plan") {
+    return {
+      title: "Bespoke path video",
+      embedUrl:
+        "https://drive.google.com/file/d/1DOEPdPs0ejTnHcSKoOLObjCA2ioospXO/preview",
+    };
+  }
+
+  return null;
 }

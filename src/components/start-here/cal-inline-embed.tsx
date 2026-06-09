@@ -136,10 +136,10 @@ export function CalInlineEmbed({
     <div
       role="region"
       aria-label="Booking calendar"
-      className="w-full overflow-visible rounded-2xl border border-white/15 bg-white text-[#111]"
+      className="w-full overflow-visible rounded-2xl border border-white/15 bg-white text-[#111] lg:h-full lg:min-h-0 lg:overflow-hidden"
     >
       {embedFailed ? (
-        <div className="grid min-h-[52rem] place-items-center p-5 text-center text-[#111] sm:min-h-[44rem]">
+        <div className="grid min-h-[52rem] place-items-center p-5 text-center text-[#111] sm:min-h-[44rem] lg:h-full lg:min-h-0">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Calendar unavailable</p>
             <p className="text-sm leading-6 text-black/65">
@@ -153,7 +153,10 @@ export function CalInlineEmbed({
           Booking received. We will send the details to Redomiciled.
         </p>
       ) : null}
-      <div ref={containerRef} className="min-h-[52rem] w-full sm:min-h-[44rem]">
+      <div
+        ref={containerRef}
+        className="min-h-[52rem] w-full sm:min-h-[44rem] lg:h-full lg:min-h-0"
+      >
         <div className="grid h-full place-items-center p-5 text-center text-[#111]">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Loading calendar...</p>
