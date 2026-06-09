@@ -43,7 +43,7 @@ export function SubmittedState({
                 title={preBookingVideo.title}
                 src={preBookingVideo.embedUrl}
                 className="h-full w-full border-0"
-                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"
                 allowFullScreen
                 referrerPolicy="strict-origin-when-cross-origin"
               />
@@ -190,7 +190,7 @@ function getPreBookingVideo(submitted: StartHereSubmissionSuccessResponse) {
     return {
       title: "Banking path video",
       embedUrl:
-        "https://drive.google.com/file/d/1rYeAgJjCDyQjogm8ynmVLX1mBRm53lmc/preview",
+        "https://www.youtube-nocookie.com/embed/2H_svyaQ23s?playsinline=1&rel=0",
     };
   }
 
@@ -198,7 +198,7 @@ function getPreBookingVideo(submitted: StartHereSubmissionSuccessResponse) {
     return {
       title: "Bespoke path video",
       embedUrl:
-        "https://drive.google.com/file/d/1DOEPdPs0ejTnHcSKoOLObjCA2ioospXO/preview",
+        "https://www.youtube-nocookie.com/embed/-LCUxRiawjo?playsinline=1&rel=0",
     };
   }
 

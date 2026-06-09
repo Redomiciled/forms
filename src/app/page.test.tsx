@@ -163,7 +163,7 @@ describe("Home", () => {
 
     expect(screen.getByTitle(/banking path video/i)).toHaveAttribute(
       "src",
-      "https://drive.google.com/file/d/1rYeAgJjCDyQjogm8ynmVLX1mBRm53lmc/preview"
+      "https://www.youtube-nocookie.com/embed/2H_svyaQ23s?playsinline=1&rel=0"
     );
     expect(
       screen.getByRole("region", { name: /pre-booking video/i })
