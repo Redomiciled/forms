@@ -162,8 +162,8 @@ describe("Home", () => {
     );
 
     expect(screen.getByTitle(/banking path video/i)).toHaveAttribute(
-      "src",
-      "https://www.youtube-nocookie.com/embed/2H_svyaQ23s?playsinline=1&rel=0"
+      "media-id",
+      "3b6qkkvvq7"
     );
     expect(
       screen.getByRole("region", { name: /pre-booking video/i })
@@ -185,6 +185,63 @@ describe("Home", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/choose a time with/i)).toBeNull();
     expect(screen.queryByText(/PLACEHOLDER_CLICKUP_CRM_LIST_ID/)).toBeNull();
+  });
+
+  it("shows a spinner while submitting the intake", async () => {
+    const user = userEvent.setup();
+    let resolveSubmission: () => void = () => {};
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: string | URL | Request, init?: RequestInit) => {
+        return new Promise<Response>((resolve) => {
+          resolveSubmission = () => {
+            const body =
+              typeof init?.body === "string" ? JSON.parse(init.body) : null;
+
+            resolve(
+              Response.json({
+                ok: true,
+                submission: prepareStartHereSubmission(body.values),
+                persistence: {
+                  submissionId: "test-submission-id",
+                  mode: "live",
+                  action: "created",
+                  taskId: "test-task-id",
+                },
+              })
+            );
+          };
+        });
+      })
+    );
+
+    window.history.pushState({}, "", "/?admin=1");
+    render(<Home />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /choose view/i })
+    );
+    await user.click(screen.getByRole("button", { name: /unqualified/i }));
+    await user.click(screen.getByRole("button", { name: /complete/i }));
+    await user.click(
+      screen.getByRole("button", { name: /confirm and continue/i })
+    );
+
+    const submittingButton = await screen.findByRole("button", {
+      name: /submitting/i,
+    });
+
+    expect(submittingButton).toBeDisabled();
+    expect(submittingButton).toHaveAttribute("aria-busy", "true");
+
+    resolveSubmission();
+
+    expect(
+      await screen.findByRole("heading", {
+        name: /we’ve received your start here answers/i,
+      })
+    ).toBeInTheDocument();
   });
 
   it("uses admin preview presets to show route outcomes", async () => {
