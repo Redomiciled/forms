@@ -387,6 +387,7 @@ describe("Start Here ClickUp API persistence", () => {
     });
     expect(createBodies).toHaveLength(1);
     expect(createBodies[0]).toMatchObject({
+      assignees: [OWNER_USER_IDS.Will],
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
     });
@@ -460,6 +461,10 @@ describe("Start Here ClickUp API persistence", () => {
     });
     expect(updateBodies).toHaveLength(1);
     expect(updateBodies[0]).toMatchObject({
+      assignees: {
+        add: [OWNER_USER_IDS.Will],
+        rem: [OWNER_USER_IDS.Erik],
+      },
       status: "MEETING BOOKED",
     });
     expect(fieldUpdateBodies).toContainEqual({
@@ -520,6 +525,12 @@ describe("Start Here ClickUp API persistence", () => {
       taskId: "known-lead-task",
     });
     expect(updateBodies).toHaveLength(1);
+    expect(updateBodies[0]).toMatchObject({
+      assignees: {
+        add: [OWNER_USER_IDS.Will],
+        rem: [OWNER_USER_IDS.Erik],
+      },
+    });
     expect(fieldUpdateBodies).toContainEqual({
       fieldId: FIELD_IDS.email,
       body: { value: "changed@example.com" },
