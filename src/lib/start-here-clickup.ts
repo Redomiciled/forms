@@ -231,8 +231,7 @@ export async function persistStartHereSubmission(
   const customFields = buildClickUpFieldValues(submission, {
     qaMode: options.qaMode === true,
   });
-  const existingTaskId =
-    options.taskId ?? (await client.findTaskIdByEmail(submission.fields.email));
+  const existingTaskId = options.taskId;
   const action = existingTaskId ? "updated" : "created";
   const taskId = existingTaskId
     ? await client.updateTask(
@@ -435,32 +434,6 @@ class ClickUpClient {
     private readonly fetchImpl: typeof fetch
   ) {}
 
-  async findTaskIdByEmail(email: string) {
-    const params = new URLSearchParams({
-      include_closed: "true",
-      page: "0",
-      custom_fields: JSON.stringify([
-        {
-          field_id: FIELD_IDS.email,
-          operator: "=",
-          value: email,
-        },
-      ]),
-    });
-    const data = await this.request<{
-      tasks?: Array<{
-        id?: string;
-        custom_fields?: Array<{ id: string; value?: unknown }>;
-      }>;
-    }>("/list/" + this.config.listId + "/task?" + params.toString(), {
-      method: "GET",
-    });
-    const tasks = data.tasks ?? [];
-    const exactMatch = tasks.find((task) => taskMatchesEmail(task, email));
-
-    return exactMatch?.id ?? tasks.find((task) => task.id)?.id ?? null;
-  }
-
   async createTask(
     name: string,
     description: string,
@@ -566,24 +539,6 @@ class ClickUpClient {
 
     return JSON.parse(responseText) as T;
   }
-}
-
-function taskMatchesEmail(
-  task: {
-    id?: string;
-    custom_fields?: Array<{ id: string; value?: unknown }>;
-  },
-  email: string
-) {
-  const taskEmail = task.custom_fields?.find(
-    (field) => field.id === FIELD_IDS.email
-  )?.value;
-
-  return (
-    Boolean(task.id) &&
-    typeof taskEmail === "string" &&
-    taskEmail.trim().toLowerCase() === email
-  );
 }
 
 function shouldRetryClickUpRequest(status: number) {

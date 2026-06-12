@@ -401,9 +401,8 @@ describe("Start Here ClickUp API persistence", () => {
     });
   });
 
-  it("updates an existing CRM record when the email already exists", async () => {
-    const updateBodies: unknown[] = [];
-    const fieldUpdateBodies: Array<{ fieldId: string; body: unknown }> = [];
+  it("creates a new CRM record when the email already exists", async () => {
+    const createBodies: unknown[] = [];
 
     configureLiveWrites();
 
@@ -411,37 +410,18 @@ describe("Start Here ClickUp API persistence", () => {
       const url = String(input);
 
       if (url.includes(`/list/${REDOMICILED_CRM_LIST_ID}/task?`)) {
-        return jsonResponse({
-          tasks: [
-            {
-              id: "existing-lead-task",
-              custom_fields: [
-                {
-                  id: FIELD_IDS.email,
-                  value: "taylor@example.com",
-                },
-              ],
-            },
-          ],
-        });
-      }
-
-      if (url.endsWith("/task/existing-lead-task") && init?.method === "PUT") {
-        updateBodies.push(JSON.parse(String(init.body)));
-
-        return jsonResponse({ id: "existing-lead-task" });
+        throw new Error(
+          "Fresh Start Here submissions should not lookup by email."
+        );
       }
 
       if (
-        url.includes("/task/existing-lead-task/field/") &&
+        url.endsWith(`/list/${REDOMICILED_CRM_LIST_ID}/task`) &&
         init?.method === "POST"
       ) {
-        fieldUpdateBodies.push({
-          fieldId: url.split("/field/")[1] ?? "",
-          body: JSON.parse(String(init.body)),
-        });
+        createBodies.push(JSON.parse(String(init.body)));
 
-        return jsonResponse({});
+        return jsonResponse({ id: "new-lead-task" });
       }
 
       throw new Error(`Unexpected ClickUp mock request: ${url}`);
@@ -456,28 +436,27 @@ describe("Start Here ClickUp API persistence", () => {
     );
 
     expect(result.persistence).toMatchObject({
-      action: "updated",
-      taskId: "existing-lead-task",
+      action: "created",
+      taskId: "new-lead-task",
     });
-    expect(updateBodies).toHaveLength(1);
-    expect(updateBodies[0]).toMatchObject({
-      assignees: {
-        add: [OWNER_USER_IDS.Will],
-        rem: [OWNER_USER_IDS.Erik],
-      },
+    expect(createBodies).toHaveLength(1);
+    expect(createBodies[0]).toMatchObject({
+      assignees: [OWNER_USER_IDS.Will],
+      custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
+      notify_all: false,
       status: "MEETING BOOKED",
     });
-    expect(fieldUpdateBodies).toContainEqual({
-      fieldId: FIELD_IDS.phone,
-      body: { value: "+1 555 0199" },
+    expect(getCreateCustomFields(createBodies[0])).toContainEqual({
+      id: FIELD_IDS.email,
+      value: "taylor@example.com",
     });
-    expect(fieldUpdateBodies).toContainEqual({
-      fieldId: FIELD_IDS.email,
-      body: { value: "taylor@example.com" },
+    expect(getCreateCustomFields(createBodies[0])).toContainEqual({
+      id: FIELD_IDS.phone,
+      value: "+1 555 0199",
     });
   });
 
-  it("updates the supplied ClickUp task ID before falling back to email lookup", async () => {
+  it("updates the supplied ClickUp task ID without email lookup", async () => {
     const updateBodies: unknown[] = [];
     const fieldUpdateBodies: Array<{ fieldId: string; body: unknown }> = [];
 
@@ -699,7 +678,7 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.calComBookingId]: "",
       });
 
-      const updateResponse = await postStartHereSubmission(
+      const secondCreateResponse = await postStartHereSubmission(
         makeQaValues(testRunId, {
           email,
           phone: "+1 555 0199",
@@ -709,29 +688,30 @@ describe("Start Here ClickUp API persistence", () => {
         })
       );
 
-      if (!updateResponse.ok) {
-        if (updateResponse.taskId) {
-          createdTaskIds.add(updateResponse.taskId);
+      if (!secondCreateResponse.ok) {
+        if (secondCreateResponse.taskId) {
+          createdTaskIds.add(secondCreateResponse.taskId);
         }
 
-        throw new Error(updateResponse.error.message);
+        throw new Error(secondCreateResponse.error.message);
       }
-      expect(updateResponse.ok).toBe(true);
+      expect(secondCreateResponse.ok).toBe(true);
 
-      const updatedTaskId = requireTaskId(updateResponse);
+      const secondTaskId = requireTaskId(secondCreateResponse);
 
-      expect(updateResponse.persistence).toMatchObject({
+      expect(secondCreateResponse.persistence).toMatchObject({
         mode: "live",
-        action: "updated",
+        action: "created",
       });
-      expect(updatedTaskId).toBe(taskId);
+      expect(secondTaskId).not.toBe(taskId);
+      createdTaskIds.add(secondTaskId);
 
-      const updatedTask = await clickUpRequest<ClickUpTask>(
+      const secondTask = await clickUpRequest<ClickUpTask>(
         apiToken,
-        `/task/${updatedTaskId}`
+        `/task/${secondTaskId}`
       );
 
-      assertCustomFields(updatedTask, {
+      assertCustomFields(secondTask, {
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0199",
         [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
