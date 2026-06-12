@@ -25,7 +25,7 @@ const ROUTE_CASES: Array<{
   {
     label: "booked-call",
     route: "Booked Call",
-    status: "MEETING BOOKED",
+    status: "START HERE SUBMITTED",
     values: makeValues({
       tryingToSolve: ["New bank account"],
       monthlyRevenueBand: "$25k–$100k / month",
@@ -118,7 +118,7 @@ describe("Start Here ClickUp task payloads", () => {
       qaMode: true,
     });
 
-    expect(fetchMock.listSearchCount).toBe(1);
+    expect(fetchMock.listSearchCount).toBe(0);
     expect(fetchMock.createBodies).toHaveLength(1);
     expect(getCreateCustomFields(fetchMock.createBodies[0])).toContainEqual({
       id: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
