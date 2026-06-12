@@ -444,7 +444,7 @@ describe("Start Here ClickUp API persistence", () => {
       assignees: [OWNER_USER_IDS.Will],
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
-      status: "MEETING BOOKED",
+      status: "START HERE SUBMITTED",
     });
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.email,

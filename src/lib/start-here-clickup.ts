@@ -146,7 +146,7 @@ const ROUTE_OPTIONS = {
 } as const;
 
 const NATIVE_STATUS_BY_ROUTE: Record<StartHereFormRoute, string> = {
-  "Booked Call": "MEETING BOOKED",
+  "Booked Call": "START HERE SUBMITTED",
   "Manual Triage": "MANUAL TRIAGE",
   "Unqualified / Not Ready": "NOT READY",
 };

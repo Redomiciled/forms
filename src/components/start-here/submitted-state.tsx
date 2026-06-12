@@ -197,7 +197,10 @@ function WistiaPlayer({
 
   return (
     <>
-      <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
+      <Script
+        src="https://fast.wistia.com/player.js"
+        strategy="afterInteractive"
+      />
       <Script
         src={`https://fast.wistia.com/embed/${video.mediaId}.js`}
         strategy="afterInteractive"
