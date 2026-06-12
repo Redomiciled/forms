@@ -182,6 +182,11 @@ export type ClickUpFieldValue = {
       };
 };
 
+type ClickUpAssigneeUpdate = {
+  add: number[];
+  rem: number[];
+};
+
 export type PersistStartHereOptions = {
   fetchImpl?: typeof fetch;
   qaMode?: boolean;
@@ -221,6 +226,8 @@ export async function persistStartHereSubmission(
   const taskStatus = getNativeClickUpStatus(
     submission.fields.startHereFormRoute
   );
+  const assigneeUserIds = getOwnerUserIds(submission);
+  const assigneeUpdate = getOwnerAssigneeUpdate(assigneeUserIds);
   const customFields = buildClickUpFieldValues(submission, {
     qaMode: options.qaMode === true,
   });
@@ -233,12 +240,14 @@ export async function persistStartHereSubmission(
         taskName,
         taskDescription,
         taskStatus,
+        assigneeUpdate,
         customFields
       )
     : await client.createTask(
         taskName,
         taskDescription,
         taskStatus,
+        assigneeUserIds,
         customFields
       );
 
@@ -258,10 +267,7 @@ export function buildClickUpFieldValues(
   options: { qaMode?: boolean } = {}
 ): ClickUpFieldValue[] {
   const fields = submission.fields;
-  const bookedCallOwner =
-    fields.bookedCallOwner === "Not assigned"
-      ? []
-      : [OWNER_USER_IDS[fields.bookedCallOwner]];
+  const bookedCallOwner = getOwnerUserIds(submission);
 
   return [
     { id: FIELD_IDS.firstName, value: fields.firstName },
@@ -356,6 +362,21 @@ export function getNativeClickUpStatus(route: StartHereFormRoute) {
   return NATIVE_STATUS_BY_ROUTE[route];
 }
 
+function getOwnerUserIds(submission: StartHerePreparedSubmission) {
+  const owner = submission.fields.bookedCallOwner;
+
+  return owner === "Not assigned" ? [] : [OWNER_USER_IDS[owner]];
+}
+
+function getOwnerAssigneeUpdate(ownerUserIds: number[]): ClickUpAssigneeUpdate {
+  return {
+    add: ownerUserIds,
+    rem: Object.values(OWNER_USER_IDS).filter(
+      (userId) => !ownerUserIds.includes(userId)
+    ),
+  };
+}
+
 function getClickUpConfig(): ClickUpConfig {
   const apiToken = process.env["REDOMICILED_CLICKUP_API_TOKEN"];
 
@@ -444,6 +465,7 @@ class ClickUpClient {
     name: string,
     description: string,
     status: string,
+    assignees: number[],
     customFields: ClickUpFieldValue[]
   ) {
     const data = await this.request<{ id?: string }>(
@@ -455,6 +477,7 @@ class ClickUpClient {
           description,
           status,
           custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
+          ...(assignees.length > 0 ? { assignees } : {}),
           custom_fields: customFields,
           notify_all: false,
         }),
@@ -476,6 +499,7 @@ class ClickUpClient {
     name: string,
     description: string,
     status: string,
+    assignees: ClickUpAssigneeUpdate,
     customFields: ClickUpFieldValue[]
   ) {
     await this.request<Record<string, unknown>>("/task/" + taskId, {
@@ -484,6 +508,7 @@ class ClickUpClient {
         name,
         description,
         status,
+        assignees,
       }),
     });
 

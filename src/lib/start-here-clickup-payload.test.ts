@@ -12,6 +12,10 @@ import {
 
 const REDOMICILED_CRM_LIST_ID = "901217458864";
 const REDOMICILED_LEAD_TASK_TYPE_ID = 1001;
+const OWNER_USER_IDS = {
+  Will: 296457746,
+  Erik: 99702565,
+} as const;
 const ROUTE_CASES: Array<{
   label: string;
   route: StartHereFormRoute;
@@ -97,6 +101,9 @@ describe("Start Here ClickUp task payloads", () => {
         custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
         notify_all: false,
       });
+      expect(
+        (fetchMock.createBodies[0] as Record<string, unknown>)["assignees"]
+      ).toEqual(route === "Booked Call" ? [OWNER_USER_IDS.Will] : undefined);
       expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(25);
     }
   );

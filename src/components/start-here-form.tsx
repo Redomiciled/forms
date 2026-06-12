@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -405,9 +405,22 @@ export function StartHereForm() {
                 className="h-11 rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
                 onClick={submitForm}
                 disabled={submitting}
+                aria-busy={submitting}
               >
-                {submitting ? "Submitting..." : "Confirm and continue"}
-                <ArrowRight className="size-4" />
+                {submitting ? (
+                  <>
+                    <LoaderCircle
+                      className="size-4 animate-spin"
+                      aria-hidden="true"
+                    />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    Confirm and continue
+                    <ArrowRight className="size-4" />
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

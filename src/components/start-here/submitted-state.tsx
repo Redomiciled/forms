@@ -7,7 +7,8 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import Script from "next/script";
+import { createElement, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { StartHereSubmissionSuccessResponse } from "@/lib/start-here-submission";
@@ -39,14 +40,7 @@ export function SubmittedState({
             className="mx-auto w-full max-w-full overflow-hidden lg:rounded-3xl lg:border lg:border-white/15 lg:bg-black/18 lg:p-3 lg:shadow-2xl lg:backdrop-blur-xl"
           >
             <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black sm:aspect-[16/10] lg:aspect-video lg:max-h-[calc(100dvh-9rem)]">
-              <iframe
-                title={preBookingVideo.title}
-                src={preBookingVideo.embedUrl}
-                className="h-full w-full border-0"
-                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
+              <WistiaPlayer video={preBookingVideo} />
             </div>
           </div>
           <Button
@@ -183,22 +177,57 @@ export function SubmittedState({
   );
 }
 
+function WistiaPlayer({
+  video,
+}: {
+  video: {
+    mediaId: string;
+    title: string;
+  };
+}) {
+  const fallbackStyles = `
+    wistia-player[media-id='${video.mediaId}']:not(:defined) {
+      background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${video.mediaId}/swatch');
+      display: block;
+      filter: blur(5px);
+      height: 100%;
+      width: 100%;
+    }
+  `;
+
+  return (
+    <>
+      <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
+      <Script
+        src={`https://fast.wistia.com/embed/${video.mediaId}.js`}
+        strategy="afterInteractive"
+        type="module"
+      />
+      <style>{fallbackStyles}</style>
+      {createElement("wistia-player", {
+        aspect: "1.7777777777777777",
+        className: "block h-full w-full",
+        "media-id": video.mediaId,
+        title: video.title,
+      })}
+    </>
+  );
+}
+
 function getPreBookingVideo(submitted: StartHereSubmissionSuccessResponse) {
   const servicePath = submitted.submission.fields.servicePath;
 
   if (servicePath === "Banking") {
     return {
       title: "Banking path video",
-      embedUrl:
-        "https://drive.google.com/file/d/1rYeAgJjCDyQjogm8ynmVLX1mBRm53lmc/preview",
+      mediaId: "3b6qkkvvq7",
     };
   }
 
   if (servicePath === "Bespoke plan") {
     return {
       title: "Bespoke path video",
-      embedUrl:
-        "https://drive.google.com/file/d/1DOEPdPs0ejTnHcSKoOLObjCA2ioospXO/preview",
+      mediaId: "omfxogl4rp",
     };
   }
 
