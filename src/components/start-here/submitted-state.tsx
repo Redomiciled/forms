@@ -134,7 +134,7 @@ export function SubmittedState({
               asChild
               className="h-12 w-fit rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
             >
-              <a href="https://www.skool.com/redomiciled" target="_blank">
+              <a href="https://www.skool.com/redomiciled-5554" target="_blank">
                 Visit free community
                 <ArrowUpRight className="size-4" />
               </a>

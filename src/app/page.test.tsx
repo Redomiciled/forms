@@ -275,7 +275,7 @@ describe("Home", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /visit free community/i })
-    ).toBeInTheDocument();
+    ).toHaveAttribute("href", "https://www.skool.com/redomiciled-5554");
     expect(
       screen.getByRole("button", { name: /review answers/i })
     ).toBeInTheDocument();
