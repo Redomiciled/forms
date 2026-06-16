@@ -1,7 +1,7 @@
 import { paidConsultMinimumSchedulingNoticeMetadataValue } from "./scheduling";
 
 export type PaidConsultConfig = {
-  bookedCallOwner: PaidConsultOwner;
+  paidConsultOwner: PaidConsultOwner;
   tallyFormId: string;
   calLink: string;
 };
@@ -31,8 +31,7 @@ export type PaidConsultCalEmbedOptions = {
 
 export const paidConsultOriginPage = "/paid-consult";
 export const paidConsultSource = "paid-consult";
-export const paidConsultBookedCallOwnerFieldId =
-  "580ba4f1-6479-4255-a0c5-be049e3b4e21";
+export const paidConsultOwnerFieldId = "27044f92-d510-44ee-a6ff-d5f88814db3f";
 export const paidConsultOwnerUserIds: Record<PaidConsultOwner, number> = {
   Erik: 99702565,
   Will: 296457746,
@@ -46,17 +45,17 @@ export const paidConsultTallyFormId = "PdOAkB";
 const taskIdPattern = /^[A-Za-z0-9_-]{3,128}$/;
 
 export function getPaidConsultConfig({
-  bookedCallOwner = "Will",
+  paidConsultOwner = "Will",
 }: {
-  bookedCallOwner?: PaidConsultOwner;
+  paidConsultOwner?: PaidConsultOwner;
 } = {}): PaidConsultConfig {
   return {
-    bookedCallOwner,
+    paidConsultOwner,
     tallyFormId:
       cleanConfigValue(
         process.env["NEXT_PUBLIC_REDOMICILED_PAID_CONSULT_TALLY_FORM_ID"]
       ) || paidConsultTallyFormId,
-    calLink: normalizeCalLink(paidConsultCalLinks[bookedCallOwner]),
+    calLink: normalizeCalLink(paidConsultCalLinks[paidConsultOwner]),
   };
 }
 
@@ -121,13 +120,13 @@ export function buildTallyMsaEmbedUrl({
 }
 
 export function getPaidConsultCalEmbedOptions({
-  bookedCallOwner,
   calLink,
+  paidConsultOwner,
   prefill,
   taskId,
 }: {
-  bookedCallOwner: PaidConsultOwner;
   calLink: string;
+  paidConsultOwner: PaidConsultOwner;
   prefill?: PaidConsultPrefill | null;
   taskId: string;
 }): PaidConsultCalEmbedOptions | null {
@@ -144,7 +143,7 @@ export function getPaidConsultCalEmbedOptions({
       ...toCalMetadataConfig({
         source: paidConsultSource,
         clickUpTaskId: taskId,
-        bookedCallOwner,
+        paidConsultOwner,
         originPage: paidConsultOriginPage,
         minimumSchedulingNotice:
           paidConsultMinimumSchedulingNoticeMetadataValue,
@@ -163,7 +162,9 @@ export function resolvePaidConsultOwnerFromCustomFields(
   customFields: PaidConsultClickUpCustomField[] | undefined
 ): PaidConsultOwner {
   const ownerField = customFields?.find(
-    (field) => field.id === paidConsultBookedCallOwnerFieldId
+    (field) =>
+      field.id === paidConsultOwnerFieldId ||
+      field.name === "Paid Consult Owner"
   );
   const userIds = extractClickUpPeopleUserIds(ownerField?.value);
 

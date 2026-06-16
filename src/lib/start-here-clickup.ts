@@ -50,6 +50,7 @@ const FIELD_IDS = {
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
   servicePath: "f8578a38-9aa4-4355-bf75-72eeb780fbc2",
   bookedCallOwner: "580ba4f1-6479-4255-a0c5-be049e3b4e21",
+  paidConsultOwner: "27044f92-d510-44ee-a6ff-d5f88814db3f",
   calComBookingId: "7d5007ea-07e9-4796-a656-49e8548a032c",
 } as const;
 
@@ -267,6 +268,7 @@ export function buildClickUpFieldValues(
 ): ClickUpFieldValue[] {
   const fields = submission.fields;
   const bookedCallOwner = getOwnerUserIds(submission);
+  const paidConsultOwner: number[] = [OWNER_USER_IDS.Will];
 
   return [
     { id: FIELD_IDS.firstName, value: fields.firstName },
@@ -350,6 +352,15 @@ export function buildClickUpFieldValues(
         add: bookedCallOwner,
         rem: Object.values(OWNER_USER_IDS).filter(
           (userId) => !bookedCallOwner.includes(userId)
+        ),
+      },
+    },
+    {
+      id: FIELD_IDS.paidConsultOwner,
+      value: {
+        add: paidConsultOwner,
+        rem: Object.values(OWNER_USER_IDS).filter(
+          (userId) => !paidConsultOwner.includes(userId)
         ),
       },
     },

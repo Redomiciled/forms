@@ -36,7 +36,7 @@ export default async function PaidConsultPage({
   const taskContext = taskId
     ? await getPaidConsultContextFromClickUpTask(taskId)
     : null;
-  const bookedCallOwner = "Will";
+  const paidConsultOwner = taskContext?.paidConsultOwner ?? "Will";
 
   return (
     <main className="relative min-h-dvh bg-[#070720] lg:h-dvh lg:overflow-hidden">
@@ -44,7 +44,7 @@ export default async function PaidConsultPage({
       <div className="pointer-events-none absolute inset-0 [background-image:linear-gradient(125deg,transparent_0%,rgba(255,255,255,0.13)_46%,transparent_70%)] opacity-35" />
       <div className="relative lg:h-full">
         <PaidConsultFlow
-          config={getPaidConsultConfig({ bookedCallOwner })}
+          config={getPaidConsultConfig({ paidConsultOwner })}
           hasInvalidTaskId={Boolean(rawTaskId && !taskId)}
           prefill={taskContext?.prefill ?? null}
           previewState={previewStep}

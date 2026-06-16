@@ -41,6 +41,7 @@ const FIELD_IDS = {
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
   servicePath: "f8578a38-9aa4-4355-bf75-72eeb780fbc2",
   bookedCallOwner: "580ba4f1-6479-4255-a0c5-be049e3b4e21",
+  paidConsultOwner: "27044f92-d510-44ee-a6ff-d5f88814db3f",
   calComBookingId: "7d5007ea-07e9-4796-a656-49e8548a032c",
 } as const;
 
@@ -194,6 +195,7 @@ const CLICKUP_FIELD_CONTRACT: Array<{
     optionIds: Object.values(OPTION_IDS.servicePath),
   },
   { fieldId: FIELD_IDS.bookedCallOwner },
+  { fieldId: FIELD_IDS.paidConsultOwner },
   { fieldId: FIELD_IDS.calComBookingId },
 ] as const;
 
@@ -259,6 +261,13 @@ describe("buildClickUpFieldValues", () => {
         rem: [OWNER_USER_IDS.Erik],
       },
     });
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.paidConsultOwner,
+      value: {
+        add: [OWNER_USER_IDS.Will],
+        rem: [OWNER_USER_IDS.Erik],
+      },
+    });
   });
 
   it("uses the live Current Residency field ID", () => {
@@ -284,7 +293,7 @@ describe("buildClickUpFieldValues", () => {
     });
   });
 
-  it("maps non-banking booked calls to Bespoke plan", () => {
+  it("maps non-banking booked calls to Bespoke plan owned by Erik", () => {
     const clickUpFields = buildClickUpFieldValues(
       prepareStartHereSubmission(
         makeValues({
@@ -297,6 +306,20 @@ describe("buildClickUpFieldValues", () => {
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.servicePath,
       value: OPTION_IDS.servicePath.bespokePlan,
+    });
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.bookedCallOwner,
+      value: {
+        add: [OWNER_USER_IDS.Erik],
+        rem: [OWNER_USER_IDS.Will],
+      },
+    });
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.paidConsultOwner,
+      value: {
+        add: [OWNER_USER_IDS.Will],
+        rem: [OWNER_USER_IDS.Erik],
+      },
     });
   });
 
@@ -387,7 +410,7 @@ describe("Start Here ClickUp API persistence", () => {
     });
     expect(createBodies).toHaveLength(1);
     expect(createBodies[0]).toMatchObject({
-      assignees: [OWNER_USER_IDS.Will],
+      assignees: [OWNER_USER_IDS.Erik],
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
     });
@@ -441,7 +464,7 @@ describe("Start Here ClickUp API persistence", () => {
     });
     expect(createBodies).toHaveLength(1);
     expect(createBodies[0]).toMatchObject({
-      assignees: [OWNER_USER_IDS.Will],
+      assignees: [OWNER_USER_IDS.Erik],
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
       status: "START HERE SUBMITTED",
@@ -506,13 +529,22 @@ describe("Start Here ClickUp API persistence", () => {
     expect(updateBodies).toHaveLength(1);
     expect(updateBodies[0]).toMatchObject({
       assignees: {
-        add: [OWNER_USER_IDS.Will],
-        rem: [OWNER_USER_IDS.Erik],
+        add: [OWNER_USER_IDS.Erik],
+        rem: [OWNER_USER_IDS.Will],
       },
     });
     expect(fieldUpdateBodies).toContainEqual({
       fieldId: FIELD_IDS.email,
       body: { value: "changed@example.com" },
+    });
+    expect(fieldUpdateBodies).toContainEqual({
+      fieldId: FIELD_IDS.paidConsultOwner,
+      body: {
+        value: {
+          add: [OWNER_USER_IDS.Will],
+          rem: [OWNER_USER_IDS.Erik],
+        },
+      },
     });
   });
 
@@ -675,6 +707,7 @@ describe("Start Here ClickUp API persistence", () => {
           OPTION_IDS.servicePath.banking
         ),
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
+        [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.calComBookingId]: "",
       });
 
@@ -721,7 +754,8 @@ describe("Start Here ClickUp API persistence", () => {
           FIELD_IDS.servicePath,
           OPTION_IDS.servicePath.bespokePlan
         ),
-        [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
+        [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Erik],
+        [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.importantRoutingNotes]:
           "Second automated ClickUp integration test. Safe to delete.",
       });
@@ -813,6 +847,7 @@ describe("Start Here ClickUp API persistence", () => {
           OPTION_IDS.servicePath.otherManualReview
         ),
         [FIELD_IDS.bookedCallOwner]: [],
+        [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
       });
     } finally {
       await deleteAndVerifyQaTasks(apiToken, [...createdTaskIds]);
@@ -886,6 +921,7 @@ describe("Start Here ClickUp API persistence", () => {
           OPTION_IDS.servicePath.unknown
         ),
         [FIELD_IDS.bookedCallOwner]: [],
+        [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
       });
     } finally {
       await deleteAndVerifyQaTasks(apiToken, [...createdTaskIds]);
@@ -989,7 +1025,10 @@ function normalizeClickUpReadValue(
   value: unknown,
   expectedValue: unknown
 ) {
-  if (fieldId === FIELD_IDS.bookedCallOwner) {
+  if (
+    fieldId === FIELD_IDS.bookedCallOwner ||
+    fieldId === FIELD_IDS.paidConsultOwner
+  ) {
     return normalizeClickUpPeopleValue(value);
   }
 

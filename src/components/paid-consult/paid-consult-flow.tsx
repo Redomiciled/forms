@@ -61,12 +61,12 @@ export function PaidConsultFlow({
     }
 
     return getPaidConsultCalEmbedOptions({
-      bookedCallOwner: config.bookedCallOwner,
       calLink: config.calLink,
+      paidConsultOwner: config.paidConsultOwner,
       prefill,
       taskId,
     });
-  }, [config.bookedCallOwner, config.calLink, prefill, taskId]);
+  }, [config.calLink, config.paidConsultOwner, prefill, taskId]);
   const handleBookingSubmitted = useCallback(() => {
     setBookingSubmitted(true);
   }, []);

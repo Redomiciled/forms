@@ -6,7 +6,7 @@ import {
   getPaidConsultOwnerFromClickUpTask,
 } from "./paid-consult-clickup";
 import {
-  paidConsultBookedCallOwnerFieldId,
+  paidConsultOwnerFieldId,
   paidConsultOwnerUserIds,
 } from "./paid-consult";
 
@@ -23,12 +23,12 @@ afterEach(() => {
 });
 
 describe("paid consult ClickUp owner lookup", () => {
-  it("fetches the task and resolves Erik from Booked Call Owner", async () => {
+  it("fetches the task and resolves Erik from Paid Consult Owner", async () => {
     const fetchImpl = vi.fn(async () =>
       Response.json({
         custom_fields: [
           {
-            id: paidConsultBookedCallOwnerFieldId,
+            id: paidConsultOwnerFieldId,
             value: [{ id: paidConsultOwnerUserIds.Erik }],
           },
         ],
@@ -72,7 +72,7 @@ describe("paid consult ClickUp owner lookup", () => {
     await expect(
       getPaidConsultContextFromClickUpTask("CU-123", { fetchImpl })
     ).resolves.toEqual({
-      bookedCallOwner: "Will",
+      paidConsultOwner: "Will",
       prefill: {
         email: "juan.h@pulpsense.com",
         firstName: "Juan Cruz",
