@@ -27,7 +27,7 @@ describe("deriveStartHereRoute", () => {
     expect(route.routingDecisionSignals).toContain("Known product/path");
   });
 
-  it("routes clear non-banking intent with net worth signal to Will's booked call", () => {
+  it("routes clear non-banking intent with net worth signal to Erik's booked call", () => {
     const route = deriveStartHereRoute(
       makeValues({
         consideringSpecificStructure:
@@ -39,10 +39,8 @@ describe("deriveStartHereRoute", () => {
     );
 
     expect(route.startHereFormRoute).toBe("Booked Call");
-    expect(route.bookedCallOwner).toBe("Will");
-    expect(route.calendarUrl).toBe(
-      "https://cal.com/william-denton-redomiciled/30min"
-    );
+    expect(route.bookedCallOwner).toBe("Erik");
+    expect(route.calendarUrl).toBe("https://cal.com/erik-redomiciled/30min");
   });
 
   it("routes warm low-fit leads to manual triage instead of unqualified", () => {
@@ -100,6 +98,7 @@ describe("deriveStartHereRoute", () => {
     );
 
     expect(route.startHereFormRoute).toBe("Booked Call");
+    expect(route.bookedCallOwner).toBe("Erik");
     expect(route.routingDecisionSignals).toContain(
       "Urgent low commercial signal"
     );

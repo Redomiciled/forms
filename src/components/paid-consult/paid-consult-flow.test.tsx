@@ -15,7 +15,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}
@@ -38,7 +38,7 @@ describe("PaidConsultFlow", () => {
   it("renders a client-safe pending state when production embeds are not configured", () => {
     render(
       <PaidConsultFlow
-        config={{ bookedCallOwner: "Will", tallyFormId: "", calLink: "" }}
+        config={{ paidConsultOwner: "Will", tallyFormId: "", calLink: "" }}
         hasInvalidTaskId={false}
         taskId="CU-123"
       />
@@ -58,7 +58,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}
@@ -98,7 +98,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}
@@ -128,7 +128,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}
@@ -150,7 +150,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}
@@ -196,7 +196,7 @@ describe("PaidConsultFlow", () => {
     render(
       <PaidConsultFlow
         config={{
-          bookedCallOwner: "Will",
+          paidConsultOwner: "Will",
           tallyFormId: "msa123",
           calLink: "redomiciled/paid",
         }}

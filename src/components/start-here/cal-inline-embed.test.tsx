@@ -29,7 +29,7 @@ describe("getCalEmbedOptions", () => {
     });
   });
 
-  it("builds the Will Cal.com inline embed config for non-banking booked calls", () => {
+  it("builds the Erik Cal.com inline embed config for non-banking booked calls", () => {
     const result = makeSubmittedResult({
       submission: prepareStartHereSubmission({
         firstName: "Taylor",
@@ -55,9 +55,9 @@ describe("getCalEmbedOptions", () => {
     });
 
     expect(getCalEmbedOptions(result)).toMatchObject({
-      calLink: "william-denton-redomiciled/30min",
+      calLink: "erik-redomiciled/30min",
       config: {
-        "metadata[bookedCallOwner]": "Will",
+        "metadata[bookedCallOwner]": "Erik",
       },
     });
   });

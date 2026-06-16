@@ -16,6 +16,7 @@ const OWNER_USER_IDS = {
   Will: 296457746,
   Erik: 99702565,
 } as const;
+const PAID_CONSULT_OWNER_FIELD_ID = "27044f92-d510-44ee-a6ff-d5f88814db3f";
 const ROUTE_CASES: Array<{
   label: string;
   route: StartHereFormRoute;
@@ -104,7 +105,7 @@ describe("Start Here ClickUp task payloads", () => {
       expect(
         (fetchMock.createBodies[0] as Record<string, unknown>)["assignees"]
       ).toEqual(route === "Booked Call" ? [OWNER_USER_IDS.Will] : undefined);
-      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(25);
+      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(26);
     }
   );
 
@@ -123,6 +124,13 @@ describe("Start Here ClickUp task payloads", () => {
     expect(getCreateCustomFields(fetchMock.createBodies[0])).toContainEqual({
       id: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
       value: "taylor@example.com",
+    });
+    expect(getCreateCustomFields(fetchMock.createBodies[0])).toContainEqual({
+      id: PAID_CONSULT_OWNER_FIELD_ID,
+      value: {
+        add: [OWNER_USER_IDS.Will],
+        rem: [OWNER_USER_IDS.Erik],
+      },
     });
   });
 });

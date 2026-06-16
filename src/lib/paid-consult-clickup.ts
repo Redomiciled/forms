@@ -27,7 +27,7 @@ type PaidConsultClickUpTask = {
 };
 
 export type PaidConsultClickUpContext = {
-  bookedCallOwner: PaidConsultOwner;
+  paidConsultOwner: PaidConsultOwner;
   prefill: PaidConsultPrefill;
 };
 
@@ -49,7 +49,7 @@ export async function getPaidConsultOwnerFromClickUpTask(
   options: { fetchImpl?: typeof fetch } = {}
 ): Promise<PaidConsultOwner> {
   const context = await getPaidConsultContextFromClickUpTask(taskId, options);
-  return context.bookedCallOwner;
+  return context.paidConsultOwner;
 }
 
 export async function getPaidConsultContextFromClickUpTask(
@@ -63,7 +63,7 @@ export async function getPaidConsultContextFromClickUpTask(
   }
 
   return {
-    bookedCallOwner: resolvePaidConsultOwnerFromCustomFields(
+    paidConsultOwner: resolvePaidConsultOwnerFromCustomFields(
       task.custom_fields
     ),
     prefill: resolvePaidConsultPrefillFromCustomFields(task.custom_fields),
@@ -168,7 +168,7 @@ function getPaidConsultClickUpConfig(): PaidConsultClickUpConfig {
 
 function getDefaultPaidConsultContext(): PaidConsultClickUpContext {
   return {
-    bookedCallOwner: "Will",
+    paidConsultOwner: "Will",
     prefill: {},
   };
 }
