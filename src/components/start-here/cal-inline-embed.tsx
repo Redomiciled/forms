@@ -117,13 +117,13 @@ export function CalInlineEmbed({
       <div
         role="region"
         aria-label="Booking calendar"
-        className="grid min-h-[24rem] place-items-center rounded-2xl border border-white/15 bg-white/8 p-5 text-center"
+        className="border-line bg-mist grid min-h-[24rem] place-items-center rounded-2xl border p-5 text-center"
       >
         <div className="max-w-sm space-y-3">
-          <p className="text-sm font-semibold text-white">
+          <p className="text-ink text-sm font-semibold">
             Cal.com calendar pending
           </p>
-          <p className="text-sm leading-6 text-white/68">
+          <p className="text-stone text-sm leading-6">
             Calendar availability is being finalized. The live booking calendar
             will appear here once scheduling is connected.
           </p>
@@ -136,20 +136,20 @@ export function CalInlineEmbed({
     <div
       role="region"
       aria-label="Booking calendar"
-      className="w-full overflow-visible rounded-2xl border border-white/15 bg-white text-[#111] lg:h-full lg:min-h-0 lg:overflow-hidden"
+      className="border-line bg-paper text-ink w-full overflow-visible rounded-2xl border lg:h-full lg:min-h-0 lg:overflow-hidden"
     >
       {embedFailed ? (
-        <div className="grid min-h-[52rem] place-items-center p-5 text-center text-[#111] sm:min-h-[44rem] lg:h-full lg:min-h-0">
+        <div className="text-ink grid min-h-[52rem] place-items-center p-5 text-center sm:min-h-[44rem] lg:h-full lg:min-h-0">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Calendar unavailable</p>
-            <p className="text-sm leading-6 text-black/65">
+            <p className="text-stone text-sm leading-6">
               Refresh the page to load the booking calendar again.
             </p>
           </div>
         </div>
       ) : null}
       {bookingCompleted ? (
-        <p className="border-b border-black/10 bg-[#F6F6FF] px-4 py-3 text-center text-sm font-medium text-[#2422A1]">
+        <p className="border-line bg-brand/5 text-brand border-b px-4 py-3 text-center text-sm font-medium">
           Booking received. We will send the details to Redomiciled.
         </p>
       ) : null}
@@ -157,10 +157,10 @@ export function CalInlineEmbed({
         ref={containerRef}
         className="min-h-[52rem] w-full sm:min-h-[44rem] lg:h-full lg:min-h-0"
       >
-        <div className="grid h-full place-items-center p-5 text-center text-[#111]">
+        <div className="text-ink grid h-full place-items-center p-5 text-center">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Loading calendar...</p>
-            <p className="text-sm leading-6 text-black/65">
+            <p className="text-stone text-sm leading-6">
               Availability should appear in a moment.
             </p>
           </div>

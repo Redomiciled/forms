@@ -7,8 +7,9 @@ import {
 
 export const PLACEHOLDERS = {
   clickUpListId: "PLACEHOLDER_CLICKUP_CRM_LIST_ID",
-  erikCalendarUrl: "https://cal.com/erik-redomiciled/30min",
-  willCalendarUrl: "https://cal.com/william-denton-redomiciled/30min",
+  erikCalendarUrl: "https://cal.com/eric-redomiciled/30min",
+  willCalendarUrl:
+    "https://cal.com/william-denton-redomiciled/meeting-with-william",
 } as const;
 
 export const leadSourceDetails = [
@@ -19,6 +20,8 @@ export const leadSourceDetails = [
   "Cold Ad",
   "Other",
 ] as const;
+
+export const leadSources = ["Start Here Form", "Landing Page"] as const;
 
 export const consideringSpecificStructureOptions = [
   "Yes — I know what structure I want, or I know I need a bank account",
@@ -97,6 +100,7 @@ export const servicePathOptions = [
 ] as const;
 
 export type LeadSourceDetail = (typeof leadSourceDetails)[number];
+export type LeadSource = (typeof leadSources)[number];
 export type ConsideringSpecificStructure =
   (typeof consideringSpecificStructureOptions)[number];
 export type TryingToSolve = (typeof tryingToSolveOptions)[number];
@@ -232,7 +236,7 @@ export type StartHerePreparedSubmission = {
     lastName: string;
     email: string;
     phone: string;
-    leadSource: "Start Here Form";
+    leadSource: LeadSource;
     leadSourceDetail: LeadSourceDetail;
     referralDetail?: string;
     warmOverride: boolean;
@@ -305,7 +309,8 @@ export function validateStartHereValues(
 }
 
 export function prepareStartHereSubmission(
-  values: StartHereFormValues
+  values: StartHereFormValues,
+  options: { leadSource?: LeadSource } = {}
 ): StartHerePreparedSubmission {
   const leadSourceDetail = getEffectiveLeadSourceDetail(values);
   const route = deriveStartHereRoute(values);
@@ -321,7 +326,7 @@ export function prepareStartHereSubmission(
       lastName: values.lastName.trim(),
       email: values.email.trim().toLowerCase(),
       phone: values.phone.trim(),
-      leadSource: "Start Here Form",
+      leadSource: options.leadSource ?? "Start Here Form",
       leadSourceDetail,
       ...(values.referralDetail.trim()
         ? { referralDetail: values.referralDetail.trim() }

@@ -20,19 +20,18 @@ import {
 import { cn } from "@/lib/utils";
 
 const fieldControlClassName =
-  "h-12 rounded-2xl border-white/16 bg-white/10 px-4 text-base text-white placeholder:text-white/35 focus-visible:border-[#8D8BFF] focus-visible:ring-4 focus-visible:ring-[#5C59FF]/20";
+  "h-12 rounded-2xl border-line bg-paper px-4 text-base text-ink placeholder:text-stone/55 focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-brand/15";
 
 const optionCardClassName =
-  "min-h-12 cursor-pointer rounded-2xl border px-4 py-3 text-left text-sm leading-5 transition peer-focus-visible:border-[#8D8BFF] peer-focus-visible:ring-4 peer-focus-visible:ring-[#5C59FF]/20";
+  "min-h-12 cursor-pointer rounded-2xl border px-4 py-3 text-left text-sm leading-5 transition peer-focus-visible:border-brand peer-focus-visible:ring-4 peer-focus-visible:ring-brand/15";
 
 const binaryCardClassName =
-  "flex h-12 cursor-pointer items-center justify-center rounded-2xl border px-4 text-sm transition peer-focus-visible:border-[#8D8BFF] peer-focus-visible:ring-4 peer-focus-visible:ring-[#5C59FF]/20";
+  "flex h-12 cursor-pointer items-center justify-center rounded-2xl border px-4 text-sm transition peer-focus-visible:border-brand peer-focus-visible:ring-4 peer-focus-visible:ring-brand/15";
 
-const activeOptionClassName =
-  "border-[#A3A1FF] bg-white/20 text-white shadow-[0_0_22px_rgba(92,89,255,0.24)]";
+const activeOptionClassName = "border-brand bg-brand/5 text-ink shadow-sm";
 
 const inactiveOptionClassName =
-  "border-white/14 bg-white/8 text-white/72 hover:border-white/28 hover:bg-white/12";
+  "border-line bg-paper text-stone hover:border-brand/50 hover:bg-mist hover:text-ink";
 
 const cardControlClassName =
   "absolute inset-0 z-10 h-full w-full cursor-pointer rounded-2xl opacity-0";
@@ -60,14 +59,14 @@ export function TextField({
   error?: string | undefined;
 }) {
   return (
-    <Label className="grid gap-2 text-sm font-medium text-white/78">
-      <span className={error ? "text-rose-100" : undefined}>{label}</span>
+    <Label className="text-ink grid gap-2 text-sm font-medium">
+      <span className={error ? "text-red-600" : undefined}>{label}</span>
       <Input
         aria-invalid={Boolean(error)}
         className={cn(
           fieldControlClassName,
           error &&
-            "border-rose-300/70 bg-rose-500/10 focus-visible:border-rose-200 focus-visible:ring-rose-400/25"
+            "border-red-600/70 bg-red-50 focus-visible:border-red-600 focus-visible:ring-red-600/15"
         )}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -96,21 +95,18 @@ export function PhoneField({
   return (
     <fieldset className="grid gap-2">
       <legend
-        className={cn(
-          "text-sm font-medium text-white/78",
-          error && "text-rose-100"
-        )}
+        className={cn("text-ink text-sm font-medium", error && "text-red-600")}
       >
         {label}
       </legend>
       <div
         className={cn(
-          "flex h-12 overflow-hidden rounded-2xl border border-white/16 bg-white/10 focus-within:border-[#8D8BFF] focus-within:ring-4 focus-within:ring-[#5C59FF]/20",
+          "border-line bg-paper focus-within:border-brand focus-within:ring-brand/15 flex h-12 overflow-hidden rounded-2xl border focus-within:ring-4",
           error &&
-            "border-rose-300/70 bg-rose-500/10 focus-within:border-rose-200 focus-within:ring-rose-400/25"
+            "border-red-600/70 bg-red-50 focus-within:border-red-600 focus-within:ring-red-600/15"
         )}
       >
-        <div className="flex h-12 w-24 shrink-0 items-center border-r border-white/25 bg-white/6 pl-3 sm:w-36 sm:pl-4">
+        <div className="border-line bg-mist flex h-12 w-24 shrink-0 items-center border-r pl-3 sm:w-36 sm:pl-4">
           <span
             aria-label={activeCountry?.name ?? "Unknown country"}
             className="w-7 text-base"
@@ -119,7 +115,7 @@ export function PhoneField({
           </span>
           <Input
             aria-label="Country calling code"
-            className="h-12 w-full rounded-none border-0 bg-transparent px-1 text-base font-medium text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0"
+            className="text-ink placeholder:text-stone/55 h-12 w-full rounded-none border-0 bg-transparent px-1 text-base font-medium shadow-none outline-none focus-visible:border-0 focus-visible:ring-0"
             value={dialCode}
             onChange={(event) =>
               onChange(joinPhoneValue(event.target.value, localNumber))
@@ -133,7 +129,7 @@ export function PhoneField({
         <Input
           aria-label="Phone number"
           aria-invalid={Boolean(error)}
-          className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-3 text-base text-white shadow-none outline-none placeholder:text-white/35 focus-visible:border-0 focus-visible:ring-0 sm:px-4"
+          className="text-ink placeholder:text-stone/55 h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-3 text-base shadow-none outline-none focus-visible:border-0 focus-visible:ring-0 sm:px-4"
           value={localNumber}
           onChange={(event) =>
             onChange(joinPhoneValue(dialCode, event.target.value))
@@ -160,15 +156,15 @@ export function TextArea({
   error?: string | undefined;
 }) {
   return (
-    <Label className="grid gap-2 text-sm font-medium text-white/78">
-      <span className={error ? "text-rose-100" : undefined}>{label}</span>
+    <Label className="text-ink grid gap-2 text-sm font-medium">
+      <span className={error ? "text-red-600" : undefined}>{label}</span>
       <Textarea
         aria-invalid={Boolean(error)}
         className={cn(
           fieldControlClassName,
           "min-h-28 resize-y py-3",
           error &&
-            "border-rose-300/70 bg-rose-500/10 focus-visible:border-rose-200 focus-visible:ring-rose-400/25"
+            "border-red-600/70 bg-red-50 focus-visible:border-red-600 focus-visible:ring-red-600/15"
         )}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -214,17 +210,14 @@ export function CountrySelectField({
   return (
     <fieldset className="grid gap-4">
       <legend
-        className={cn(
-          "text-sm font-medium text-white/78",
-          error && "text-rose-100"
-        )}
+        className={cn("text-ink text-sm font-medium", error && "text-red-600")}
       >
         {label}
       </legend>
       <div
         className={cn(
-          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-4",
-          error && "border-rose-300/70 bg-rose-500/10"
+          "border-line bg-mist grid gap-3 rounded-2xl border p-4",
+          error && "border-red-600/70 bg-red-50"
         )}
       >
         {filteredCountries.length > 0 ? (
@@ -253,7 +246,7 @@ export function CountrySelectField({
             })}
           </div>
         ) : query.trim() ? (
-          <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
+          <p className="border-line bg-paper text-stone rounded-xl border px-3 py-2 text-sm">
             No countries match that search.
           </p>
         ) : null}
@@ -278,7 +271,7 @@ export function CountrySelectField({
           placeholder="Search country"
         />
         {selectedCountry ? (
-          <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/12 bg-white/10 px-3 py-2 text-sm text-white/78">
+          <div className="border-line bg-paper text-ink inline-flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-sm">
             <span>{selectedCountry.flag}</span>
             <span>{selectedCountry.name}</span>
           </div>
@@ -318,17 +311,14 @@ export function CountryMultiSelectField({
   return (
     <fieldset className="grid gap-4">
       <legend
-        className={cn(
-          "text-sm font-medium text-white/78",
-          error && "text-rose-100"
-        )}
+        className={cn("text-ink text-sm font-medium", error && "text-red-600")}
       >
         {label}
       </legend>
       <div
         className={cn(
-          "grid gap-3 rounded-2xl border border-white/16 bg-white/8 p-4",
-          error && "border-rose-300/70 bg-rose-500/10"
+          "border-line bg-mist grid gap-3 rounded-2xl border p-4",
+          error && "border-red-600/70 bg-red-50"
         )}
       >
         {filteredCountries.length > 0 ? (
@@ -353,7 +343,7 @@ export function CountryMultiSelectField({
             ))}
           </div>
         ) : query.trim() ? (
-          <p className="rounded-xl border border-white/12 bg-white/6 px-3 py-2 text-sm text-white/55">
+          <p className="border-line bg-paper text-stone rounded-xl border px-3 py-2 text-sm">
             No countries match that search.
           </p>
         ) : null}
@@ -387,12 +377,12 @@ export function CountryMultiSelectField({
                 key={country}
                 type="button"
                 aria-label={`Remove ${country}`}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/12 bg-white/12 px-3 py-2 text-sm text-white/82 hover:border-white/24 hover:bg-white/16"
+                className="border-line bg-paper text-ink hover:border-brand/50 hover:bg-cloud inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm"
                 onClick={() => toggleCountry(country)}
               >
                 <span>{getCountryFlag(country)}</span>
                 <span>{country}</span>
-                <span className="text-white/45">×</span>
+                <span className="text-stone">×</span>
               </button>
             ))}
           </div>
@@ -431,8 +421,8 @@ export function OptionGroup<Option extends string>({
     <fieldset>
       <legend
         className={cn(
-          "mb-3 text-sm font-medium text-white/78",
-          error && "text-rose-100"
+          "text-ink mb-3 text-sm font-medium",
+          error && "text-red-600"
         )}
       >
         {label}
@@ -463,7 +453,7 @@ export function OptionGroup<Option extends string>({
                 className={cn(
                   optionCardClassName,
                   active ? activeOptionClassName : inactiveOptionClassName,
-                  error && !value && "border-rose-300/60 bg-rose-500/10"
+                  error && !value && "border-red-600/60 bg-red-50"
                 )}
               >
                 {option}
@@ -494,8 +484,8 @@ export function CheckboxGroup<Option extends string>({
     <fieldset>
       <legend
         className={cn(
-          "mb-3 text-sm font-medium text-white/78",
-          error && "text-rose-100"
+          "text-ink mb-3 text-sm font-medium",
+          error && "text-red-600"
         )}
       >
         {label}
@@ -523,12 +513,10 @@ export function CheckboxGroup<Option extends string>({
                   "flex items-center gap-3",
                   optionCardClassName,
                   active ? activeOptionClassName : inactiveOptionClassName,
-                  error &&
-                    values.length === 0 &&
-                    "border-rose-300/60 bg-rose-500/10"
+                  error && values.length === 0 && "border-red-600/60 bg-red-50"
                 )}
               >
-                <span className="grid size-5 shrink-0 place-items-center rounded-md border border-white/25 bg-white/8">
+                <span className="border-line bg-paper text-brand grid size-5 shrink-0 place-items-center rounded-md border">
                   {active ? <Check className="size-3.5" /> : null}
                 </span>
                 {option}
@@ -557,8 +545,8 @@ export function BinaryGroup({
     <fieldset>
       <legend
         className={cn(
-          "mb-3 text-sm font-medium text-white/78",
-          error && "text-rose-100"
+          "text-ink mb-3 text-sm font-medium",
+          error && "text-red-600"
         )}
       >
         {label}
@@ -592,7 +580,7 @@ export function BinaryGroup({
                 className={cn(
                   binaryCardClassName,
                   active ? activeOptionClassName : inactiveOptionClassName,
-                  error && value === null && "border-rose-300/60 bg-rose-500/10"
+                  error && value === null && "border-red-600/60 bg-red-50"
                 )}
               >
                 {option.label}
@@ -618,7 +606,7 @@ function FieldError({
   }
 
   return (
-    <p className={cn("text-xs font-medium text-rose-100", className)}>
+    <p className={cn("text-xs font-medium text-red-600", className)}>
       {message}
     </p>
   );
@@ -626,9 +614,9 @@ function FieldError({
 
 export function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="text-card-foreground gap-0 rounded-2xl border border-white/12 bg-white/8 p-4 ring-0">
-      <p className="text-xs text-white/45">{label}</p>
-      <p className="mt-1 font-semibold text-white">{value}</p>
+    <Card className="text-card-foreground border-line bg-paper gap-0 rounded-2xl border p-4 ring-0">
+      <p className="text-stone text-xs">{label}</p>
+      <p className="text-ink mt-1 font-semibold">{value}</p>
     </Card>
   );
 }
@@ -641,9 +629,9 @@ export function SummaryItem({
   value: string;
 }) {
   return (
-    <Card className="text-card-foreground gap-0 rounded-2xl border border-white/12 bg-white/8 p-4 ring-0">
-      <dt className="text-xs text-white/45">{label}</dt>
-      <dd className="mt-1 text-white/85">{value || "Not provided"}</dd>
+    <Card className="text-card-foreground border-line bg-paper gap-0 rounded-2xl border p-4 ring-0">
+      <dt className="text-stone text-xs">{label}</dt>
+      <dd className="text-ink mt-1">{value || "Not provided"}</dd>
     </Card>
   );
 }

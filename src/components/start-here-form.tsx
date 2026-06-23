@@ -179,7 +179,7 @@ export function StartHereForm() {
     setSubmitError("");
 
     try {
-      const response = await fetch("/api/start-here/submissions", {
+      const response = await fetch(getSubmissionEndpoint(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -306,7 +306,7 @@ export function StartHereForm() {
   return (
     <section
       ref={shellRef}
-      className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-2 overflow-visible px-5 py-4 text-white sm:h-dvh sm:gap-4 sm:overflow-hidden sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10"
+      className="text-ink mx-auto flex min-h-dvh w-full max-w-7xl flex-col gap-2 overflow-visible px-5 py-4 sm:h-dvh sm:gap-4 sm:overflow-hidden sm:px-8 sm:py-6 lg:grid lg:grid-cols-[0.78fr_1.22fr] lg:gap-8 lg:px-10"
     >
       <StartHereSidebar
         stepIndex={stepIndex}
@@ -321,24 +321,24 @@ export function StartHereForm() {
       />
 
       <form
-        className="flex flex-col rounded-3xl border border-white/16 bg-white/12 p-4 shadow-2xl backdrop-blur-2xl sm:min-h-0 sm:flex-1 sm:p-6"
+        className="border-line bg-mist flex flex-col rounded-3xl border p-4 shadow-lg sm:min-h-0 sm:flex-1 sm:p-6"
         onSubmit={(event) => {
           event.preventDefault();
           submitForm();
         }}
       >
-        <div className="flex flex-col rounded-2xl border border-white/10 bg-[#0C0C2E]/45 sm:min-h-0 sm:flex-1 sm:overflow-hidden">
-          <div className="border-b border-white/10 p-5 sm:p-7">
+        <div className="border-line bg-paper flex flex-col rounded-2xl border sm:min-h-0 sm:flex-1 sm:overflow-hidden">
+          <div className="border-line border-b p-5 sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-[#B9B7FF]">
+                <p className="text-brand text-sm font-medium">
                   {currentStep.eyebrow}
                 </p>
-                <h2 className="mt-1 text-2xl font-semibold">
+                <h2 className="font-heading text-ink mt-1 text-2xl font-medium">
                   {getStepTitle(currentStep.id)}
                 </h2>
               </div>
-              <p className="hidden rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs text-white/65 sm:block">
+              <p className="border-line bg-mist text-stone hidden rounded-full border px-3 py-1 text-xs sm:block">
                 {stepIndex + 1} / {steps.length}
               </p>
             </div>
@@ -348,16 +348,16 @@ export function StartHereForm() {
         </div>
 
         {currentStepHasErrors ? (
-          <p className="mx-auto mt-4 max-w-md text-center text-sm font-medium text-rose-100">
+          <p className="mx-auto mt-4 max-w-md text-center text-sm font-medium text-red-600">
             Please complete the highlighted fields before continuing.
           </p>
         ) : null}
 
-        <div className="mt-4 flex shrink-0 items-center justify-between gap-3 rounded-2xl border border-white/12 bg-[#090923]/80 p-3 shadow-2xl backdrop-blur-xl">
+        <div className="border-line bg-paper mt-4 flex shrink-0 items-center justify-between gap-3 rounded-2xl border p-3 shadow-sm">
           <Button
             type="button"
             variant="ghost"
-            className="h-11 rounded-xl px-4 text-white hover:bg-white/10 hover:text-white"
+            className="text-ink hover:bg-mist hover:text-brand h-11 rounded-xl px-4"
             onClick={goBack}
             disabled={stepIndex === 0}
           >
@@ -366,7 +366,7 @@ export function StartHereForm() {
           </Button>
           <Button
             type="button"
-            className="h-11 rounded-xl bg-[#1E1E1E] px-5 text-white hover:bg-[#111]"
+            className="bg-brand text-paper hover:bg-brand-deep h-11 rounded-xl px-5"
             onClick={goNext}
           >
             {stepIndex === steps.length - 1 ? "Complete" : "Continue"}
@@ -389,12 +389,12 @@ export function StartHereForm() {
             </ScrollArea>
             <DialogFooter>
               {submitError ? (
-                <p className="text-sm leading-5 text-rose-100">{submitError}</p>
+                <p className="text-sm leading-5 text-red-600">{submitError}</p>
               ) : null}
               <Button
                 type="button"
                 variant="ghost"
-                className="h-11 rounded-xl px-4 text-white hover:bg-white/10 hover:text-white"
+                className="text-ink hover:bg-mist hover:text-brand h-11 rounded-xl px-4"
                 onClick={() => setReviewOpen(false)}
                 disabled={submitting}
               >
@@ -402,7 +402,7 @@ export function StartHereForm() {
               </Button>
               <Button
                 type="button"
-                className="h-11 rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
+                className="bg-brand text-paper hover:bg-brand-deep h-11 rounded-xl px-5 font-semibold"
                 onClick={submitForm}
                 disabled={submitting}
                 aria-busy={submitting}
@@ -428,6 +428,16 @@ export function StartHereForm() {
       </form>
     </section>
   );
+}
+
+function getSubmissionEndpoint() {
+  const source = new URLSearchParams(globalThis.location.search).get("source");
+
+  if (source !== "landing_page") {
+    return "/api/start-here/submissions";
+  }
+
+  return "/api/start-here/submissions?source=landing_page";
 }
 
 function useAdminAvailable() {

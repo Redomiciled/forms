@@ -6,8 +6,8 @@ import {
 } from "./start-here";
 
 const CALENDAR_URLS = {
-  erik: "https://cal.com/erik-redomiciled/30min",
-  will: "https://cal.com/william-denton-redomiciled/30min",
+  erik: "https://cal.com/eric-redomiciled/30min",
+  will: "https://cal.com/william-denton-redomiciled/meeting-with-william",
 } as const;
 
 export type StartHereRouteResult = {

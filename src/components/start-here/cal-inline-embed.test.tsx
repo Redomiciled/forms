@@ -10,7 +10,7 @@ describe("getCalEmbedOptions", () => {
     const result = makeSubmittedResult();
 
     expect(getCalEmbedOptions(result)).toMatchObject({
-      calLink: "william-denton-redomiciled/30min",
+      calLink: "william-denton-redomiciled/meeting-with-william",
       config: {
         name: "Taylor Rivera",
         email: "taylor@example.com",
@@ -55,7 +55,7 @@ describe("getCalEmbedOptions", () => {
     });
 
     expect(getCalEmbedOptions(result)).toMatchObject({
-      calLink: "erik-redomiciled/30min",
+      calLink: "eric-redomiciled/30min",
       config: {
         "metadata[bookedCallOwner]": "Erik",
       },

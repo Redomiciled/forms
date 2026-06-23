@@ -316,6 +316,29 @@ describe("Home", () => {
     expect(latestRequestBody.taskId).toBe("test-task-id");
   });
 
+  it("forwards source=landing_page to the submission endpoint", async () => {
+    const user = userEvent.setup();
+
+    window.history.pushState({}, "", "/?admin=1&source=landing_page");
+    render(<Home />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /choose view/i })
+    );
+    await user.click(screen.getByRole("button", { name: /unqualified/i }));
+    await user.click(screen.getByRole("button", { name: /complete/i }));
+    await user.click(
+      screen.getByRole("button", { name: /confirm and continue/i })
+    );
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/start-here/submissions?source=landing_page",
+      expect.objectContaining({
+        method: "POST",
+      })
+    );
+  });
+
   it("does not submit the admin form when pressing Enter in country fields", async () => {
     const user = userEvent.setup();
 

@@ -31,8 +31,8 @@ This repo-local map is limited to values the Start Here form collects or prepare
 - `CLICKUP_FIELD_ID_SERVICE_PATH`: `f8578a38-9aa4-4355-bf75-72eeb780fbc2`
 - `CLICKUP_FIELD_ID_BOOKED_CALL_OWNER`: `580ba4f1-6479-4255-a0c5-be049e3b4e21`
 - `CLICKUP_FIELD_ID_CAL_COM_BOOKING_ID`: `7d5007ea-07e9-4796-a656-49e8548a032c`
-- `CAL_COM_OWNER_ERIK_URL`: `https://cal.com/erik-redomiciled/30min`
-- `CAL_COM_OWNER_WILL_URL`: `https://cal.com/william-denton-redomiciled/30min`
+- `CAL_COM_OWNER_ERIK_URL`: `https://cal.com/eric-redomiciled/30min`
+- `CAL_COM_OWNER_WILL_URL`: `https://cal.com/william-denton-redomiciled/meeting-with-william`
 
 ## Native ClickUp Status Mapping
 
@@ -91,7 +91,7 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
   - **ClickUp field:** `Lead Source`
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_LEAD_SOURCE`
   - **Type:** dropdown
-  - **Submitted value:** `Start Here Form`
+  - **Submitted value:** `Start Here Form` by default, or `Landing Page` when the public form URL includes `source=landing_page`.
   - **QA submitted value:** `Test (Ignore)` for production-list integration tests only.
 
 - `leadSourceDetail`

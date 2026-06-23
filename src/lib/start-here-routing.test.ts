@@ -22,7 +22,7 @@ describe("deriveStartHereRoute", () => {
     expect(route.startHereFormRoute).toBe("Booked Call");
     expect(route.bookedCallOwner).toBe("Will");
     expect(route.calendarUrl).toBe(
-      "https://cal.com/william-denton-redomiciled/30min"
+      "https://cal.com/william-denton-redomiciled/meeting-with-william"
     );
     expect(route.routingDecisionSignals).toContain("Known product/path");
   });
@@ -40,7 +40,7 @@ describe("deriveStartHereRoute", () => {
 
     expect(route.startHereFormRoute).toBe("Booked Call");
     expect(route.bookedCallOwner).toBe("Erik");
-    expect(route.calendarUrl).toBe("https://cal.com/erik-redomiciled/30min");
+    expect(route.calendarUrl).toBe("https://cal.com/eric-redomiciled/30min");
   });
 
   it("routes warm low-fit leads to manual triage instead of unqualified", () => {

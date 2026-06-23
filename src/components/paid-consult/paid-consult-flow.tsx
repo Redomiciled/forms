@@ -138,28 +138,26 @@ export function PaidConsultFlow({
   }, [bookingCompleted, bookingSubmitted, taskId]);
 
   return (
-    <section className="mx-auto grid min-h-dvh w-full max-w-[96rem] gap-5 px-5 py-5 text-white sm:px-8 sm:py-7 lg:h-dvh lg:min-h-0 lg:grid-cols-[0.52fr_1.48fr] lg:gap-6 lg:overflow-hidden lg:px-6 lg:py-4 xl:max-w-[104rem]">
+    <section className="text-ink mx-auto grid min-h-dvh w-full max-w-[96rem] gap-5 px-5 py-5 sm:px-8 sm:py-7 lg:h-dvh lg:min-h-0 lg:grid-cols-[0.7fr_1.3fr] lg:gap-6 lg:overflow-hidden lg:px-6 lg:py-4 xl:max-w-[104rem]">
       <aside className="flex min-h-0 flex-col justify-center gap-5 lg:gap-6">
         <div className="space-y-5">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <Image
-              src="/redomiciled-logo.png"
-              alt=""
-              width={40}
-              height={34}
-              className="h-8 w-auto shrink-0 sm:h-9"
+              src="/redomiciled-logo.webp"
+              alt="Redomiciled"
+              width={166}
+              height={29}
+              className="h-7 w-auto shrink-0"
               priority
             />
-            <p className="text-base font-semibold text-white sm:text-lg">
-              Redomiciled
-            </p>
+            <span className="sr-only">Redomiciled</span>
           </div>
           <div className="space-y-4">
-            <p className="text-sm font-medium text-[#B9B7FF]">Paid consult</p>
-            <h1 className="max-w-2xl text-3xl leading-tight font-semibold sm:text-5xl lg:text-6xl">
+            <p className="text-brand text-sm font-medium">Paid consult</p>
+            <h1 className="font-heading text-ink max-w-2xl text-3xl leading-tight font-medium sm:text-5xl lg:text-6xl">
               Finalize your consult booking.
             </h1>
-            <p className="max-w-xl text-sm leading-6 text-white/72 sm:text-base lg:text-lg lg:leading-7">
+            <p className="text-stone max-w-xl text-sm leading-6 sm:text-base lg:text-lg lg:leading-7">
               Complete the agreement, then book and pay for your private
               Redomiciled consult.
             </p>
@@ -185,8 +183,8 @@ export function PaidConsultFlow({
       </aside>
 
       <div className="flex min-h-0 flex-col justify-center lg:h-full">
-        <div className="min-h-0 rounded-3xl border border-white/16 bg-white/12 p-3 shadow-2xl backdrop-blur-2xl sm:p-4 lg:max-h-full xl:p-3">
-          <div className="flex min-h-[32rem] flex-col rounded-2xl border border-white/10 bg-[#0C0C2E]/45 p-4 sm:p-5 lg:h-[calc(100dvh-4rem)] lg:min-h-0">
+        <div className="border-line bg-mist min-h-0 rounded-3xl border p-3 shadow-lg sm:p-4 lg:max-h-full xl:p-3">
+          <div className="border-line bg-paper flex min-h-[32rem] flex-col rounded-2xl border p-4 sm:p-5 lg:h-[calc(100dvh-4rem)] lg:min-h-0">
             {!taskId ? (
               <RouteIssueState hasInvalidTaskId={hasInvalidTaskId} />
             ) : !configured ? (
@@ -214,7 +212,7 @@ export function PaidConsultFlow({
                 {bookingSubmitted ? (
                   <p
                     role="status"
-                    className="rounded-xl border border-white/12 bg-white/8 px-3 py-2 text-sm text-white/72"
+                    className="border-line bg-brand/5 text-stone rounded-xl border px-3 py-2 text-sm"
                   >
                     Confirming your paid booking with Redomiciled. Keep this
                     page open for a moment.
@@ -254,15 +252,17 @@ function BookingCompleteState() {
     <div
       role="region"
       aria-label="Booking confirmation"
-      className="grid min-h-[32rem] flex-1 place-items-center rounded-2xl border border-white/15 bg-white p-6 text-center text-[#111]"
+      className="border-line bg-paper text-ink grid min-h-[32rem] flex-1 place-items-center rounded-2xl border p-6 text-center"
     >
       <div className="max-w-lg space-y-5">
         <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-700">
           <CircleCheck className="size-8" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-3xl font-semibold">Booking received.</h2>
-          <p className="text-sm leading-6 text-black/65 sm:text-base">
+          <h2 className="font-heading text-ink text-3xl font-medium">
+            Booking received.
+          </h2>
+          <p className="text-stone text-sm leading-6 sm:text-base">
             Your paid consult is confirmed. Redomiciled will send the next form
             for your consult route shortly.
           </p>
@@ -286,21 +286,21 @@ function StepItem({
   return (
     <li
       className={[
-        "flex min-w-0 items-center justify-between gap-3 rounded-2xl border px-4 py-3 backdrop-blur",
+        "flex min-w-0 items-center justify-between gap-3 rounded-2xl border px-4 py-3",
         active
-          ? "border-white/38 bg-white/18 shadow-[0_0_34px_rgba(92,89,255,0.28)]"
+          ? "border-brand bg-brand/5 shadow-sm"
           : complete
-            ? "border-white/20 bg-white/10"
-            : "border-white/10 bg-white/6",
+            ? "border-brand/30 bg-paper"
+            : "border-line bg-paper",
       ].join(" ")}
     >
       <span className="min-w-0">
-        <span className="block text-xs text-white/50">Step {index}</span>
-        <span className="block truncate text-sm font-semibold text-white">
+        <span className="text-stone block text-xs">Step {index}</span>
+        <span className="text-ink block truncate text-sm font-semibold">
           {label}
         </span>
       </span>
-      <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-xs">
+      <span className="border-line bg-mist text-ink grid size-7 shrink-0 place-items-center rounded-full border text-xs">
         {complete ? <Check className="size-4" /> : index}
       </span>
     </li>
@@ -318,16 +318,14 @@ function PanelHeader({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="grid size-8 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/10 text-[#B9B7FF]">
+      <div className="border-line bg-mist text-brand grid size-8 shrink-0 place-items-center rounded-xl border">
         {icon}
       </div>
       <div className="min-w-0 space-y-0.5">
-        <h2 className="text-xl leading-tight font-semibold text-white">
+        <h2 className="font-heading text-ink text-xl leading-tight font-medium">
           {title}
         </h2>
-        <p className="max-w-2xl text-sm leading-5 text-white/68">
-          {description}
-        </p>
+        <p className="text-stone max-w-2xl text-sm leading-5">{description}</p>
       </div>
     </div>
   );
@@ -369,18 +367,20 @@ function CenteredState({
   return (
     <div className="grid min-h-[28rem] place-items-center text-center">
       <div className="max-w-md space-y-4">
-        <div className="mx-auto grid size-14 place-items-center rounded-2xl border border-white/14 bg-white/10 text-[#B9B7FF]">
+        <div className="border-line bg-mist text-brand mx-auto grid size-14 place-items-center rounded-2xl border">
           {icon}
         </div>
         <div className="space-y-2">
-          <h2 className="text-3xl font-semibold text-white">{title}</h2>
-          <p className="text-sm leading-6 text-white/68 sm:text-base">
+          <h2 className="font-heading text-ink text-3xl font-medium">
+            {title}
+          </h2>
+          <p className="text-stone text-sm leading-6 sm:text-base">
             {description}
           </p>
         </div>
         <Button
           asChild
-          className="h-11 rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
+          className="bg-brand text-paper hover:bg-brand-deep h-11 rounded-xl px-5 font-semibold"
         >
           <a href="mailto:team@redomiciled.com">Contact Redomiciled</a>
         </Button>

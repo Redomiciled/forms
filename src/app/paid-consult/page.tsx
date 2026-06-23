@@ -39,18 +39,14 @@ export default async function PaidConsultPage({
   const paidConsultOwner = taskContext?.paidConsultOwner ?? "Will";
 
   return (
-    <main className="relative min-h-dvh bg-[#070720] lg:h-dvh lg:overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(92,89,255,0.42),transparent_32%),radial-gradient(circle_at_80%_12%,rgba(59,56,224,0.36),transparent_30%),linear-gradient(135deg,#2422A1_0%,#3B38E0_48%,#11102B_100%)]" />
-      <div className="pointer-events-none absolute inset-0 [background-image:linear-gradient(125deg,transparent_0%,rgba(255,255,255,0.13)_46%,transparent_70%)] opacity-35" />
-      <div className="relative lg:h-full">
-        <PaidConsultFlow
-          config={getPaidConsultConfig({ paidConsultOwner })}
-          hasInvalidTaskId={Boolean(rawTaskId && !taskId)}
-          prefill={taskContext?.prefill ?? null}
-          previewState={previewStep}
-          taskId={taskId}
-        />
-      </div>
+    <main className="bg-paper text-ink min-h-dvh lg:h-dvh lg:overflow-hidden">
+      <PaidConsultFlow
+        config={getPaidConsultConfig({ paidConsultOwner })}
+        hasInvalidTaskId={Boolean(rawTaskId && !taskId)}
+        prefill={taskContext?.prefill ?? null}
+        previewState={previewStep}
+        taskId={taskId}
+      />
     </main>
   );
 }
