@@ -5,6 +5,7 @@ import {
 import {
   type StartHereSubmissionResponse,
   startHereSubmissionRequestSchema,
+  startHereSubmissionSourceSchema,
 } from "@/lib/start-here-submission";
 
 export const runtime = "nodejs";
@@ -27,8 +28,10 @@ export async function POST(request: Request) {
   }
 
   try {
+    const source = getStartHereSubmissionSource(request);
     const result = await persistStartHereSubmission(parsed.data.values, {
       qaMode: parsed.data.qaMode,
+      ...(source ? { source } : {}),
       ...(parsed.data.taskId ? { taskId: parsed.data.taskId } : {}),
     });
 
@@ -63,6 +66,13 @@ export async function POST(request: Request) {
       500
     );
   }
+}
+
+function getStartHereSubmissionSource(request: Request) {
+  const source = new URL(request.url).searchParams.get("source");
+  const parsed = startHereSubmissionSourceSchema.safeParse(source);
+
+  return parsed.success ? parsed.data : undefined;
 }
 
 function json<T>(body: T, status = 200) {

@@ -93,7 +93,7 @@ describe("paid consult route helpers", () => {
 
   it("uses Eric's paid consult Cal.com link when the task owner is Erik", () => {
     expect(getPaidConsultConfig({ paidConsultOwner: "Erik" }).calLink).toBe(
-      "erik-redomiciled/paid-consult"
+      "eric-redomiciled/paid-consult"
     );
     expect(
       getPaidConsultConfig({ paidConsultOwner: "Erik" }).paidConsultOwner

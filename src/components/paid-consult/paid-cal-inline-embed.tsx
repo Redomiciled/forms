@@ -111,13 +111,13 @@ export function PaidCalInlineEmbed({
       <div
         role="region"
         aria-label="Paid booking calendar"
-        className="grid min-h-[24rem] flex-1 place-items-center rounded-2xl border border-white/15 bg-white/8 p-5 text-center"
+        className="border-line bg-mist grid min-h-[24rem] flex-1 place-items-center rounded-2xl border p-5 text-center"
       >
         <div className="max-w-sm space-y-3">
-          <p className="text-sm font-semibold text-white">
+          <p className="text-ink text-sm font-semibold">
             Booking calendar pending
           </p>
-          <p className="text-sm leading-6 text-white/68">
+          <p className="text-stone text-sm leading-6">
             Redomiciled is finalizing paid consult availability.
           </p>
         </div>
@@ -129,23 +129,23 @@ export function PaidCalInlineEmbed({
     <div
       role="region"
       aria-label="Paid booking calendar"
-      className="min-h-[28rem] flex-1 overflow-auto rounded-2xl border border-white/15 bg-white text-[#111]"
+      className="border-line bg-paper text-ink min-h-[28rem] flex-1 overflow-auto rounded-2xl border"
     >
       {embedFailed ? (
-        <div className="grid h-full min-h-[28rem] place-items-center p-5 text-center text-[#111]">
+        <div className="text-ink grid h-full min-h-[28rem] place-items-center p-5 text-center">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Calendar unavailable</p>
-            <p className="text-sm leading-6 text-black/65">
+            <p className="text-stone text-sm leading-6">
               Refresh the page to load the booking calendar again.
             </p>
           </div>
         </div>
       ) : null}
       <div ref={containerRef} className="h-full min-h-[28rem] w-full">
-        <div className="grid h-full place-items-center p-5 text-center text-[#111]">
+        <div className="text-ink grid h-full place-items-center p-5 text-center">
           <div className="max-w-sm space-y-3">
             <p className="text-sm font-semibold">Loading calendar...</p>
-            <p className="text-sm leading-6 text-black/65">
+            <p className="text-stone text-sm leading-6">
               Availability should appear in a moment.
             </p>
           </div>

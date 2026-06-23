@@ -16,14 +16,16 @@ export function ReviewStep({
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-2xl border border-white/12 bg-white/8 p-5">
-        <h3 className="text-lg font-semibold">Review your answers</h3>
-        <p className="mt-2 text-sm leading-6 text-white/65">
+      <div className="border-line bg-mist rounded-2xl border p-5">
+        <h3 className="font-heading text-ink text-lg font-medium">
+          Review your answers
+        </h3>
+        <p className="text-stone mt-2 text-sm leading-6">
           Confirm the details below before we show the right next step.
         </p>
       </div>
       {errorEntries.length > 0 ? (
-        <div className="rounded-2xl border border-rose-300/30 bg-rose-500/12 p-4 text-sm text-rose-100">
+        <div className="rounded-2xl border border-red-600/30 bg-red-50 p-4 text-sm text-red-700">
           <p className="font-semibold">Required answers missing</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             {errorEntries.map(([field, message]) => (
@@ -84,10 +86,8 @@ export function ReviewStep({
           value={values.importantRoutingNotes || "Not provided"}
         />
       </dl>
-      <div className="rounded-2xl border border-white/12 bg-white/8 p-4 text-sm text-white/75">
-        <p className="font-semibold text-white">
-          What are you trying to solve?
-        </p>
+      <div className="border-line bg-paper text-stone rounded-2xl border p-4 text-sm">
+        <p className="text-ink font-semibold">What are you trying to solve?</p>
         <p className="mt-2 leading-6">
           {values.tryingToSolve.join(", ") || "Not selected"}
         </p>

@@ -1,6 +1,7 @@
 import {
   type BudgetReadiness,
   type ConsideringSpecificStructure,
+  type LeadSource,
   type LeadSourceDetail,
   type MonthlyRevenueBand,
   type NetWorthBand,
@@ -17,6 +18,7 @@ import {
 import {
   type StartHerePersistenceResult,
   type StartHereSubmissionErrorCode,
+  type StartHereSubmissionSource,
 } from "./start-here-submission";
 
 const CLICKUP_API_BASE_URL = "https://api.clickup.com/api/v2";
@@ -61,7 +63,8 @@ const OWNER_USER_IDS = {
 
 const LEAD_SOURCE_OPTIONS = {
   "Start Here Form": "d9e3fb72-dfce-41e3-b1dc-fdba96a1e546",
-} as const;
+  "Landing Page": "4a0b03f2-ad58-49e9-a859-8158a3a2a9db",
+} as const satisfies Record<LeadSource, string>;
 
 const QA_LEAD_SOURCE_OPTION_ID = "0c13ba94-31cf-4479-a8e4-5a5a066aae5c";
 
@@ -191,6 +194,7 @@ type ClickUpAssigneeUpdate = {
 export type PersistStartHereOptions = {
   fetchImpl?: typeof fetch;
   qaMode?: boolean;
+  source?: StartHereSubmissionSource;
   taskId?: string;
 };
 
@@ -218,7 +222,9 @@ export async function persistStartHereSubmission(
   persistence: StartHerePersistenceResult;
 }> {
   const submissionId = globalThis.crypto.randomUUID();
-  const submission = prepareStartHereSubmission(values);
+  const submission = prepareStartHereSubmission(values, {
+    leadSource: getLeadSourceFromSubmissionSource(options.source),
+  });
   const config = getClickUpConfig();
 
   const client = new ClickUpClient(config, options.fetchImpl ?? fetch);
@@ -370,6 +376,12 @@ export function buildClickUpFieldValues(
 
 export function getNativeClickUpStatus(route: StartHereFormRoute) {
   return NATIVE_STATUS_BY_ROUTE[route];
+}
+
+function getLeadSourceFromSubmissionSource(
+  source: StartHereSubmissionSource | undefined
+): LeadSource {
+  return source === "landing_page" ? "Landing Page" : "Start Here Form";
 }
 
 function getOwnerUserIds(submission: StartHerePreparedSubmission) {

@@ -7,6 +7,8 @@ import {
 
 const clickUpTaskIdSchema = z.string().regex(/^[A-Za-z0-9_-]{3,128}$/);
 
+export const startHereSubmissionSourceSchema = z.enum(["landing_page"]);
+
 export const startHereSubmissionRequestSchema = z.object({
   values: startHereFormSchema,
   adminMode: z.boolean().optional().default(false),
@@ -16,6 +18,10 @@ export const startHereSubmissionRequestSchema = z.object({
 
 export type StartHereSubmissionRequest = z.infer<
   typeof startHereSubmissionRequestSchema
+>;
+
+export type StartHereSubmissionSource = z.infer<
+  typeof startHereSubmissionSourceSchema
 >;
 
 export type StartHerePersistenceResult = {

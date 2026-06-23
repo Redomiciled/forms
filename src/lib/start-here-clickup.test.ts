@@ -49,6 +49,7 @@ const OPTION_IDS = {
   leadSource: {
     startHereForm: "d9e3fb72-dfce-41e3-b1dc-fdba96a1e546",
     testIgnore: "0c13ba94-31cf-4479-a8e4-5a5a066aae5c",
+    landingPage: "4a0b03f2-ad58-49e9-a859-8158a3a2a9db",
   },
   leadSourceDetail: {
     communityMember: "8494fb8f-a4a7-43c8-9dd8-bf19d1507058",
@@ -141,6 +142,7 @@ const CLICKUP_FIELD_CONTRACT: Array<{
     optionIds: Object.values(OPTION_IDS.leadSource),
     optionNames: {
       [OPTION_IDS.leadSource.testIgnore]: "Test (Ignore)",
+      [OPTION_IDS.leadSource.landingPage]: "Landing Page",
     },
   },
   {
@@ -293,6 +295,19 @@ describe("buildClickUpFieldValues", () => {
     });
   });
 
+  it("uses Landing Page when the submission source came from landing_page", () => {
+    const clickUpFields = buildClickUpFieldValues(
+      prepareStartHereSubmission(makeValues(), {
+        leadSource: "Landing Page",
+      })
+    );
+
+    expect(clickUpFields).toContainEqual({
+      id: FIELD_IDS.leadSource,
+      value: OPTION_IDS.leadSource.landingPage,
+    });
+  });
+
   it("maps non-banking booked calls to Bespoke plan owned by Erik", () => {
     const clickUpFields = buildClickUpFieldValues(
       prepareStartHereSubmission(
@@ -421,6 +436,37 @@ describe("Start Here ClickUp API persistence", () => {
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.leadSource,
       value: OPTION_IDS.leadSource.testIgnore,
+    });
+  });
+
+  it("maps source=landing_page to the Landing Page Lead Source option", async () => {
+    const createBodies: unknown[] = [];
+
+    configureLiveWrites();
+
+    const fetchImpl: typeof fetch = vi.fn(async (input, init) => {
+      const url = String(input);
+
+      if (
+        url.endsWith(`/list/${REDOMICILED_CRM_LIST_ID}/task`) &&
+        init?.method === "POST"
+      ) {
+        createBodies.push(JSON.parse(String(init.body)));
+
+        return jsonResponse({ id: "landing-page-lead-task" });
+      }
+
+      throw new Error(`Unexpected ClickUp mock request: ${url}`);
+    });
+
+    await persistStartHereSubmission(makeValues(), {
+      fetchImpl,
+      source: "landing_page",
+    });
+
+    expect(getCreateCustomFields(createBodies[0])).toContainEqual({
+      id: FIELD_IDS.leadSource,
+      value: OPTION_IDS.leadSource.landingPage,
     });
   });
 

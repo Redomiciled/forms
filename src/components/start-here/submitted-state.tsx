@@ -31,13 +31,13 @@ export function SubmittedState({
 
   if (isBookedCall && !showBookingCalendar && preBookingVideo) {
     return (
-      <section className="mx-auto grid min-h-dvh w-full max-w-6xl place-items-center px-4 py-6 text-white sm:px-6 lg:h-dvh lg:min-h-0 lg:overflow-hidden lg:px-8">
+      <section className="text-ink mx-auto grid min-h-dvh w-full max-w-6xl place-items-center px-4 py-6 sm:px-6 lg:h-dvh lg:min-h-0 lg:overflow-hidden lg:px-8">
         <h1 className="sr-only">{preBookingVideo.title}</h1>
         <div className="mx-auto grid w-full gap-4 sm:gap-5 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)_auto] lg:items-center lg:gap-4">
           <div
             role="region"
             aria-label="Pre-booking video"
-            className="mx-auto w-full max-w-full overflow-hidden lg:rounded-3xl lg:border lg:border-white/15 lg:bg-black/18 lg:p-3 lg:shadow-2xl lg:backdrop-blur-xl"
+            className="lg:border-line lg:bg-mist mx-auto w-full max-w-full overflow-hidden lg:rounded-3xl lg:border lg:p-3 lg:shadow-lg"
           >
             <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black sm:aspect-[16/10] lg:aspect-video lg:max-h-[calc(100dvh-9rem)]">
               <WistiaPlayer video={preBookingVideo} />
@@ -45,7 +45,7 @@ export function SubmittedState({
           </div>
           <Button
             type="button"
-            className="mx-auto h-12 rounded-xl bg-white px-6 font-semibold text-[#2422A1] hover:bg-white/90"
+            className="bg-brand text-paper hover:bg-brand-deep mx-auto h-12 rounded-xl px-6 font-semibold"
             onClick={() => setShowBookingCalendar(true)}
           >
             <CalendarCheck className="size-4" />
@@ -58,27 +58,25 @@ export function SubmittedState({
 
   if (isBookedCall) {
     return (
-      <section className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-start px-4 py-7 text-white sm:px-6 sm:py-8 lg:h-dvh lg:min-h-0 lg:justify-center lg:overflow-hidden lg:px-8 lg:py-6">
+      <section className="text-ink mx-auto flex min-h-dvh w-full max-w-7xl flex-col justify-start px-4 py-7 sm:px-6 sm:py-8 lg:h-dvh lg:min-h-0 lg:justify-center lg:overflow-hidden lg:px-8 lg:py-6">
         <div className="grid gap-4 sm:gap-5 lg:h-full lg:min-h-0 lg:w-full lg:grid-rows-[auto_minmax(0,1fr)]">
           <div className="space-y-3 text-center sm:space-y-4">
-            <div className="mx-auto flex w-fit items-center justify-center gap-3">
+            <div className="mx-auto flex w-fit items-center justify-center">
               <Image
-                src="/redomiciled-logo.png"
-                alt=""
-                width={40}
-                height={34}
-                className="h-7 w-auto shrink-0 sm:h-9"
+                src="/redomiciled-logo.webp"
+                alt="Redomiciled"
+                width={166}
+                height={29}
+                className="h-7 w-auto shrink-0"
                 priority
               />
-              <p className="text-sm font-semibold text-white sm:text-lg">
-                Redomiciled
-              </p>
+              <span className="sr-only">Redomiciled</span>
             </div>
-            <h1 className="text-3xl leading-tight font-semibold sm:text-4xl lg:text-5xl">
+            <h1 className="font-heading text-ink text-3xl leading-tight font-medium sm:text-4xl lg:text-5xl">
               Book a call with us
             </h1>
           </div>
-          <div className="mx-auto w-full max-w-5xl overflow-visible rounded-3xl border border-white/15 bg-black/18 p-2 shadow-2xl backdrop-blur-xl sm:p-3 lg:h-full lg:min-h-0 lg:overflow-hidden">
+          <div className="border-line bg-mist mx-auto w-full max-w-5xl overflow-visible rounded-3xl border p-2 shadow-lg sm:p-3 lg:h-full lg:min-h-0 lg:overflow-hidden">
             <CalInlineEmbed submitted={submitted} />
           </div>
         </div>
@@ -95,27 +93,25 @@ export function SubmittedState({
 
   if (isUnqualified) {
     return (
-      <section className="mx-auto flex h-dvh w-full max-w-4xl flex-col justify-center overflow-hidden px-5 py-5 text-white sm:px-8 lg:px-10">
+      <section className="text-ink mx-auto flex h-dvh w-full max-w-4xl flex-col justify-center overflow-hidden px-5 py-5 sm:px-8 lg:px-10">
         <div className="space-y-8">
           <div className="space-y-4">
-            <div className="flex w-fit items-center gap-3">
+            <div className="flex w-fit items-center">
               <Image
-                src="/redomiciled-logo.png"
-                alt=""
-                width={40}
-                height={34}
-                className="h-8 w-auto shrink-0 sm:h-9"
+                src="/redomiciled-logo.webp"
+                alt="Redomiciled"
+                width={166}
+                height={29}
+                className="h-7 w-auto shrink-0"
                 priority
               />
-              <p className="text-base font-semibold text-white sm:text-lg">
-                Redomiciled
-              </p>
+              <span className="sr-only">Redomiciled</span>
             </div>
             <div className="space-y-4">
-              <h1 className="max-w-3xl text-3xl leading-tight font-semibold sm:text-4xl lg:text-6xl">
+              <h1 className="font-heading text-ink max-w-3xl text-3xl leading-tight font-medium sm:text-4xl lg:text-6xl">
                 {title}
               </h1>
-              <p className="max-w-2xl text-sm leading-6 text-white/75 sm:text-base lg:text-lg lg:leading-7">
+              <p className="text-stone max-w-2xl text-sm leading-6 sm:text-base lg:text-lg lg:leading-7">
                 {description}
               </p>
             </div>
@@ -124,7 +120,7 @@ export function SubmittedState({
             <Button
               type="button"
               variant="outline"
-              className="h-12 w-fit rounded-xl border-white/20 bg-white/8 px-5 font-semibold text-white hover:bg-white/14 hover:text-white"
+              className="border-line bg-paper text-ink hover:border-brand hover:bg-mist hover:text-brand h-12 w-fit rounded-xl px-5 font-semibold"
               onClick={onReviewAnswers}
             >
               <ArrowLeft className="size-4" />
@@ -132,7 +128,7 @@ export function SubmittedState({
             </Button>
             <Button
               asChild
-              className="h-12 w-fit rounded-xl bg-white px-5 font-semibold text-[#2422A1] hover:bg-white/90"
+              className="bg-brand text-paper hover:bg-brand-deep h-12 w-fit rounded-xl px-5 font-semibold"
             >
               <a href="https://www.skool.com/redomiciled-5554" target="_blank">
                 Visit free community
@@ -146,27 +142,27 @@ export function SubmittedState({
   }
 
   return (
-    <section className="mx-auto flex h-dvh w-full max-w-5xl flex-col justify-center overflow-hidden px-5 py-5 text-white sm:px-8 lg:px-10">
+    <section className="text-ink mx-auto flex h-dvh w-full max-w-5xl flex-col justify-center overflow-hidden px-5 py-5 sm:px-8 lg:px-10">
       <div className="grid min-h-0 gap-5">
-        <div className="mx-auto flex w-fit items-center gap-3">
+        <div className="mx-auto flex w-fit items-center">
           <Image
-            src="/redomiciled-logo.png"
-            alt=""
-            width={40}
-            height={34}
-            className="h-8 w-auto shrink-0 sm:h-9"
+            src="/redomiciled-logo.webp"
+            alt="Redomiciled"
+            width={166}
+            height={29}
+            className="h-7 w-auto shrink-0"
             priority
           />
-          <p className="text-base font-semibold text-white sm:text-lg">
-            Redomiciled
-          </p>
+          <span className="sr-only">Redomiciled</span>
         </div>
-        <div className="min-h-0 overflow-hidden rounded-3xl border border-white/15 bg-black/18 p-4 shadow-2xl backdrop-blur-xl">
-          <div className="grid min-h-[20rem] place-items-center rounded-2xl border border-white/10 bg-white/8 p-6 text-center">
+        <div className="border-line bg-mist min-h-0 overflow-hidden rounded-3xl border p-4 shadow-lg">
+          <div className="border-line bg-paper grid min-h-[20rem] place-items-center rounded-2xl border p-6 text-center">
             <div className="max-w-md space-y-4">
-              <ClipboardCheck className="mx-auto size-9 text-[#A3A1FF]" />
-              <h1 className="text-3xl font-semibold">{title}</h1>
-              <p className="text-sm leading-6 text-white/70 sm:text-base">
+              <ClipboardCheck className="text-brand mx-auto size-9" />
+              <h1 className="font-heading text-ink text-3xl font-medium">
+                {title}
+              </h1>
+              <p className="text-stone text-sm leading-6 sm:text-base">
                 {description}
               </p>
             </div>

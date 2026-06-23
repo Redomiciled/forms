@@ -1,57 +1,154 @@
-web application/stitch/projects/3258906854658574842/screens/96e13fd9d5cb407cb00613ed3642d10b
+# Redomiciled Start Here Form Design Spec
 
-# Design Specification: Redomiciled "Start Here" Intake Form
+> Updated: 2026-06-23
+> Source of truth: Redomiciled public website at `https://www.redomiciled.global/` and Juan's scope note on 2026-06-23.
 
-## 1. Visual Identity & Brand Essence
+## Implementation Scope
 
-The Redomiciled brand projects a sense of "Global Family Office" prestige. The visual language is defined by deep, fluid backgrounds, high-contrast white typography, and a modern, tech-forward feel that balances security with accessibility.
+Only update the visual system surfaces below:
 
-### Color Palette
+- Font
+- Color palette
+- Logo, if the current asset does not fit the new white-background website style
+- Browser tab image / favicon, using the same icon style shown on the new Redomiciled website
 
-- **Primary (Deep Indigo):** #3B38E0 - #2422A1 (Fluid gradient)
-- **Secondary (Onyx/Dark Grey):** #1E1E1E (Used for buttons and secondary elements)
-- **Accent (Electric Blue):** #5C59FF
-- **Text (White):** #FFFFFF (High readability against dark backgrounds)
-- **Background:** Deep blue-to-violet linear/radial gradients.
+Do not add new page imagery. In particular, do not add the Hong Kong skyline or any other website hero image to the Start Here form or paid-consult path.
 
-### Typography
+Do not change form logic, routing, ClickUp persistence, Cal.com behavior, Tally behavior, or paid-consult task ID handling as part of this design pass.
 
-- **Primary Typeface:** Geometric Sans-serif (e.g., Montserrat, Inter, or Gilroy).
-- **Headings:** Large, bold, and high-tracking for a premium editorial look.
-- **Body:** Clean, medium weight with generous line-height (1.6) for clarity.
+## Brand Direction
 
-### Imagery & Shapes
+The current Redomiciled website uses a restrained editorial family-office style:
 
-- **Fluidity:** Use of "organic wave" or "flowing data" patterns as subtle background textures.
-- **Iconography:** Minimalist, thin-stroke icons (Instagram, YouTube style) or custom utility icons for form categories.
-- **Rounded Corners:** Consistent 12px - 16px radius for buttons and input fields to soften the professional tone.
+- White paper background
+- Near-black primary text
+- Cool grey secondary text and borders
+- Blue-violet accent for CTAs, links, rules, and active states
+- Serif headings paired with Inter UI/body text
+- Generous spacing and simple section boundaries
 
-## 2. Component Design: "Start Here" Form
+The Start Here form and paid-consult path should feel like part of that public website, but remain focused form/product surfaces rather than landing pages.
 
-### Form Structure
+## Color Tokens
 
-- **Step-by-Step Navigation:** Multi-stage intake to prevent user fatigue (Progressive Disclosure).
-- **Hero Section:** Clear value proposition: "Begin Your Global Journey" or "Start Your Consultation."
+Confirmed from the live website CSS:
 
-### Input Fields
+| Token         |       Hex | Usage                                          |
+| ------------- | --------: | ---------------------------------------------- |
+| `paper`       | `#ffffff` | Main background and light surfaces             |
+| `ink`         | `#0b0b0c` | Primary text and dark inverse surfaces         |
+| `mist`        | `#f5f6f7` | Soft alternate background                      |
+| `cloud`       | `#eceef0` | Hover/secondary surface                        |
+| `line`        | `#e4e5e8` | Borders and dividers                           |
+| `stone`       | `#6b7075` | Secondary body text                            |
+| `accent`      | `#6364f9` | Primary CTA, active states, links, small rules |
+| `accent-deep` | `#4b4ce0` | Primary CTA hover                              |
 
-- **Style:** Glassmorphism or subtle translucent backgrounds with white borders.
-- **Active State:** Glowing electric blue border highlight.
-- **Labels:** Minimal, floating labels or high-contrast placeholder text.
+Use these tokens instead of the previous dark indigo gradient, white glass panels, and electric-glow styling.
 
-### Call-to-Action (CTA)
+## Typography
 
-- **Primary Button:** Dark Onyx (#1E1E1E) with rounded corners and subtle hover transition.
-- **Secondary Button:** Ghost buttons (white border, transparent fill).
+Confirmed from the live website:
 
-## 3. Interaction Patterns
+- Body/UI: `Inter`
+- Headings: `Source Serif 4`
 
-- **Smooth Transitions:** Fade-in effects for form sections.
-- **Mobile Responsiveness:** Sticky CTA at the bottom; stacked inputs for small screens.
-- **Social Proof/Access:** Quick-access links for WhatsApp or Calendar booking (matching the site's floating action buttons).
+Usage:
 
-## 4. User Experience (UX) Principles
+- Global body font should be Inter.
+- Page titles, step headings, and confirmation headings should use Source Serif 4 with medium weight.
+- Utility text, labels, nav text, buttons, and form controls should use Inter.
+- Use uppercase letter spacing only for small eyebrow text such as `START HERE` or `PAID CONSULT`.
+- Do not use viewport-width font scaling.
 
-- **Clarity:** Every question should feel purposeful for a "Family Office" intake.
-- **Trust:** Incorporate subtle mentions of confidentiality and global reach.
-- **Efficiency:** Autofill capabilities and clear error states.
+Recommended implementation:
+
+```tsx
+import { Inter, Source_Serif_4 } from "next/font/google";
+```
+
+Use font variables such as `--font-inter` and `--font-source-serif`, then map Tailwind `font-sans` and `font-heading` / `font-serif` to those variables.
+
+## Logo And Tab Icon
+
+Use the public website logo assets when needed:
+
+- Header/brand wordmark: full color Redomiciled wordmark from `/img/logo.webp` on the public website.
+- Browser tab image / favicon: use the blue-violet Redomiciled icon from the website metadata (`/icon.png` or `/favicon.ico`).
+
+The current form's white mark-only logo is not appropriate on a white-background design. Prefer the full color wordmark for visible page branding and the website icon for tab/favicons.
+
+## Page Shell
+
+Use a simple light shell:
+
+- `bg-paper`
+- `text-ink`
+- No radial gradients
+- No decorative image backgrounds
+- No glassmorphism
+- No imported website hero imagery
+
+The existing form structure can remain, but its surfaces should be rethemed:
+
+- Outer page background: `paper`
+- Main form panel: `paper` or `mist`
+- Borders: `line`
+- Secondary text: `stone`
+- Primary action: `accent`, hover `accent-deep`
+- Secondary action: transparent or `paper` with `ink/15` border
+
+## Buttons
+
+Primary:
+
+- Rounded pill or soft rounded rectangle, depending on local form layout
+- Background `accent`
+- Text `paper`
+- Hover `accent-deep`
+
+Secondary:
+
+- Background `paper` or transparent
+- Border `line` or `ink/15`
+- Text `ink`
+- Hover border/text `accent`
+
+Avoid black primary buttons unless they are used as dark-section inverse CTAs. The form should visually match the public website's blue-violet primary CTA.
+
+## Form Fields
+
+Use light fields:
+
+- Background `paper`
+- Border `line`
+- Text `ink`
+- Placeholder/help text `stone`
+- Focus border/ring `accent`
+- Error text should stay visibly red and accessible
+
+Option cards and checkbox/radio cards should use light surfaces, accent selected states, and line borders. Avoid white-on-dark controls from the old design.
+
+## Paid Consult Path
+
+The paid-consult path should receive the same font, color, logo, and tab-icon treatment as Start Here.
+
+Keep these out of scope:
+
+- Paid-consult route logic
+- Tally embed behavior
+- Cal.com embed behavior
+- ClickUp task ID parsing
+- ClickUp status updates
+- Any new imagery
+
+## Verification Checklist
+
+- [ ] Start Here route uses Inter body/UI text and Source Serif 4 headings.
+- [ ] Paid consult route uses Inter body/UI text and Source Serif 4 headings.
+- [ ] Old dark-gradient/glass theme is removed from visible shells.
+- [ ] Logo works on white background.
+- [ ] Browser tab icon matches the new website icon.
+- [ ] No new page images were added.
+- [ ] Existing form and paid-consult behavior still works.
+- [ ] Desktop and mobile layouts have no text overlap or horizontal overflow.

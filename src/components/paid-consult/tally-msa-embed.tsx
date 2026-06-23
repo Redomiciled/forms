@@ -60,10 +60,10 @@ export function TallyMsaEmbed({
     <div
       role="region"
       aria-label="Service agreement"
-      className="min-h-[28rem] flex-1 overflow-hidden rounded-2xl border border-white/15 bg-white text-[#111]"
+      className="border-line bg-paper text-ink min-h-[28rem] flex-1 overflow-hidden rounded-2xl border"
     >
       {embedFailed ? (
-        <div className="border-b border-black/10 bg-[#F6F6FF] px-4 py-3 text-center text-sm font-medium text-[#2422A1]">
+        <div className="border-line bg-brand/5 text-brand border-b px-4 py-3 text-center text-sm font-medium">
           Agreement form unavailable. Refresh the page to load it again.
         </div>
       ) : null}

@@ -37,7 +37,7 @@ export const paidConsultOwnerUserIds: Record<PaidConsultOwner, number> = {
   Will: 296457746,
 };
 export const paidConsultCalLinks: Record<PaidConsultOwner, string> = {
-  Erik: "https://cal.com/erik-redomiciled/paid-consult",
+  Erik: "https://cal.com/eric-redomiciled/paid-consult",
   Will: "https://cal.com/william-denton-redomiciled/paid-consult",
 };
 export const paidConsultTallyFormId = "PdOAkB";

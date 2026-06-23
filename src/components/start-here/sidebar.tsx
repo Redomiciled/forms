@@ -46,23 +46,21 @@ export function StartHereSidebar({
         ].join(" ")}
       >
         <div className="space-y-5 sm:space-y-2 lg:space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <Image
-              src="/redomiciled-logo.png"
-              alt=""
-              width={40}
-              height={34}
-              className="h-8 w-auto shrink-0 sm:h-9"
+              src="/redomiciled-logo.webp"
+              alt="Redomiciled"
+              width={166}
+              height={29}
+              className="h-7 w-auto shrink-0"
               priority
             />
-            <p className="text-base font-semibold text-white sm:text-lg">
-              Redomiciled
-            </p>
+            <span className="sr-only">Redomiciled</span>
           </div>
-          <h1 className="max-w-2xl text-2xl leading-tight font-semibold sm:text-4xl lg:text-6xl">
+          <h1 className="font-heading text-ink max-w-2xl text-2xl leading-tight font-medium sm:text-4xl lg:text-6xl">
             Begin your global journey.
           </h1>
-          <p className="hidden max-w-xl text-sm leading-6 text-white/72 sm:block sm:text-base lg:text-lg lg:leading-7">
+          <p className="text-stone hidden max-w-xl text-sm leading-6 sm:block sm:text-base lg:text-lg lg:leading-7">
             Please complete this short form to help us find the right next step
             for you.
           </p>
@@ -82,36 +80,32 @@ export function StartHereSidebar({
                 disabled={!available || active}
                 onClick={() => onStepSelect(index)}
                 className={[
-                  "relative flex w-full min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 text-left shadow-none ring-0 backdrop-blur transition disabled:cursor-not-allowed lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-3",
+                  "relative flex w-full min-w-0 flex-col gap-1 rounded-xl border px-2 py-2 text-left shadow-none ring-0 transition disabled:cursor-not-allowed lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-2xl lg:px-4 lg:py-3",
                   active
-                    ? "border-white/38 bg-white/18 shadow-[0_0_34px_rgba(92,89,255,0.28)]"
+                    ? "border-brand bg-brand/5 shadow-sm"
                     : complete
-                      ? "border-white/20 bg-white/10"
+                      ? "border-brand/30 bg-paper"
                       : available
-                        ? "border-white/12 bg-white/7"
-                        : "border-white/8 bg-white/4 opacity-45",
+                        ? "border-line bg-paper hover:border-brand/50 hover:bg-mist"
+                        : "border-line bg-mist opacity-45",
                 ].join(" ")}
               >
                 <span
                   aria-hidden="true"
                   className={[
                     "absolute inset-y-2 left-0 hidden w-1 rounded-r-full lg:block",
-                    active
-                      ? "bg-[#A3A1FF]"
-                      : complete
-                        ? "bg-white/35"
-                        : "bg-white/12",
+                    active ? "bg-brand" : complete ? "bg-brand/35" : "bg-line",
                   ].join(" ")}
                 />
                 <span className="min-w-0 lg:pl-2">
-                  <span className="block text-[10px] text-white/50 lg:text-xs">
+                  <span className="text-stone block text-[10px] lg:text-xs">
                     {step.eyebrow}
                   </span>
-                  <span className="block truncate text-[11px] leading-snug font-semibold text-white sm:text-xs lg:text-sm lg:whitespace-normal">
+                  <span className="text-ink block truncate text-[11px] leading-snug font-semibold sm:text-xs lg:text-sm lg:whitespace-normal">
                     {step.label}
                   </span>
                 </span>
-                <span className="grid size-6 shrink-0 place-items-center self-end rounded-full border border-white/20 bg-white/10 text-[10px] lg:size-7 lg:self-auto lg:text-xs">
+                <span className="border-line bg-mist text-ink grid size-6 shrink-0 place-items-center self-end rounded-full border text-[10px] lg:size-7 lg:self-auto lg:text-xs">
                   {complete ? <Check className="size-4" /> : index + 1}
                 </span>
               </button>
@@ -125,7 +119,7 @@ export function StartHereSidebar({
           <Button
             type="button"
             variant="ghost"
-            className="absolute top-0 right-0 h-8 rounded-lg border border-white/12 bg-white/8 px-3 text-xs text-white hover:bg-white/12 hover:text-white sm:hidden"
+            className="border-line bg-paper text-ink hover:border-brand hover:bg-mist hover:text-brand absolute top-0 right-0 h-8 rounded-lg border px-3 text-xs sm:hidden"
             onClick={() => {
               onAdminModeChange(true);
               setAdminDialogOpen(true);
@@ -134,13 +128,13 @@ export function StartHereSidebar({
             Admin
           </Button>
 
-          <div className="hidden rounded-2xl border border-white/12 bg-white/7 p-3 backdrop-blur sm:block">
+          <div className="border-line bg-paper hidden rounded-2xl border p-3 sm:block">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-white">Admin preview</p>
+              <p className="text-ink text-sm font-semibold">Admin preview</p>
               <Button
                 type="button"
                 variant="ghost"
-                className="h-8 rounded-lg px-3 text-xs text-white hover:bg-white/10 hover:text-white"
+                className="text-ink hover:bg-mist hover:text-brand h-8 rounded-lg px-3 text-xs"
                 onClick={() => {
                   onAdminModeChange(true);
                   setAdminDialogOpen(true);
@@ -150,7 +144,7 @@ export function StartHereSidebar({
               </Button>
             </div>
             {adminMode ? (
-              <p className="mt-2 text-xs text-white/50">
+              <p className="text-stone mt-2 text-xs">
                 Preview mode is on. All steps are unlocked.
               </p>
             ) : null}
@@ -170,7 +164,7 @@ export function StartHereSidebar({
                   key={preset.id}
                   type="button"
                   variant="ghost"
-                  className="h-auto justify-start rounded-xl border border-white/10 bg-white/7 px-4 py-3 text-left text-sm text-white/75 hover:bg-white/12 hover:text-white"
+                  className="border-line bg-paper text-stone hover:border-brand hover:bg-mist hover:text-ink h-auto justify-start rounded-xl border px-4 py-3 text-left text-sm"
                   onClick={() => {
                     onPresetSelect(preset);
                     setAdminDialogOpen(false);
