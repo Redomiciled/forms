@@ -332,7 +332,12 @@ export function StartHereForm() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-brand text-sm font-medium">
-                  {currentStep.eyebrow}
+                  <span className="sm:hidden">
+                    Step {stepIndex + 1} of {steps.length}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {currentStep.eyebrow}
+                  </span>
                 </p>
                 <h2 className="font-heading text-ink mt-1 text-2xl font-medium">
                   {getStepTitle(currentStep.id)}

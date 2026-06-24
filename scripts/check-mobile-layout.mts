@@ -15,6 +15,7 @@ type MobileLayoutSnapshot = {
   scrollAreaClientHeight: number | null;
   scrollAreaDisplay: string | null;
   scrollAreaScrollHeight: number | null;
+  stepEyebrowText: string | null;
   stepListDisplay: string | null;
   title: string | null;
 };
@@ -42,6 +43,11 @@ try {
     );
     const scrollArea = document.querySelector<HTMLElement>(
       '[data-slot="scroll-area-viewport"]'
+    );
+    const stepEyebrow = Array.from(document.querySelectorAll("p span")).find(
+      (span) =>
+        span.textContent?.trim() === "Step 1 of 4" &&
+        getComputedStyle(span).display !== "none"
     );
     const heroHeading = Array.from(document.querySelectorAll("h1")).find(
       (heading) => heading.textContent?.trim() === "Begin your global journey."
@@ -88,6 +94,7 @@ try {
         ? getComputedStyle(scrollArea).display
         : null,
       scrollAreaScrollHeight: scrollArea?.scrollHeight ?? null,
+      stepEyebrowText: stepEyebrow?.textContent?.trim() ?? null,
       stepListDisplay: stepList ? getComputedStyle(stepList).display : null,
       title: document.querySelector("h2")?.textContent?.trim() ?? null,
       undersizedTextControls,
@@ -98,8 +105,12 @@ try {
 
   assert(snapshot.title === "Contact", "Expected Step 1 title to be Contact.");
   assert(
-    snapshot.stepListDisplay === "grid",
-    "Expected the step navigation list to be visible on mobile."
+    snapshot.stepListDisplay === "none",
+    "Expected the step navigation card list to be hidden on mobile."
+  );
+  assert(
+    snapshot.stepEyebrowText === "Step 1 of 4",
+    "Expected the mobile form header to show progress as 'Step 1 of 4'."
   );
   assert(
     snapshot.adminButtonText === "Admin" && snapshot.adminButtonVisible,
