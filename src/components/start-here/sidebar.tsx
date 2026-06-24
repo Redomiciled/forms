@@ -67,7 +67,7 @@ export function StartHereSidebar({
         </div>
       </div>
 
-      <ol className="grid grid-cols-4 gap-1.5 lg:grid-cols-1 lg:gap-3">
+      <ol className="hidden grid-cols-4 gap-1.5 sm:grid lg:grid-cols-1 lg:gap-3">
         {steps.map((step, index) => {
           const active = index === stepIndex;
           const complete = completedSteps.has(step.id);
