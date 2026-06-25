@@ -21,8 +21,6 @@ export const leadSourceDetails = [
   "Other",
 ] as const;
 
-export const leadSources = ["Start Here Form", "Landing Page"] as const;
-
 export const consideringSpecificStructureOptions = [
   "Yes — I know what structure I want, or I know I need a bank account",
   "No — I want help finding the right path",
@@ -100,7 +98,7 @@ export const servicePathOptions = [
 ] as const;
 
 export type LeadSourceDetail = (typeof leadSourceDetails)[number];
-export type LeadSource = (typeof leadSources)[number];
+export type LeadSource = string;
 export type ConsideringSpecificStructure =
   (typeof consideringSpecificStructureOptions)[number];
 export type TryingToSolve = (typeof tryingToSolveOptions)[number];

@@ -10,7 +10,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
 - `CLICKUP_FIELD_ID_LAST_NAME`: `c63b5e5a-220f-49f2-8b0f-1da4137139d1`
 - `CLICKUP_FIELD_ID_EMAIL`: `cfe207d1-c5a3-47b7-bd72-eae0d5c0c708`
 - `CLICKUP_FIELD_ID_PHONE`: `3a356107-fadc-41c2-90fd-46b4af007fdf`
-- `CLICKUP_FIELD_ID_LEAD_SOURCE`: `f4b729b2-a300-4bb0-a465-08c51e7ad441`
+- `CLICKUP_FIELD_ID_LEAD_SOURCE`: `ca71b224-d78d-4b83-ac83-f78a6ac50054`
 - `CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`: `428ab3fa-d1de-464b-b4d5-4785a51012d0`
 - `CLICKUP_FIELD_ID_REFERRAL_DETAIL`: `9eabae2e-f35e-40ab-8284-05526f4e223c`
 - `CLICKUP_FIELD_ID_WARM_OVERRIDE`: `2b9bb488-1791-40cf-9f51-9cc1883de459`
@@ -90,8 +90,8 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
 - `leadSource`
   - **ClickUp field:** `Lead Source`
   - **ClickUp field ID:** `CLICKUP_FIELD_ID_LEAD_SOURCE`
-  - **Type:** dropdown
-  - **Submitted value:** `Start Here Form` by default, or `Landing Page` when the public form URL includes `source=landing_page`.
+  - **Type:** text / long text
+  - **Submitted value:** `Start Here Form` by default. If the public form URL includes a `source` query parameter, the submitted value is the query parameter value.
   - **QA submitted value:** `Test (Ignore)` for production-list integration tests only.
 
 - `leadSourceDetail`

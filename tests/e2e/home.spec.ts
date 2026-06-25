@@ -6,13 +6,10 @@ import {
 } from "@playwright/test";
 
 const CLICKUP_API_BASE_URL = "https://api.clickup.com/api/v2";
-const REDOMICILED_CRM_LIST_ID = "901217458864";
 const FIELD_IDS = {
   email: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
-  leadSource: "f4b729b2-a300-4bb0-a465-08c51e7ad441",
+  leadSource: "ca71b224-d78d-4b83-ac83-f78a6ac50054",
 } as const;
-const TEST_IGNORE_LEAD_SOURCE_OPTION_ID =
-  "0c13ba94-31cf-4479-a8e4-5a5a066aae5c";
 const e2eCreatedTaskIds = new WeakMap<Page, Set<string>>();
 const e2eResponseTrackers = new WeakMap<Page, Array<Promise<void>>>();
 
@@ -523,20 +520,12 @@ async function assertE2eClickUpTask(
 ) {
   const apiToken = requireClickUpApiToken();
   const task = await getE2eClickUpTask(request, apiToken, taskId);
-  const fieldDefinitions = await getE2eClickUpFieldDefinitions(
-    request,
-    apiToken
-  );
-  const leadSourceOption = getCustomFieldOption(
-    task,
-    fieldDefinitions,
-    FIELD_IDS.leadSource
-  );
 
   expect(task.name).toMatch(/^TEST /);
   expect(getCustomFieldValue(task, FIELD_IDS.email)).toBe(expected.email);
-  expect(leadSourceOption?.id).toBe(TEST_IGNORE_LEAD_SOURCE_OPTION_ID);
-  expect(leadSourceOption?.name).toBe(expected.leadSource);
+  expect(getCustomFieldValue(task, FIELD_IDS.leadSource)).toBe(
+    expected.leadSource
+  );
 }
 
 async function deleteE2eClickUpTasks(
@@ -576,28 +565,6 @@ async function getE2eClickUpTask(
   }
 
   return (await response.json()) as E2eClickUpTask;
-}
-
-async function getE2eClickUpFieldDefinitions(
-  request: APIRequestContext,
-  apiToken: string
-) {
-  const response = await request.get(
-    `${CLICKUP_API_BASE_URL}/list/${REDOMICILED_CRM_LIST_ID}/field`,
-    {
-      headers: clickUpHeaders(apiToken),
-    }
-  );
-
-  if (!response.ok()) {
-    throw new Error(
-      `Failed to fetch E2E ClickUp fields: ${response.status()}.`
-    );
-  }
-
-  const body = (await response.json()) as { fields?: E2eClickUpField[] };
-
-  return body.fields ?? [];
 }
 
 async function deleteE2eClickUpTask(
@@ -666,21 +633,6 @@ function getCustomFieldValue(task: E2eClickUpTask, fieldId: string) {
   return task.custom_fields.find((field) => field.id === fieldId)?.value;
 }
 
-function getCustomFieldOption(
-  task: E2eClickUpTask,
-  fieldDefinitions: E2eClickUpField[],
-  fieldId: string
-) {
-  const value = getCustomFieldValue(task, fieldId);
-  const fieldDefinition = fieldDefinitions.find(
-    (field) => field.id === fieldId
-  );
-
-  return fieldDefinition?.type_config?.options?.find(
-    (item) => item.id === value || item.orderindex === value
-  );
-}
-
 type E2eSubmissionResponse = {
   ok?: boolean;
   persistence?: {
@@ -695,15 +647,4 @@ type E2eClickUpTask = {
     id: string;
     value?: unknown;
   }>;
-};
-
-type E2eClickUpField = {
-  id: string;
-  type_config?: {
-    options?: Array<{
-      id: string;
-      name: string;
-      orderindex?: number;
-    }>;
-  };
 };

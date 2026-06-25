@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const source = getStartHereSubmissionSource(request);
     const result = await persistStartHereSubmission(parsed.data.values, {
       qaMode: parsed.data.qaMode,
-      ...(source ? { source } : {}),
+      ...(source !== undefined ? { source } : {}),
       ...(parsed.data.taskId ? { taskId: parsed.data.taskId } : {}),
     });
 
@@ -69,7 +69,13 @@ export async function POST(request: Request) {
 }
 
 function getStartHereSubmissionSource(request: Request) {
-  const source = new URL(request.url).searchParams.get("source");
+  const searchParams = new URL(request.url).searchParams;
+
+  if (!searchParams.has("source")) {
+    return undefined;
+  }
+
+  const source = searchParams.get("source") ?? "";
   const parsed = startHereSubmissionSourceSchema.safeParse(source);
 
   return parsed.success ? parsed.data : undefined;

@@ -1,7 +1,6 @@
 import {
   type BudgetReadiness,
   type ConsideringSpecificStructure,
-  type LeadSource,
   type LeadSourceDetail,
   type MonthlyRevenueBand,
   type NetWorthBand,
@@ -32,7 +31,7 @@ const FIELD_IDS = {
   lastName: "c63b5e5a-220f-49f2-8b0f-1da4137139d1",
   email: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
   phone: "3a356107-fadc-41c2-90fd-46b4af007fdf",
-  leadSource: "f4b729b2-a300-4bb0-a465-08c51e7ad441",
+  leadSource: "ca71b224-d78d-4b83-ac83-f78a6ac50054",
   leadSourceDetail: "428ab3fa-d1de-464b-b4d5-4785a51012d0",
   referralDetail: "9eabae2e-f35e-40ab-8284-05526f4e223c",
   warmOverride: "2b9bb488-1791-40cf-9f51-9cc1883de459",
@@ -61,12 +60,7 @@ const OWNER_USER_IDS = {
   Erik: 99702565,
 } as const;
 
-const LEAD_SOURCE_OPTIONS = {
-  "Start Here Form": "d9e3fb72-dfce-41e3-b1dc-fdba96a1e546",
-  "Landing Page": "4a0b03f2-ad58-49e9-a859-8158a3a2a9db",
-} as const satisfies Record<LeadSource, string>;
-
-const QA_LEAD_SOURCE_OPTION_ID = "0c13ba94-31cf-4479-a8e4-5a5a066aae5c";
+const QA_LEAD_SOURCE = "Test (Ignore)";
 
 const LEAD_SOURCE_DETAIL_OPTIONS: Record<LeadSourceDetail, string> = {
   "Community Member": "8494fb8f-a4a7-43c8-9dd8-bf19d1507058",
@@ -283,9 +277,7 @@ export function buildClickUpFieldValues(
     { id: FIELD_IDS.phone, value: fields.phone },
     {
       id: FIELD_IDS.leadSource,
-      value: options.qaMode
-        ? QA_LEAD_SOURCE_OPTION_ID
-        : LEAD_SOURCE_OPTIONS[fields.leadSource],
+      value: options.qaMode ? QA_LEAD_SOURCE : fields.leadSource,
     },
     {
       id: FIELD_IDS.leadSourceDetail,
@@ -380,8 +372,8 @@ export function getNativeClickUpStatus(route: StartHereFormRoute) {
 
 function getLeadSourceFromSubmissionSource(
   source: StartHereSubmissionSource | undefined
-): LeadSource {
-  return source === "landing_page" ? "Landing Page" : "Start Here Form";
+) {
+  return source === undefined ? "Start Here Form" : source;
 }
 
 function getOwnerUserIds(submission: StartHerePreparedSubmission) {

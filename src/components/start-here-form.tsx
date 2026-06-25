@@ -436,13 +436,15 @@ export function StartHereForm() {
 }
 
 function getSubmissionEndpoint() {
-  const source = new URLSearchParams(globalThis.location.search).get("source");
+  const searchParams = new URLSearchParams(globalThis.location.search);
 
-  if (source !== "landing_page") {
+  if (!searchParams.has("source")) {
     return "/api/start-here/submissions";
   }
 
-  return "/api/start-here/submissions?source=landing_page";
+  return `/api/start-here/submissions?${new URLSearchParams({
+    source: searchParams.get("source") ?? "",
+  }).toString()}`;
 }
 
 function useAdminAvailable() {

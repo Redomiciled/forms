@@ -316,10 +316,10 @@ describe("Home", () => {
     expect(latestRequestBody.taskId).toBe("test-task-id");
   });
 
-  it("forwards source=landing_page to the submission endpoint", async () => {
+  it("forwards arbitrary source values to the submission endpoint", async () => {
     const user = userEvent.setup();
 
-    window.history.pushState({}, "", "/?admin=1&source=landing_page");
+    window.history.pushState({}, "", "/?admin=1&source=partner webinar");
     render(<Home />);
 
     await user.click(
@@ -332,7 +332,7 @@ describe("Home", () => {
     );
 
     expect(fetch).toHaveBeenCalledWith(
-      "/api/start-here/submissions?source=landing_page",
+      "/api/start-here/submissions?source=partner+webinar",
       expect.objectContaining({
         method: "POST",
       })

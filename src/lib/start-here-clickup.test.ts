@@ -21,7 +21,7 @@ const FIELD_IDS = {
   lastName: "c63b5e5a-220f-49f2-8b0f-1da4137139d1",
   email: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
   phone: "3a356107-fadc-41c2-90fd-46b4af007fdf",
-  leadSource: "f4b729b2-a300-4bb0-a465-08c51e7ad441",
+  leadSource: "ca71b224-d78d-4b83-ac83-f78a6ac50054",
   leadSourceDetail: "428ab3fa-d1de-464b-b4d5-4785a51012d0",
   referralDetail: "9eabae2e-f35e-40ab-8284-05526f4e223c",
   warmOverride: "2b9bb488-1791-40cf-9f51-9cc1883de459",
@@ -46,11 +46,6 @@ const FIELD_IDS = {
 } as const;
 
 const OPTION_IDS = {
-  leadSource: {
-    startHereForm: "d9e3fb72-dfce-41e3-b1dc-fdba96a1e546",
-    testIgnore: "0c13ba94-31cf-4479-a8e4-5a5a066aae5c",
-    landingPage: "4a0b03f2-ad58-49e9-a859-8158a3a2a9db",
-  },
   leadSourceDetail: {
     communityMember: "8494fb8f-a4a7-43c8-9dd8-bf19d1507058",
     pastClient: "40bf4a6d-7959-41b6-b267-af24f2f0b564",
@@ -137,14 +132,7 @@ const CLICKUP_FIELD_CONTRACT: Array<{
   { fieldId: FIELD_IDS.lastName },
   { fieldId: FIELD_IDS.email },
   { fieldId: FIELD_IDS.phone },
-  {
-    fieldId: FIELD_IDS.leadSource,
-    optionIds: Object.values(OPTION_IDS.leadSource),
-    optionNames: {
-      [OPTION_IDS.leadSource.testIgnore]: "Test (Ignore)",
-      [OPTION_IDS.leadSource.landingPage]: "Landing Page",
-    },
-  },
+  { fieldId: FIELD_IDS.leadSource },
   {
     fieldId: FIELD_IDS.leadSourceDetail,
     optionIds: Object.values(OPTION_IDS.leadSourceDetail),
@@ -225,7 +213,7 @@ afterEach(() => {
 });
 
 describe("buildClickUpFieldValues", () => {
-  it("maps form values to live ClickUp field and option IDs", () => {
+  it("maps form values to live ClickUp field values and option IDs", () => {
     const values = makeValues({
       tryingToSolve: ["New bank account"],
       monthlyRevenueBand: "$25k–$100k / month",
@@ -242,7 +230,7 @@ describe("buildClickUpFieldValues", () => {
     });
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.leadSource,
-      value: OPTION_IDS.leadSource.startHereForm,
+      value: "Start Here Form",
     });
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.tryingToSolve,
@@ -291,20 +279,20 @@ describe("buildClickUpFieldValues", () => {
 
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.leadSource,
-      value: OPTION_IDS.leadSource.testIgnore,
+      value: "Test (Ignore)",
     });
   });
 
-  it("uses Landing Page when the submission source came from landing_page", () => {
+  it("uses arbitrary text when the submission source is provided", () => {
     const clickUpFields = buildClickUpFieldValues(
       prepareStartHereSubmission(makeValues(), {
-        leadSource: "Landing Page",
+        leadSource: "partner webinar",
       })
     );
 
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.leadSource,
-      value: OPTION_IDS.leadSource.landingPage,
+      value: "partner webinar",
     });
   });
 
@@ -435,11 +423,11 @@ describe("Start Here ClickUp API persistence", () => {
     });
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.leadSource,
-      value: OPTION_IDS.leadSource.testIgnore,
+      value: "Test (Ignore)",
     });
   });
 
-  it("maps source=landing_page to the Landing Page Lead Source option", async () => {
+  it("maps arbitrary source query values to the Lead Source text field", async () => {
     const createBodies: unknown[] = [];
 
     configureLiveWrites();
@@ -461,12 +449,12 @@ describe("Start Here ClickUp API persistence", () => {
 
     await persistStartHereSubmission(makeValues(), {
       fetchImpl,
-      source: "landing_page",
+      source: "partner webinar",
     });
 
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.leadSource,
-      value: OPTION_IDS.leadSource.landingPage,
+      value: "partner webinar",
     });
   });
 
@@ -693,10 +681,7 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.lastName]: testRunId,
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0100",
-        [FIELD_IDS.leadSource]: optionReadValue(
-          FIELD_IDS.leadSource,
-          OPTION_IDS.leadSource.testIgnore
-        ),
+        [FIELD_IDS.leadSource]: "Test (Ignore)",
         [FIELD_IDS.leadSourceDetail]: optionReadValue(
           FIELD_IDS.leadSourceDetail,
           OPTION_IDS.leadSourceDetail.other
@@ -855,10 +840,7 @@ describe("Start Here ClickUp API persistence", () => {
 
       assertTaskIdentity(task, testRunId, email);
       assertCustomFields(task, {
-        [FIELD_IDS.leadSource]: optionReadValue(
-          FIELD_IDS.leadSource,
-          OPTION_IDS.leadSource.testIgnore
-        ),
+        [FIELD_IDS.leadSource]: "Test (Ignore)",
         [FIELD_IDS.leadSourceDetail]: optionReadValue(
           FIELD_IDS.leadSourceDetail,
           OPTION_IDS.leadSourceDetail.warmReferral
@@ -944,10 +926,7 @@ describe("Start Here ClickUp API persistence", () => {
 
       assertTaskIdentity(task, testRunId, email);
       assertCustomFields(task, {
-        [FIELD_IDS.leadSource]: optionReadValue(
-          FIELD_IDS.leadSource,
-          OPTION_IDS.leadSource.testIgnore
-        ),
+        [FIELD_IDS.leadSource]: "Test (Ignore)",
         [FIELD_IDS.startHereFormRoute]: optionReadValue(
           FIELD_IDS.startHereFormRoute,
           OPTION_IDS.startHereFormRoute.unqualified

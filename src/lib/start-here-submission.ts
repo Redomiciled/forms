@@ -7,7 +7,7 @@ import {
 
 const clickUpTaskIdSchema = z.string().regex(/^[A-Za-z0-9_-]{3,128}$/);
 
-export const startHereSubmissionSourceSchema = z.enum(["landing_page"]);
+export const startHereSubmissionSourceSchema = z.string();
 
 export const startHereSubmissionRequestSchema = z.object({
   values: startHereFormSchema,
