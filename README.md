@@ -48,4 +48,10 @@ Run `npm run test:e2e` before opening or merging changes that affect the form fl
 
 ## Deploy
 
-Import this repository into Vercel and use the default Next.js settings. Use the generated `*.vercel.app` domain until Redomiciled is ready to connect its own account/domain.
+Production is the Redomiciled Vercel `forms` project connected to this GitHub repo.
+
+- Production branch: `main`
+- Production URL: `https://start.redomiciled.global`
+- Vercel project: `https://vercel.com/redomiciled/forms`
+
+Deploy production changes by pushing or merging to `main` and verifying the GitHub commit status `Vercel - forms` succeeds. Do not use a local `npx vercel deploy --prod` unless the CLI is explicitly scoped to the Redomiciled team and linked to the `forms` project; otherwise it may deploy a different Vercel project.
