@@ -402,7 +402,7 @@ class ClickUpClient {
         method: "POST",
         body: JSON.stringify({
           name,
-          description,
+          markdown_content: description,
           status,
           custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
           ...(assignees.length > 0 ? { assignees } : {}),
@@ -434,7 +434,7 @@ class ClickUpClient {
       method: "PUT",
       body: JSON.stringify({
         name,
-        description,
+        markdown_content: description,
         status,
         assignees,
       }),

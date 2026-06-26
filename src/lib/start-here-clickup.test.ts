@@ -319,17 +319,18 @@ describe("Start Here ClickUp API persistence", () => {
       notify_all: false,
     });
     expect(createBodies[0]).toMatchObject({
-      description: expect.stringContaining("**Route:** Booked Call"),
+      markdown_content: expect.stringContaining("**Route:** Booked Call"),
     });
     expect(
-      (createBodies[0] as { description?: string }).description
+      (createBodies[0] as { markdown_content?: string }).markdown_content
     ).not.toContain("Start Here submission:");
-    expect((createBodies[0] as { description?: string }).description).toContain(
-      "### Answers"
-    );
-    expect((createBodies[0] as { description?: string }).description).toContain(
-      "- **Source detail:** Other"
-    );
+    expect(
+      (createBodies[0] as { markdown_content?: string }).markdown_content
+    ).toContain("### Answers");
+    expect(
+      (createBodies[0] as { markdown_content?: string }).markdown_content
+    ).toContain("- **Source detail:** Other");
+    expect(createBodies[0]).not.toHaveProperty("description");
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.email,
       value: "taylor@example.com",
@@ -479,7 +480,9 @@ describe("Start Here ClickUp API persistence", () => {
         add: [OWNER_USER_IDS.Erik],
         rem: [OWNER_USER_IDS.Will],
       },
+      markdown_content: expect.stringContaining("**Route:** Booked Call"),
     });
+    expect(updateBodies[0]).not.toHaveProperty("description");
     expect(fieldUpdateBodies).toContainEqual({
       fieldId: FIELD_IDS.email,
       body: { value: "changed@example.com" },
