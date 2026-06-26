@@ -11,20 +11,7 @@ This repo-local map is limited to values the Start Here form collects or prepare
 - `CLICKUP_FIELD_ID_EMAIL`: `cfe207d1-c5a3-47b7-bd72-eae0d5c0c708`
 - `CLICKUP_FIELD_ID_PHONE`: `3a356107-fadc-41c2-90fd-46b4af007fdf`
 - `CLICKUP_FIELD_ID_LEAD_SOURCE`: `ca71b224-d78d-4b83-ac83-f78a6ac50054`
-- `CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`: `428ab3fa-d1de-464b-b4d5-4785a51012d0`
-- `CLICKUP_FIELD_ID_REFERRAL_DETAIL`: `9eabae2e-f35e-40ab-8284-05526f4e223c`
-- `CLICKUP_FIELD_ID_WARM_OVERRIDE`: `2b9bb488-1791-40cf-9f51-9cc1883de459`
-- `CLICKUP_FIELD_ID_CONSIDERING_SPECIFIC_STRUCTURE`: `11af648c-f959-4155-a431-19b173c2f43c`
-- `CLICKUP_FIELD_ID_TRYING_TO_SOLVE`: `f84cb55a-383d-4e72-9423-f17321324b1c`
-- `CLICKUP_FIELD_ID_SETUP_MATURITY`: `bbf53e18-3edc-428c-97f7-e30af56da120`
-- `CLICKUP_FIELD_ID_CURRENT_RESIDENCE`: `793483e6-ff19-4d4b-ac56-d36cc0cb2ec0`
-- `CLICKUP_FIELD_ID_PASSPORTS_CITIZENSHIPS`: `af5c8a0b-acbf-4ed7-a0ae-b9d1c2ec8dde`
-- `CLICKUP_FIELD_ID_BUSINESS_MAIN_SOURCE_OF_INCOME`: `c41d84b5-6db8-4d04-b8e5-d88396e5b5d3`
-- `CLICKUP_FIELD_ID_MONTHLY_REVENUE_BAND`: `42ae346a-bd16-47a9-bb06-b4a50ace0e2c`
-- `CLICKUP_FIELD_ID_NET_WORTH_BAND`: `57525f9d-ec68-423a-a4c8-3207c778e5ae`
-- `CLICKUP_FIELD_ID_TIMELINE_TO_ACT`: `a06451f1-e78d-46e7-aa53-826c54628f1a`
-- `CLICKUP_FIELD_ID_BUDGET_READINESS`: `c0107b5f-5049-4613-a588-2cc4ca62e997`
-- `CLICKUP_FIELD_ID_IMPORTANT_ROUTING_NOTES`: `e54df295-82b9-43e0-b6ef-daee240eef04`
+- `CLICKUP_FIELD_ID_START_HERE_ANSWERS`: `fa954f53-1c02-4c8e-aaab-e90259a8250c`
 - `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE`: `0ed775f3-ae23-43ea-8f70-d1ecd161a301`
 - `CLICKUP_FIELD_ID_START_HERE_FORM_ROUTE_REASON`: `86714782-7be3-4823-9095-de518c8057c5`
 - `CLICKUP_FIELD_ID_ROUTING_DECISION_SIGNALS`: `aa730523-3be9-4f95-abe4-82548635ddda`
@@ -94,91 +81,34 @@ The Start Here form only sets the three intake statuses mapped above. Downstream
   - **Submitted value:** `Start Here Form` by default. If the public form URL includes a `source` query parameter, the submitted value is the query parameter value.
   - **QA submitted value:** `Test (Ignore)` for production-list integration tests only.
 
-- `leadSourceDetail`
-  - **ClickUp field:** `Lead Source Detail`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_LEAD_SOURCE_DETAIL`
-  - **Type:** dropdown
-  - **Options:** `Community Member`, `Past Client`, `Warm Referral`, `Partner Referral`, `Cold Ad`, `Other`
-  - **Required:** yes
+### Start Here Answer Storage
 
-- `referralDetail`
-  - **ClickUp field:** `Referral Detail`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_REFERRAL_DETAIL`
-  - **Type:** short text
-  - **Required:** no
-
-- `warmOverride`
-  - **ClickUp field:** `Warm Override`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_WARM_OVERRIDE`
-  - **Type:** checkbox
-  - **Prepared value:** true when source detail is `Past Client`, `Warm Referral`, or `Partner Referral`.
-
-### Start Here Questions
-
-- `consideringSpecificStructure`
-  - **ClickUp field:** `Considering Specific Structure`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_CONSIDERING_SPECIFIC_STRUCTURE`
-  - **Type:** dropdown
-  - **Options:** `Yes - knows structure or bank need`, `No - needs path guidance`, `Compliance check`
-
-- `tryingToSolve`
-  - **ClickUp field:** `Trying To Solve`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_TRYING_TO_SOLVE`
-  - **Type:** labels
-  - **Options:** `Relocate tax residency`, `New entity`, `Second passport`, `New bank account`, `Crypto transaction`, `Structure compliance check`, `Diversify assets without moving`
-
-- `setupMaturity`
-  - **ClickUp field:** `Setup Maturity`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_SETUP_MATURITY`
-  - **Type:** dropdown
-  - **Options:** `New to this`, `Partially set up`, `Sophisticated setup`
-
-- `currentResidence`
-  - **ClickUp field:** `Current Residency`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_CURRENT_RESIDENCE`
-  - **Type:** short text
-
-- `passportsCitizenships`
-  - **ClickUp field:** `Passports / Citizenships`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_PASSPORTS_CITIZENSHIPS`
+- `startHereAnswers`
+  - **ClickUp field:** `Start Here Answers`
+  - **ClickUp field ID:** `CLICKUP_FIELD_ID_START_HERE_ANSWERS`
   - **Type:** long text
+  - **Submitted value:** stringified JSON with `schema: "redomiciled.start_here_answers.v1"` and an `answers` array.
+  - **Contract:** each answer record has `key`, `label`, and `value`. Blank optional answers are included as empty strings to keep the shape stable.
+  - **Replaces direct fields:** the form no longer writes separate answer-only custom fields such as `Lead Source Detail`, `Referral Detail`, `Trying To Solve`, `Current Residency`, `Monthly Revenue Band`, or `Important Routing Notes`.
 
-- `businessMainSourceOfIncome`
-  - **ClickUp field:** `Business Main Source Of Income`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_BUSINESS_MAIN_SOURCE_OF_INCOME`
-  - **Type:** checkbox
+Current JSON answer keys:
 
-- `monthlyRevenueBand`
-  - **ClickUp field:** `Monthly Revenue Band`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_MONTHLY_REVENUE_BAND`
-  - **Type:** dropdown
-  - **Options:** `$0-$5k/month`, `$5k-$25k/month`, `$25k-$100k/month`, `$100k-$1M/month`, `$1M+/month`, `Not applicable`
-  - **Prepared value:** `Not applicable` when `businessMainSourceOfIncome` is false.
-
-- `netWorthBand`
-  - **ClickUp field:** `Net Worth Band`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_NET_WORTH_BAND`
-  - **Type:** dropdown
-  - **Options:** `$0-$50k`, `$50k-$250k`, `$250k-$1M`, `$1M-$5M`, `$5M-$20M`, `$20M+`
-
-- `timelineToAct`
-  - **ClickUp field:** `Timeline To Act`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_TIMELINE_TO_ACT`
-  - **Type:** dropdown
-  - **Options:** `ASAP / 0-3 months`, `3-6 months`, `6+ months`, `Just exploring`
-
-- `budgetReadiness`
-  - **ClickUp field:** `Budget Readiness`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_BUDGET_READINESS`
-  - **Type:** dropdown
-  - **Options:** `Yes`, `Maybe, if the fit is clear`, `No`
-  - **Displayed copy:** `Most Redomiciled engagements require a minimum initial investment of EUR 1,500. If we confirm we're the right fit, are you ready to invest at that level?`
-
-- `importantRoutingNotes`
-  - **ClickUp field:** `Important Routing Notes`
-  - **ClickUp field ID:** `CLICKUP_FIELD_ID_IMPORTANT_ROUTING_NOTES`
-  - **Type:** long text
-  - **Required:** no
+| Key                            | Label                            | Value shape                                                                                               |
+| ------------------------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `leadSourceDetail`             | `Lead Source Detail`             | string option: `Community Member`, `Past Client`, `Warm Referral`, `Partner Referral`, `Cold Ad`, `Other` |
+| `referralDetail`               | `Referral Detail`                | string                                                                                                    |
+| `warmOverride`                 | `Warm Override`                  | boolean                                                                                                   |
+| `consideringSpecificStructure` | `Considering Specific Structure` | string option                                                                                             |
+| `tryingToSolve`                | `Trying To Solve`                | string array                                                                                              |
+| `setupMaturity`                | `Setup Maturity`                 | string option                                                                                             |
+| `currentResidence`             | `Current Residency`              | string                                                                                                    |
+| `passportsCitizenships`        | `Passports / Citizenships`       | string                                                                                                    |
+| `businessMainSourceOfIncome`   | `Business Main Source Of Income` | boolean                                                                                                   |
+| `monthlyRevenueBand`           | `Monthly Revenue Band`           | string option; `Not applicable` when `businessMainSourceOfIncome` is false                                |
+| `netWorthBand`                 | `Net Worth Band`                 | string option                                                                                             |
+| `timelineToAct`                | `Timeline To Act`                | string option                                                                                             |
+| `budgetReadiness`              | `Budget Readiness`               | string option                                                                                             |
+| `importantRoutingNotes`        | `Important Routing Notes`        | string                                                                                                    |
 
 ### Prepared Outcome Fields
 

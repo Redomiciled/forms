@@ -16,6 +16,7 @@ const OWNER_USER_IDS = {
   Will: 296457746,
   Erik: 99702565,
 } as const;
+const START_HERE_ANSWERS_FIELD_ID = "fa954f53-1c02-4c8e-aaab-e90259a8250c";
 const PAID_CONSULT_OWNER_FIELD_ID = "27044f92-d510-44ee-a6ff-d5f88814db3f";
 const ROUTE_CASES: Array<{
   label: string;
@@ -105,7 +106,7 @@ describe("Start Here ClickUp task payloads", () => {
       expect(
         (fetchMock.createBodies[0] as Record<string, unknown>)["assignees"]
       ).toEqual(route === "Booked Call" ? [OWNER_USER_IDS.Will] : undefined);
-      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(26);
+      expect(getCreateCustomFields(fetchMock.createBodies[0]).length).toBe(13);
     }
   );
 
@@ -132,6 +133,18 @@ describe("Start Here ClickUp task payloads", () => {
         rem: [OWNER_USER_IDS.Erik],
       },
     });
+
+    const answers = parseStartHereAnswersField(
+      getCreateCustomFields(fetchMock.createBodies[0])
+    );
+
+    expect(getStartHereAnswer(answers, "tryingToSolve")).toEqual([
+      "Get a second passport",
+    ]);
+    expect(getStartHereAnswer(answers, "currentResidence")).toBe("Argentina");
+    expect(getStartHereAnswer(answers, "monthlyRevenueBand")).toBe(
+      "$25k–$100k / month"
+    );
   });
 });
 
@@ -219,3 +232,42 @@ function getCreateCustomFields(body: unknown) {
 
   return customFields;
 }
+
+function parseStartHereAnswersField(customFields: unknown[]) {
+  const field = customFields.find(
+    (item): item is { id: string; value?: unknown } =>
+      item !== null &&
+      typeof item === "object" &&
+      "id" in item &&
+      (item as { id?: unknown }).id === START_HERE_ANSWERS_FIELD_ID
+  );
+
+  if (typeof field?.value !== "string") {
+    throw new Error("Start Here Answers field did not contain JSON text.");
+  }
+
+  const parsed = JSON.parse(field.value) as StartHereAnswersPayload;
+
+  if (!Array.isArray(parsed.answers)) {
+    throw new Error("Start Here Answers JSON did not include answers.");
+  }
+
+  return parsed;
+}
+
+function getStartHereAnswer(payload: StartHereAnswersPayload, key: string) {
+  const answer = payload.answers.find((item) => item.key === key);
+
+  if (!answer) {
+    throw new Error(`Start Here Answers JSON did not include ${key}.`);
+  }
+
+  return answer.value;
+}
+
+type StartHereAnswersPayload = {
+  answers: Array<{
+    key: string;
+    value: unknown;
+  }>;
+};

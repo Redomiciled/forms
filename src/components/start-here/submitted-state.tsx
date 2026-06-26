@@ -39,9 +39,12 @@ export function SubmittedState({
             aria-label="Pre-booking video"
             className="lg:border-line lg:bg-mist mx-auto w-full max-w-full overflow-hidden lg:rounded-3xl lg:border lg:p-3 lg:shadow-lg"
           >
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black sm:aspect-[16/10] lg:aspect-video lg:max-h-[calc(100dvh-9rem)]">
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black sm:aspect-[16/10] lg:aspect-video lg:max-h-[calc(100dvh-11rem)]">
               <WistiaPlayer video={preBookingVideo} />
             </div>
+            <p className="text-stone px-1 pt-3 text-center text-sm font-medium sm:text-base">
+              A quick message from Will, co-founder of Redomiciled
+            </p>
           </div>
           <Button
             type="button"

@@ -169,6 +169,9 @@ describe("Home", () => {
       screen.getByRole("region", { name: /pre-booking video/i })
     ).toBeVisible();
     expect(
+      screen.getByText("A quick message from Will, co-founder of Redomiciled")
+    ).toBeVisible();
+    expect(
       screen.queryByRole("region", { name: /booking calendar/i })
     ).not.toBeInTheDocument();
 
