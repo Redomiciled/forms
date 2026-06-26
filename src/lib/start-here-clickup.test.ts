@@ -22,20 +22,7 @@ const FIELD_IDS = {
   email: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
   phone: "3a356107-fadc-41c2-90fd-46b4af007fdf",
   leadSource: "ca71b224-d78d-4b83-ac83-f78a6ac50054",
-  leadSourceDetail: "428ab3fa-d1de-464b-b4d5-4785a51012d0",
-  referralDetail: "9eabae2e-f35e-40ab-8284-05526f4e223c",
-  warmOverride: "2b9bb488-1791-40cf-9f51-9cc1883de459",
-  consideringSpecificStructure: "11af648c-f959-4155-a431-19b173c2f43c",
-  tryingToSolve: "f84cb55a-383d-4e72-9423-f17321324b1c",
-  setupMaturity: "bbf53e18-3edc-428c-97f7-e30af56da120",
-  currentResidency: "793483e6-ff19-4d4b-ac56-d36cc0cb2ec0",
-  passportsCitizenships: "af5c8a0b-acbf-4ed7-a0ae-b9d1c2ec8dde",
-  businessMainSourceOfIncome: "c41d84b5-6db8-4d04-b8e5-d88396e5b5d3",
-  monthlyRevenueBand: "42ae346a-bd16-47a9-bb06-b4a50ace0e2c",
-  netWorthBand: "57525f9d-ec68-423a-a4c8-3207c778e5ae",
-  timelineToAct: "a06451f1-e78d-46e7-aa53-826c54628f1a",
-  budgetReadiness: "c0107b5f-5049-4613-a588-2cc4ca62e997",
-  importantRoutingNotes: "e54df295-82b9-43e0-b6ef-daee240eef04",
+  startHereAnswers: "fa954f53-1c02-4c8e-aaab-e90259a8250c",
   startHereFormRoute: "0ed775f3-ae23-43ea-8f70-d1ecd161a301",
   startHereFormRouteReason: "86714782-7be3-4823-9095-de518c8057c5",
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
@@ -46,60 +33,6 @@ const FIELD_IDS = {
 } as const;
 
 const OPTION_IDS = {
-  leadSourceDetail: {
-    communityMember: "8494fb8f-a4a7-43c8-9dd8-bf19d1507058",
-    pastClient: "40bf4a6d-7959-41b6-b267-af24f2f0b564",
-    other: "95a6fd94-14b7-4d70-9217-2e2f3ae4cb6f",
-    warmReferral: "11e8dfdf-93ae-446a-bd07-85ec2e02b589",
-    partnerReferral: "df17aa72-9d4d-4461-a9dc-3cb41204c70a",
-    coldAd: "f9ed3924-3775-415b-a868-160ce0980eda",
-  },
-  consideringSpecificStructure: {
-    yes: "a11726c9-6838-4c37-9b71-f2d89afaa788",
-    no: "c7f9658b-7e4c-4d87-9b6f-814fc111b40a",
-    complianceCheck: "2aea3435-208f-4fd3-882a-412e100082fa",
-  },
-  tryingToSolve: {
-    taxResidency: "d0b34714-e90d-4328-b7b9-569178255f35",
-    newEntity: "d6cb8a8d-bbe9-4d57-a646-33ab423d66ae",
-    secondPassport: "dca2d8a6-9b99-43a9-8775-49d90c9dfd41",
-    newBankAccount: "d947e583-9137-4a59-8ac5-52e74d1bc58d",
-    cryptoTransaction: "a64ebafc-f478-436e-906a-18ea849ab477",
-    complianceCheck: "6c08bfc2-e243-4b5c-b79a-3c0a61a5e8dc",
-    diversifyAssets: "4660e952-ac9a-4865-909f-16cda70d1b17",
-  },
-  setupMaturity: {
-    newToThis: "db2dabe8-1a74-4a2b-a884-6f8715e98ccc",
-    partial: "efb7b298-99ba-4b53-a41b-6ed9c49f2d81",
-    sophisticated: "6741e164-5a00-4078-974e-99bee4a5f289",
-  },
-  monthlyRevenueBand: {
-    zeroToFive: "c180c0ed-1a83-4ec4-b57e-bb5cf130e743",
-    fiveToTwentyFive: "6a98560a-87bd-40ff-b415-002c3e7bd002",
-    twentyFiveToOneHundred: "8ce02323-0210-4722-80e5-d0c7b989e624",
-    oneHundredToOneMillion: "16862875-be06-439e-99fe-10c25bb3e7ee",
-    oneMillionPlus: "735aeac8-669d-4b96-951c-4abe412d3600",
-    notApplicable: "0d3aa7ec-4fec-46bc-9f7d-ad3bfb3e5616",
-  },
-  netWorthBand: {
-    zeroToFifty: "bf88df9c-d10b-4dc7-bfee-105476488583",
-    fiftyToTwoFifty: "fbc06021-c2b7-44c6-95cd-885dece6d47b",
-    twoFiftyToOneMillion: "b07464fc-994a-4d85-a11f-4510786356e9",
-    oneToFiveMillion: "ccee2708-0778-4c62-a301-e884cd0d4a8c",
-    fiveToTwentyMillion: "e34a3a25-d66b-4bb2-8515-83b43cd4b4fa",
-    twentyMillionPlus: "5faae105-4d39-4b44-ac5d-f9411b628cbf",
-  },
-  timelineToAct: {
-    asap: "41024f5c-27fe-42a9-a00b-ceabb0396a79",
-    threeToSixMonths: "665b91a0-8aee-4dd9-94f9-7de12c36a428",
-    sixPlusMonths: "3a7a4292-8365-481b-9c40-c7c20e5cb429",
-    justExploring: "5e69926d-84b2-493a-b785-5b5f47dd2bd5",
-  },
-  budgetReadiness: {
-    yes: "efe8ebab-55a8-4956-a2d7-487f272a8ef3",
-    maybe: "4ad8cc7e-cf0e-4464-bf28-e2087aee7e53",
-    no: "8059db50-41c9-4044-a305-08fb7b3d57e5",
-  },
   startHereFormRoute: {
     unqualified: "ddc9bb23-b40a-44e8-9d69-2387a2d0752e",
     bookedCall: "ed6fe3c3-d74e-4d71-90d4-5882eb16a7f6",
@@ -133,44 +66,7 @@ const CLICKUP_FIELD_CONTRACT: Array<{
   { fieldId: FIELD_IDS.email },
   { fieldId: FIELD_IDS.phone },
   { fieldId: FIELD_IDS.leadSource },
-  {
-    fieldId: FIELD_IDS.leadSourceDetail,
-    optionIds: Object.values(OPTION_IDS.leadSourceDetail),
-  },
-  { fieldId: FIELD_IDS.referralDetail },
-  { fieldId: FIELD_IDS.warmOverride },
-  {
-    fieldId: FIELD_IDS.consideringSpecificStructure,
-    optionIds: Object.values(OPTION_IDS.consideringSpecificStructure),
-  },
-  {
-    fieldId: FIELD_IDS.tryingToSolve,
-    optionIds: Object.values(OPTION_IDS.tryingToSolve),
-  },
-  {
-    fieldId: FIELD_IDS.setupMaturity,
-    optionIds: Object.values(OPTION_IDS.setupMaturity),
-  },
-  { fieldId: FIELD_IDS.currentResidency },
-  { fieldId: FIELD_IDS.passportsCitizenships },
-  { fieldId: FIELD_IDS.businessMainSourceOfIncome },
-  {
-    fieldId: FIELD_IDS.monthlyRevenueBand,
-    optionIds: Object.values(OPTION_IDS.monthlyRevenueBand),
-  },
-  {
-    fieldId: FIELD_IDS.netWorthBand,
-    optionIds: Object.values(OPTION_IDS.netWorthBand),
-  },
-  {
-    fieldId: FIELD_IDS.timelineToAct,
-    optionIds: Object.values(OPTION_IDS.timelineToAct),
-  },
-  {
-    fieldId: FIELD_IDS.budgetReadiness,
-    optionIds: Object.values(OPTION_IDS.budgetReadiness),
-  },
-  { fieldId: FIELD_IDS.importantRoutingNotes },
+  { fieldId: FIELD_IDS.startHereAnswers },
   {
     fieldId: FIELD_IDS.startHereFormRoute,
     optionIds: Object.values(OPTION_IDS.startHereFormRoute),
@@ -232,17 +128,22 @@ describe("buildClickUpFieldValues", () => {
       id: FIELD_IDS.leadSource,
       value: "Start Here Form",
     });
-    expect(clickUpFields).toContainEqual({
-      id: FIELD_IDS.tryingToSolve,
-      value: [OPTION_IDS.tryingToSolve.newBankAccount],
-    });
+
+    const startHereAnswers = parseStartHereAnswersField(clickUpFields);
+
+    expect(startHereAnswers.schema).toBe("redomiciled.start_here_answers.v1");
+    expect(getStartHereAnswer(startHereAnswers, "tryingToSolve")).toEqual([
+      "New bank account",
+    ]);
+    expect(getStartHereAnswer(startHereAnswers, "monthlyRevenueBand")).toBe(
+      "$25k–$100k / month"
+    );
+    expect(getStartHereAnswer(startHereAnswers, "budgetReadiness")).toBe(
+      "Maybe, if the fit is clear"
+    );
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.servicePath,
       value: OPTION_IDS.servicePath.banking,
-    });
-    expect(clickUpFields).toContainEqual({
-      id: FIELD_IDS.monthlyRevenueBand,
-      value: OPTION_IDS.monthlyRevenueBand.twentyFiveToOneHundred,
     });
     expect(clickUpFields).toContainEqual({
       id: FIELD_IDS.bookedCallOwner,
@@ -260,15 +161,15 @@ describe("buildClickUpFieldValues", () => {
     });
   });
 
-  it("uses the live Current Residency field ID", () => {
+  it("stores current residence in Start Here Answers", () => {
     const clickUpFields = buildClickUpFieldValues(
       prepareStartHereSubmission(makeValues())
     );
+    const startHereAnswers = parseStartHereAnswersField(clickUpFields);
 
-    expect(clickUpFields).toContainEqual({
-      id: FIELD_IDS.currentResidency,
-      value: "Argentina",
-    });
+    expect(getStartHereAnswer(startHereAnswers, "currentResidence")).toBe(
+      "Argentina"
+    );
   });
 
   it("uses Test (Ignore) when QA mode maps field values", () => {
@@ -417,6 +318,18 @@ describe("Start Here ClickUp API persistence", () => {
       custom_item_id: REDOMICILED_LEAD_TASK_TYPE_ID,
       notify_all: false,
     });
+    expect(createBodies[0]).toMatchObject({
+      description: expect.stringContaining("**Route:** Booked Call"),
+    });
+    expect(
+      (createBodies[0] as { description?: string }).description
+    ).not.toContain("Start Here submission:");
+    expect((createBodies[0] as { description?: string }).description).toContain(
+      "### Answers"
+    );
+    expect((createBodies[0] as { description?: string }).description).toContain(
+      "- **Source detail:** Other"
+    );
     expect(getCreateCustomFields(createBodies[0])).toContainEqual({
       id: FIELD_IDS.email,
       value: "taylor@example.com",
@@ -682,44 +595,6 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0100",
         [FIELD_IDS.leadSource]: "Test (Ignore)",
-        [FIELD_IDS.leadSourceDetail]: optionReadValue(
-          FIELD_IDS.leadSourceDetail,
-          OPTION_IDS.leadSourceDetail.other
-        ),
-        [FIELD_IDS.referralDetail]: "",
-        [FIELD_IDS.warmOverride]: false,
-        [FIELD_IDS.consideringSpecificStructure]: optionReadValue(
-          FIELD_IDS.consideringSpecificStructure,
-          OPTION_IDS.consideringSpecificStructure.yes
-        ),
-        [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
-          OPTION_IDS.tryingToSolve.newBankAccount,
-        ]),
-        [FIELD_IDS.setupMaturity]: optionReadValue(
-          FIELD_IDS.setupMaturity,
-          OPTION_IDS.setupMaturity.partial
-        ),
-        [FIELD_IDS.currentResidency]: "Argentina",
-        [FIELD_IDS.passportsCitizenships]: "United States",
-        [FIELD_IDS.businessMainSourceOfIncome]: true,
-        [FIELD_IDS.monthlyRevenueBand]: optionReadValue(
-          FIELD_IDS.monthlyRevenueBand,
-          OPTION_IDS.monthlyRevenueBand.twentyFiveToOneHundred
-        ),
-        [FIELD_IDS.netWorthBand]: optionReadValue(
-          FIELD_IDS.netWorthBand,
-          OPTION_IDS.netWorthBand.oneToFiveMillion
-        ),
-        [FIELD_IDS.timelineToAct]: optionReadValue(
-          FIELD_IDS.timelineToAct,
-          OPTION_IDS.timelineToAct.asap
-        ),
-        [FIELD_IDS.budgetReadiness]: optionReadValue(
-          FIELD_IDS.budgetReadiness,
-          OPTION_IDS.budgetReadiness.maybe
-        ),
-        [FIELD_IDS.importantRoutingNotes]:
-          "Automated ClickUp integration test. Safe to delete.",
         [FIELD_IDS.startHereFormRoute]: optionReadValue(
           FIELD_IDS.startHereFormRoute,
           OPTION_IDS.startHereFormRoute.bookedCall
@@ -740,6 +615,25 @@ describe("Start Here ClickUp API persistence", () => {
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
         [FIELD_IDS.calComBookingId]: "",
+      });
+      assertStartHereAnswers(createdTask, {
+        leadSourceDetail: "Other",
+        referralDetail: "",
+        warmOverride: false,
+        consideringSpecificStructure:
+          "Yes — I know what structure I want, or I know I need a bank account",
+        tryingToSolve: ["New bank account"],
+        setupMaturity:
+          "Partially set up — I have some international structure but want to improve it",
+        currentResidence: "Argentina",
+        passportsCitizenships: "United States",
+        businessMainSourceOfIncome: true,
+        monthlyRevenueBand: "$25k–$100k / month",
+        netWorthBand: "$1M–$5M",
+        timelineToAct: "ASAP / 0–3 months",
+        budgetReadiness: "Maybe, if the fit is clear",
+        importantRoutingNotes:
+          "Automated ClickUp integration test. Safe to delete.",
       });
 
       const secondCreateResponse = await postStartHereSubmission(
@@ -778,16 +672,16 @@ describe("Start Here ClickUp API persistence", () => {
       assertCustomFields(secondTask, {
         [FIELD_IDS.email]: email,
         [FIELD_IDS.phone]: "+1 555 0199",
-        [FIELD_IDS.tryingToSolve]: labelsReadValue(FIELD_IDS.tryingToSolve, [
-          OPTION_IDS.tryingToSolve.secondPassport,
-        ]),
         [FIELD_IDS.servicePath]: optionReadValue(
           FIELD_IDS.servicePath,
           OPTION_IDS.servicePath.bespokePlan
         ),
         [FIELD_IDS.bookedCallOwner]: [OWNER_USER_IDS.Erik],
         [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
-        [FIELD_IDS.importantRoutingNotes]:
+      });
+      assertStartHereAnswers(secondTask, {
+        tryingToSolve: ["Get a second passport"],
+        importantRoutingNotes:
           "Second automated ClickUp integration test. Safe to delete.",
       });
     } finally {
@@ -841,20 +735,6 @@ describe("Start Here ClickUp API persistence", () => {
       assertTaskIdentity(task, testRunId, email);
       assertCustomFields(task, {
         [FIELD_IDS.leadSource]: "Test (Ignore)",
-        [FIELD_IDS.leadSourceDetail]: optionReadValue(
-          FIELD_IDS.leadSourceDetail,
-          OPTION_IDS.leadSourceDetail.warmReferral
-        ),
-        [FIELD_IDS.warmOverride]: true,
-        [FIELD_IDS.businessMainSourceOfIncome]: false,
-        [FIELD_IDS.monthlyRevenueBand]: optionReadValue(
-          FIELD_IDS.monthlyRevenueBand,
-          OPTION_IDS.monthlyRevenueBand.notApplicable
-        ),
-        [FIELD_IDS.netWorthBand]: optionReadValue(
-          FIELD_IDS.netWorthBand,
-          OPTION_IDS.netWorthBand.zeroToFifty
-        ),
         [FIELD_IDS.startHereFormRoute]: optionReadValue(
           FIELD_IDS.startHereFormRoute,
           OPTION_IDS.startHereFormRoute.manualTriage
@@ -876,6 +756,20 @@ describe("Start Here ClickUp API persistence", () => {
         ),
         [FIELD_IDS.bookedCallOwner]: [],
         [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
+      });
+      assertStartHereAnswers(task, {
+        leadSourceDetail: "Warm Referral",
+        referralDetail: "Introduced by Alex",
+        warmOverride: true,
+        consideringSpecificStructure: "No — I want help finding the right path",
+        tryingToSolve: [
+          "Diversify my assets globally without changing where I live",
+        ],
+        businessMainSourceOfIncome: false,
+        monthlyRevenueBand: "Not applicable",
+        netWorthBand: "$0–$50k",
+        timelineToAct: "Just exploring",
+        budgetReadiness: "No",
       });
     } finally {
       await deleteAndVerifyQaTasks(apiToken, [...createdTaskIds]);
@@ -947,6 +841,17 @@ describe("Start Here ClickUp API persistence", () => {
         ),
         [FIELD_IDS.bookedCallOwner]: [],
         [FIELD_IDS.paidConsultOwner]: [OWNER_USER_IDS.Will],
+      });
+      assertStartHereAnswers(task, {
+        consideringSpecificStructure: "No — I want help finding the right path",
+        tryingToSolve: [
+          "Diversify my assets globally without changing where I live",
+        ],
+        businessMainSourceOfIncome: false,
+        monthlyRevenueBand: "Not applicable",
+        netWorthBand: "$50k–$250k",
+        timelineToAct: "6+ months",
+        budgetReadiness: "No",
       });
     } finally {
       await deleteAndVerifyQaTasks(apiToken, [...createdTaskIds]);
@@ -1043,6 +948,65 @@ function assertCustomFields(
       fieldId
     ).toEqual(normalizeClickUpReadValue(fieldId, expectedValue, expectedValue));
   }
+}
+
+function assertStartHereAnswers(
+  task: ClickUpTask,
+  expectedValues: Record<string, unknown>
+) {
+  const payload = parseStartHereAnswersValue(
+    getCustomFieldValue(task, FIELD_IDS.startHereAnswers)
+  );
+
+  for (const [key, expectedValue] of Object.entries(expectedValues)) {
+    expect(getStartHereAnswer(payload, key), key).toEqual(expectedValue);
+  }
+}
+
+function parseStartHereAnswersField(customFields: unknown[]) {
+  return parseStartHereAnswersValue(
+    getPayloadCustomFieldValue(customFields, FIELD_IDS.startHereAnswers)
+  );
+}
+
+function parseStartHereAnswersValue(value: unknown): StartHereAnswersPayload {
+  if (typeof value !== "string") {
+    throw new Error("Start Here Answers field did not contain JSON text.");
+  }
+
+  const parsed = JSON.parse(value) as unknown;
+
+  if (
+    !parsed ||
+    typeof parsed !== "object" ||
+    !Array.isArray((parsed as { answers?: unknown }).answers)
+  ) {
+    throw new Error("Start Here Answers JSON did not include answers.");
+  }
+
+  return parsed as StartHereAnswersPayload;
+}
+
+function getStartHereAnswer(payload: StartHereAnswersPayload, key: string) {
+  const answer = payload.answers.find((item) => item.key === key);
+
+  if (!answer) {
+    throw new Error(`Start Here Answers JSON did not include ${key}.`);
+  }
+
+  return answer.value;
+}
+
+function getPayloadCustomFieldValue(customFields: unknown[], fieldId: string) {
+  const field = customFields.find(
+    (item): item is { id: string; value?: unknown } =>
+      item !== null &&
+      typeof item === "object" &&
+      "id" in item &&
+      (item as { id?: unknown }).id === fieldId
+  );
+
+  return field?.value;
 }
 
 function normalizeClickUpReadValue(
@@ -1320,5 +1284,14 @@ type ClickUpTask = {
   custom_fields: Array<{
     id: string;
     value?: unknown;
+  }>;
+};
+
+type StartHereAnswersPayload = {
+  schema?: string;
+  answers: Array<{
+    key: string;
+    label?: string;
+    value: unknown;
   }>;
 };

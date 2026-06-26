@@ -1,18 +1,10 @@
 import {
-  type BudgetReadiness,
-  type ConsideringSpecificStructure,
-  type LeadSourceDetail,
-  type MonthlyRevenueBand,
-  type NetWorthBand,
   prepareStartHereSubmission,
   type RoutingDecisionSignal,
   type ServicePath,
-  type SetupMaturity,
   type StartHereFormRoute,
   type StartHereFormValues,
   type StartHerePreparedSubmission,
-  type TimelineToAct,
-  type TryingToSolve,
 } from "./start-here";
 import {
   type StartHerePersistenceResult,
@@ -32,20 +24,7 @@ const FIELD_IDS = {
   email: "cfe207d1-c5a3-47b7-bd72-eae0d5c0c708",
   phone: "3a356107-fadc-41c2-90fd-46b4af007fdf",
   leadSource: "ca71b224-d78d-4b83-ac83-f78a6ac50054",
-  leadSourceDetail: "428ab3fa-d1de-464b-b4d5-4785a51012d0",
-  referralDetail: "9eabae2e-f35e-40ab-8284-05526f4e223c",
-  warmOverride: "2b9bb488-1791-40cf-9f51-9cc1883de459",
-  consideringSpecificStructure: "11af648c-f959-4155-a431-19b173c2f43c",
-  tryingToSolve: "f84cb55a-383d-4e72-9423-f17321324b1c",
-  setupMaturity: "bbf53e18-3edc-428c-97f7-e30af56da120",
-  currentResidency: "793483e6-ff19-4d4b-ac56-d36cc0cb2ec0",
-  passportsCitizenships: "af5c8a0b-acbf-4ed7-a0ae-b9d1c2ec8dde",
-  businessMainSourceOfIncome: "c41d84b5-6db8-4d04-b8e5-d88396e5b5d3",
-  monthlyRevenueBand: "42ae346a-bd16-47a9-bb06-b4a50ace0e2c",
-  netWorthBand: "57525f9d-ec68-423a-a4c8-3207c778e5ae",
-  timelineToAct: "a06451f1-e78d-46e7-aa53-826c54628f1a",
-  budgetReadiness: "c0107b5f-5049-4613-a588-2cc4ca62e997",
-  importantRoutingNotes: "e54df295-82b9-43e0-b6ef-daee240eef04",
+  startHereAnswers: "fa954f53-1c02-4c8e-aaab-e90259a8250c",
   startHereFormRoute: "0ed775f3-ae23-43ea-8f70-d1ecd161a301",
   startHereFormRouteReason: "86714782-7be3-4823-9095-de518c8057c5",
   routingDecisionSignals: "aa730523-3be9-4f95-abe4-82548635ddda",
@@ -61,81 +40,6 @@ const OWNER_USER_IDS = {
 } as const;
 
 const QA_LEAD_SOURCE = "Test (Ignore)";
-
-const LEAD_SOURCE_DETAIL_OPTIONS: Record<LeadSourceDetail, string> = {
-  "Community Member": "8494fb8f-a4a7-43c8-9dd8-bf19d1507058",
-  "Past Client": "40bf4a6d-7959-41b6-b267-af24f2f0b564",
-  "Warm Referral": "11e8dfdf-93ae-446a-bd07-85ec2e02b589",
-  "Partner Referral": "df17aa72-9d4d-4461-a9dc-3cb41204c70a",
-  "Cold Ad": "f9ed3924-3775-415b-a868-160ce0980eda",
-  Other: "95a6fd94-14b7-4d70-9217-2e2f3ae4cb6f",
-};
-
-const CONSIDERING_OPTIONS: Record<ConsideringSpecificStructure, string> = {
-  "Yes — I know what structure I want, or I know I need a bank account":
-    "a11726c9-6838-4c37-9b71-f2d89afaa788",
-  "No — I want help finding the right path":
-    "c7f9658b-7e4c-4d87-9b6f-814fc111b40a",
-  "I just want to check my current structure is compliant":
-    "2aea3435-208f-4fd3-882a-412e100082fa",
-};
-
-const TRYING_TO_SOLVE_OPTIONS: Record<TryingToSolve, string> = {
-  "Relocate my individual tax residency":
-    "d0b34714-e90d-4328-b7b9-569178255f35",
-  "Set up a new entity that suits me better":
-    "d6cb8a8d-bbe9-4d57-a646-33ab423d66ae",
-  "Get a second passport": "dca2d8a6-9b99-43a9-8775-49d90c9dfd41",
-  "New bank account": "d947e583-9137-4a59-8ac5-52e74d1bc58d",
-  "Help with a crypto transaction": "a64ebafc-f478-436e-906a-18ea849ab477",
-  "Check if my current structure is compliant":
-    "6c08bfc2-e243-4b5c-b79a-3c0a61a5e8dc",
-  "Diversify my assets globally without changing where I live":
-    "4660e952-ac9a-4865-909f-16cda70d1b17",
-};
-
-const SETUP_MATURITY_OPTIONS: Record<SetupMaturity, string> = {
-  "New to this — first time moving abroad / first experience with the offshore world":
-    "db2dabe8-1a74-4a2b-a884-6f8715e98ccc",
-  "Partially set up — I have some international structure but want to improve it":
-    "efb7b298-99ba-4b53-a41b-6ed9c49f2d81",
-  "Sophisticated setup — I have established structures and need specific expert help":
-    "6741e164-5a00-4078-974e-99bee4a5f289",
-};
-
-const MONTHLY_REVENUE_OPTIONS: Record<
-  MonthlyRevenueBand | "Not applicable",
-  string
-> = {
-  "$0–$5k / month": "c180c0ed-1a83-4ec4-b57e-bb5cf130e743",
-  "$5k–$25k / month": "6a98560a-87bd-40ff-b415-002c3e7bd002",
-  "$25k–$100k / month": "8ce02323-0210-4722-80e5-d0c7b989e624",
-  "$100k–$1M / month": "16862875-be06-439e-99fe-10c25bb3e7ee",
-  "$1M+ / month": "735aeac8-669d-4b96-951c-4abe412d3600",
-  "Not applicable": "0d3aa7ec-4fec-46bc-9f7d-ad3bfb3e5616",
-};
-
-const NET_WORTH_OPTIONS: Record<NetWorthBand, string> = {
-  "$0–$50k": "bf88df9c-d10b-4dc7-bfee-105476488583",
-  "$50k–$250k": "fbc06021-c2b7-44c6-95cd-885dece6d47b",
-  "$250k–$1M": "b07464fc-994a-4d85-a11f-4510786356e9",
-  "$1M–$5M": "ccee2708-0778-4c62-a301-e884cd0d4a8c",
-  "$5M–$20M": "e34a3a25-d66b-4bb2-8515-83b43cd4b4fa",
-  "$20M+": "5faae105-4d39-4b44-ac5d-f9411b628cbf",
-};
-
-const TIMELINE_OPTIONS: Record<TimelineToAct, string> = {
-  "ASAP / 0–3 months": "41024f5c-27fe-42a9-a00b-ceabb0396a79",
-  "3–6 months": "665b91a0-8aee-4dd9-94f9-7de12c36a428",
-  "6+ months": "3a7a4292-8365-481b-9c40-c7c20e5cb429",
-  "Just exploring": "5e69926d-84b2-493a-b785-5b5f47dd2bd5",
-};
-
-const BUDGET_READINESS_OPTIONS: Record<BudgetReadiness, string> = {
-  Yes: "efe8ebab-55a8-4956-a2d7-487f272a8ef3",
-  "Maybe, if the fit is clear": "4ad8cc7e-cf0e-4464-bf28-e2087aee7e53",
-  No: "8059db50-41c9-4044-a305-08fb7b3d57e5",
-};
 
 const ROUTE_OPTIONS = {
   "Unqualified / Not Ready": "ddc9bb23-b40a-44e8-9d69-2387a2d0752e",
@@ -279,53 +183,7 @@ export function buildClickUpFieldValues(
       id: FIELD_IDS.leadSource,
       value: options.qaMode ? QA_LEAD_SOURCE : fields.leadSource,
     },
-    {
-      id: FIELD_IDS.leadSourceDetail,
-      value: LEAD_SOURCE_DETAIL_OPTIONS[fields.leadSourceDetail],
-    },
-    { id: FIELD_IDS.referralDetail, value: fields.referralDetail ?? "" },
-    { id: FIELD_IDS.warmOverride, value: fields.warmOverride },
-    {
-      id: FIELD_IDS.consideringSpecificStructure,
-      value: CONSIDERING_OPTIONS[fields.consideringSpecificStructure],
-    },
-    {
-      id: FIELD_IDS.tryingToSolve,
-      value: fields.tryingToSolve.map((item) => TRYING_TO_SOLVE_OPTIONS[item]),
-    },
-    {
-      id: FIELD_IDS.setupMaturity,
-      value: SETUP_MATURITY_OPTIONS[fields.setupMaturity],
-    },
-    { id: FIELD_IDS.currentResidency, value: fields.currentResidence },
-    {
-      id: FIELD_IDS.passportsCitizenships,
-      value: fields.passportsCitizenships,
-    },
-    {
-      id: FIELD_IDS.businessMainSourceOfIncome,
-      value: fields.businessMainSourceOfIncome,
-    },
-    {
-      id: FIELD_IDS.monthlyRevenueBand,
-      value: MONTHLY_REVENUE_OPTIONS[fields.monthlyRevenueBand],
-    },
-    {
-      id: FIELD_IDS.netWorthBand,
-      value: NET_WORTH_OPTIONS[fields.netWorthBand],
-    },
-    {
-      id: FIELD_IDS.timelineToAct,
-      value: TIMELINE_OPTIONS[fields.timelineToAct],
-    },
-    {
-      id: FIELD_IDS.budgetReadiness,
-      value: BUDGET_READINESS_OPTIONS[fields.budgetReadiness],
-    },
-    {
-      id: FIELD_IDS.importantRoutingNotes,
-      value: fields.importantRoutingNotes ?? "",
-    },
+    { id: FIELD_IDS.startHereAnswers, value: getStartHereAnswersJson(fields) },
     {
       id: FIELD_IDS.startHereFormRoute,
       value: ROUTE_OPTIONS[fields.startHereFormRoute],
@@ -368,6 +226,90 @@ export function buildClickUpFieldValues(
 
 export function getNativeClickUpStatus(route: StartHereFormRoute) {
   return NATIVE_STATUS_BY_ROUTE[route];
+}
+
+function getStartHereAnswersJson(
+  fields: StartHerePreparedSubmission["fields"]
+) {
+  return JSON.stringify(
+    {
+      schema: "redomiciled.start_here_answers.v1",
+      answers: [
+        {
+          key: "leadSourceDetail",
+          label: "Lead Source Detail",
+          value: fields.leadSourceDetail,
+        },
+        {
+          key: "referralDetail",
+          label: "Referral Detail",
+          value: fields.referralDetail ?? "",
+        },
+        {
+          key: "warmOverride",
+          label: "Warm Override",
+          value: fields.warmOverride,
+        },
+        {
+          key: "consideringSpecificStructure",
+          label: "Considering Specific Structure",
+          value: fields.consideringSpecificStructure,
+        },
+        {
+          key: "tryingToSolve",
+          label: "Trying To Solve",
+          value: fields.tryingToSolve,
+        },
+        {
+          key: "setupMaturity",
+          label: "Setup Maturity",
+          value: fields.setupMaturity,
+        },
+        {
+          key: "currentResidence",
+          label: "Current Residency",
+          value: fields.currentResidence,
+        },
+        {
+          key: "passportsCitizenships",
+          label: "Passports / Citizenships",
+          value: fields.passportsCitizenships,
+        },
+        {
+          key: "businessMainSourceOfIncome",
+          label: "Business Main Source Of Income",
+          value: fields.businessMainSourceOfIncome,
+        },
+        {
+          key: "monthlyRevenueBand",
+          label: "Monthly Revenue Band",
+          value: fields.monthlyRevenueBand,
+        },
+        {
+          key: "netWorthBand",
+          label: "Net Worth Band",
+          value: fields.netWorthBand,
+        },
+        {
+          key: "timelineToAct",
+          label: "Timeline To Act",
+          value: fields.timelineToAct,
+        },
+        {
+          key: "budgetReadiness",
+          label: "Budget Readiness",
+          value: fields.budgetReadiness,
+        },
+        {
+          key: "importantRoutingNotes",
+          label: "Important Routing Notes",
+          value: fields.importantRoutingNotes ?? "",
+        },
+      ],
+    },
+    null,
+    2
+  );
 }
 
 function getLeadSourceFromSubmissionSource(
@@ -414,32 +356,30 @@ function getTaskName(submission: StartHerePreparedSubmission) {
 
 function getTaskDescription(
   submission: StartHerePreparedSubmission,
-  submissionId: string
+  _submissionId: string
 ) {
   const fields = submission.fields;
 
   return [
-    `Start Here submission: ${submissionId}`,
+    `**Route:** ${fields.startHereFormRoute}`,
+    `**Route reason:** ${fields.startHereFormRouteReason}`,
+    `**Owner:** ${fields.bookedCallOwner}`,
+    `**Signals:** ${fields.routingDecisionSignals.join(", ")}`,
     "",
-    `Route: ${fields.startHereFormRoute}`,
-    `Route reason: ${fields.startHereFormRouteReason}`,
-    `Owner: ${fields.bookedCallOwner}`,
-    `Signals: ${fields.routingDecisionSignals.join(", ")}`,
-    "",
-    "Answers:",
-    `- Source detail: ${fields.leadSourceDetail}`,
-    `- Referral detail: ${fields.referralDetail ?? ""}`,
-    `- Considering structure: ${fields.consideringSpecificStructure}`,
-    `- Trying to solve: ${fields.tryingToSolve.join(", ")}`,
-    `- Setup maturity: ${fields.setupMaturity}`,
-    `- Current residency: ${fields.currentResidence}`,
-    `- Passports/citizenships: ${fields.passportsCitizenships}`,
-    `- Business main source of income: ${String(fields.businessMainSourceOfIncome)}`,
-    `- Monthly revenue band: ${fields.monthlyRevenueBand}`,
-    `- Net worth band: ${fields.netWorthBand}`,
-    `- Timeline to act: ${fields.timelineToAct}`,
-    `- Budget readiness: ${fields.budgetReadiness}`,
-    `- Important notes: ${fields.importantRoutingNotes ?? ""}`,
+    "### Answers",
+    `- **Source detail:** ${fields.leadSourceDetail}`,
+    `- **Referral detail:** ${fields.referralDetail ?? ""}`,
+    `- **Considering structure:** ${fields.consideringSpecificStructure}`,
+    `- **Trying to solve:** ${fields.tryingToSolve.join(", ")}`,
+    `- **Setup maturity:** ${fields.setupMaturity}`,
+    `- **Current residency:** ${fields.currentResidence}`,
+    `- **Passports/citizenships:** ${fields.passportsCitizenships}`,
+    `- **Business main source of income:** ${String(fields.businessMainSourceOfIncome)}`,
+    `- **Monthly revenue band:** ${fields.monthlyRevenueBand}`,
+    `- **Net worth band:** ${fields.netWorthBand}`,
+    `- **Timeline to act:** ${fields.timelineToAct}`,
+    `- **Budget readiness:** ${fields.budgetReadiness}`,
+    `- **Important notes:** ${fields.importantRoutingNotes ?? ""}`,
   ].join("\n");
 }
 
